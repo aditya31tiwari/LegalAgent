@@ -1,0 +1,330 @@
+================================================================================
+FILE MANIFEST — LegalAgent v0
+================================================================================
+
+Complete list of files, purposes, and status.
+
+================================================================================
+DOCUMENTATION (Read These First)
+================================================================================
+
+FILE: V0_PLAN.md
+TYPE: Original specification
+SIZE: ~12 KB
+PURPOSE: The 12-day implementation plan that drove this v0
+STATUS: Read-only reference
+HOW TO USE: Start here to understand the vision and constraints
+
+FILE: README_ARCHITECTURE.txt
+TYPE: Architecture guide
+SIZE: ~9 KB
+PURPOSE: Complete architecture, stages, constraints, running instructions
+STATUS: Primary reference for developers
+HOW TO USE: Navigate by topic (find "I want to..." section)
+
+FILE: PROJECT_STRUCTURE.txt
+TYPE: Directory overview
+SIZE: ~7 KB
+PURPOSE: Directory layout, what's implemented, what's stubbed, phases
+STATUS: Quick reference
+HOW TO USE: See file tree and understand what goes where
+
+FILE: IMPLEMENTATION_SUMMARY.txt
+TYPE: Completion report
+SIZE: ~8 KB
+PURPOSE: What was built, test results, design decisions, next steps
+STATUS: Summary of v0 completion
+HOW TO USE: See smoke test results and integration validation
+
+FILE: INDEX.txt
+TYPE: Navigation guide
+SIZE: ~9 KB
+PURPOSE: Quick lookup by task, file, or component
+STATUS: Fast reference
+HOW TO USE: "I want to..." → find file and read it
+
+FILE: PIPELINE_FLOW.txt
+TYPE: Visual data flow
+SIZE: ~10 KB
+PURPOSE: Stage-by-stage data transformations (text diagrams)
+STATUS: Understanding reference
+HOW TO USE: See how data flows through each layer
+
+FILE: FILE_MANIFEST.txt
+TYPE: This file
+SIZE: ~5 KB
+PURPOSE: Complete inventory of what exists
+STATUS: Reference
+HOW TO USE: Find file and understand its role
+
+================================================================================
+CORE PIPELINE (The Implementation)
+================================================================================
+
+DIRECTORY: core/
+
+FILE: core/__init__.py
+TYPE: Python package init
+PURPOSE: Export public API (Clause, Finding, Run, analyse)
+SIZE: ~200 bytes
+STATUS: ✓ Complete
+KEY EXPORTS: Clause, Finding, Run, analyse
+
+FILE: core/types.py
+TYPE: Data structures
+PURPOSE: Define final Clause, Finding, Run dataclasses
+SIZE: ~1 KB
+STATUS: ✓ Complete (FINAL - don't change without consensus)
+KEY CLASSES: Clause, Finding, Run
+GUARANTEE: Field names match DB columns exactly
+
+FILE: core/ingestion.py
+TYPE: Stage 1 implementation
+PURPOSE: Load PDF/DOCX/TXT, normalize to canonical text
+SIZE: ~1.5 KB
+STATUS: ✓ Complete
+KEY FUNCTIONS: ingest(file_path) → str, normalize(text) → str
+GUARANTEE: Byte-identical on re-run
+
+FILE: core/extraction.py
+TYPE: Stage 2 implementation
+PURPOSE: Regex-based clause extraction (decimal numbering)
+SIZE: ~1.5 KB
+STATUS: ✓ Complete (v0 only: decimal numbers, no hierarchies)
+KEY FUNCTIONS: extract(text, contract_id) → List[Clause]
+KEY REGEX: ^\s*(\d+(?:\.\d+)*)\s*\.?\s+
+FEATURES: char_start/char_end offsets, xref detection/resolution
+
+FILE: core/classification.py
+TYPE: Stage 3 implementation
+PURPOSE: Keyword-based clause labeling
+SIZE: ~1 KB
+STATUS: ✓ Complete (v0: keyword dictionary, confidence=1.0)
+KEY FUNCTIONS: classify(clauses) → List[Clause]
+KEYWORDS: 11 label types (indemnification, liability, termination, ...)
+
+FILE: core/candidate_selection.py
+TYPE: Stage 4 implementation
+PURPOSE: BM25 + xref + type_matrix pair generation
+SIZE: ~2 KB
+STATUS: ✓ Complete
+KEY FUNCTIONS: select_candidates(clauses, config) → List[tuple]
+METHODS: BM25 scoring, cross-reference pairing, type matrix
+TYPE_MATRIX: Label pairs that commonly conflict
+
+FILE: core/pipeline.py
+TYPE: Orchestration + Stage 5 (stub)
+PURPOSE: Chain all stages together, stub LLM analysis
+SIZE: ~1.5 KB
+STATUS: ✓ Complete (v0: analysis stubbed)
+KEY FUNCTIONS: analyse(file_path, config) → (Run, List[Clause], List[Finding])
+STUB: analyse_pair_stub() returns None (upgrade on Day 9)
+
+================================================================================
+CLI & TESTING
+================================================================================
+
+FILE: __main__.py
+TYPE: Entry point
+PURPOSE: Command-line interface for analyzing contracts
+SIZE: ~4 KB
+STATUS: ✓ Complete
+USAGE: python -m legalagent analyse contract.pdf [--top-k 5] [--output run.json]
+KEY FUNCTIONS: main(), format_finding()
+
+DIRECTORY: tests/
+
+FILE: tests/__init__.py
+TYPE: Package marker
+PURPOSE: Make tests/ a Python package
+SIZE: ~20 bytes
+STATUS: ✓ Complete
+
+FILE: tests/test_pipeline.py
+TYPE: Smoke test
+PURPOSE: End-to-end validation of all pipeline layers
+SIZE: ~2 KB
+STATUS: ✓ Complete (passing)
+USAGE: python tests/test_pipeline.py
+VALIDATES:
+  ├─ Clauses extracted with offsets
+  ├─ Labels classified
+  ├─ Candidate pairs generated
+  ├─ Run stats consistent
+  └─ All layers integrated
+FIXTURES: Embedded in test (temp file created on-the-fly)
+
+================================================================================
+REFERENCE DOCUMENTS (Existing, Pre-v0)
+================================================================================
+
+FILE: DATA_MODEL.md
+TYPE: Future database schema
+PURPOSE: PostgreSQL schema (not yet implemented)
+SIZE: ~6 KB
+STATUS: Placeholder (pre-v0, will be used for Week 11)
+HOW TO USE: Reference for field names, types, constraints
+
+FILE: API.md
+TYPE: Future API specification
+PURPOSE: HTTP endpoints and request/response bodies (not yet implemented)
+SIZE: ~8 KB
+STATUS: Placeholder (pre-v0, will be used for Week 12)
+HOW TO USE: Reference for response format (note: v0 pipeline output matches this)
+
+FILE: CUAD.md
+TYPE: Clause taxonomy reference
+PURPOSE: Classification labels and hierarchy (CUAD dataset)
+SIZE: ~9 KB
+STATUS: Reference (used for keywords in core/classification.py)
+HOW TO USE: Understand what labels mean, future LegalBERT fine-tuning
+
+FILE: README.md
+TYPE: Project README
+PURPOSE: General project overview (pre-v0)
+SIZE: ~2 KB
+STATUS: Pre-v0 (may need update)
+HOW TO USE: Quick project intro
+
+================================================================================
+SUMMARY BY PURPOSE
+================================================================================
+
+Data Structures (FINAL):
+  └─ core/types.py (Clause, Finding, Run)
+
+Pipeline Layers (Implemented):
+  ├─ core/ingestion.py (Load & normalize)
+  ├─ core/extraction.py (Parse clauses)
+  ├─ core/classification.py (Label clauses)
+  ├─ core/candidate_selection.py (Generate pairs)
+  ├─ core/pipeline.py (Orchestrate + stub analysis)
+  └─ __main__.py (CLI output)
+
+Testing:
+  └─ tests/test_pipeline.py (Smoke test)
+
+Documentation:
+  ├─ V0_PLAN.md (Original plan)
+  ├─ README_ARCHITECTURE.txt (Architecture)
+  ├─ PROJECT_STRUCTURE.txt (Directory layout)
+  ├─ IMPLEMENTATION_SUMMARY.txt (Completion)
+  ├─ INDEX.txt (Quick lookup)
+  ├─ PIPELINE_FLOW.txt (Data flow)
+  ├─ FILE_MANIFEST.txt (This file)
+  └─ DATA_MODEL.md, API.md, CUAD.md (References)
+
+================================================================================
+FILE SIZES & COMPLEXITY
+================================================================================
+
+Total Python code (core + tests):
+  ├─ core/types.py: ~600 bytes (3 dataclasses)
+  ├─ core/ingestion.py: ~1.5 KB (normalization logic)
+  ├─ core/extraction.py: ~1.5 KB (regex extraction + xref resolution)
+  ├─ core/classification.py: ~1 KB (keyword matching)
+  ├─ core/candidate_selection.py: ~2 KB (BM25 + type matrix)
+  ├─ core/pipeline.py: ~1.5 KB (orchestration)
+  ├─ __main__.py: ~4 KB (CLI)
+  └─ tests/test_pipeline.py: ~2 KB (smoke test)
+  TOTAL: ~14 KB Python code
+
+Total documentation:
+  ├─ V0_PLAN.md: ~12 KB
+  ├─ README_ARCHITECTURE.txt: ~9 KB
+  ├─ PROJECT_STRUCTURE.txt: ~7 KB
+  ├─ IMPLEMENTATION_SUMMARY.txt: ~8 KB
+  ├─ INDEX.txt: ~9 KB
+  ├─ PIPELINE_FLOW.txt: ~10 KB
+  ├─ FILE_MANIFEST.txt: ~5 KB
+  └─ Data models + API: ~15 KB
+  TOTAL: ~75 KB documentation
+
+Code-to-Docs ratio: ~1:5 (minimal code, maximum clarity)
+
+================================================================================
+DEPENDENCIES
+================================================================================
+
+Python:
+  ├─ pathlib (stdlib)
+  ├─ tempfile (stdlib)
+  ├─ json (stdlib)
+  ├─ re (stdlib)
+  ├─ argparse (stdlib)
+  ├─ uuid (stdlib)
+  └─ dataclasses (stdlib)
+
+Optional (for PDF/DOCX):
+  ├─ pdfplumber (PDF parsing)
+  ├─ python-docx (DOCX parsing)
+  └─ Falls back to plain text read if not installed
+
+No external ML/LLM libraries in v0 (added in Day 9+)
+
+================================================================================
+WHAT'S RUNNING NOW
+================================================================================
+
+✓ Full pipeline implemented (5 stages + orchestration)
+✓ CLI working (python -m legalagent analyse contract.pdf)
+✓ Smoke test passing (all layers integrated)
+✓ Data shapes final (Clause, Finding, Run)
+✓ Ingestion perfect (normalized_text canonical)
+✓ Documentation complete
+
+What's NOT running:
+  ✗ LLM analysis (stubbed: returns None)
+  ✗ Database (out of v0 scope)
+  ✗ API (out of v0 scope)
+  ✗ Frontend (out of v0 scope)
+
+================================================================================
+NEXT STEPS
+================================================================================
+
+Week 3: Extraction v1
+  └─ Add hierarchies, Roman numerals, lettered sub-clauses
+
+Week 5: Classification v1
+  └─ Replace keyword dictionary with LegalBERT model
+
+Week 6: Retrieval v2
+  └─ Add dense embeddings + hybrid BM25 scoring
+
+Day 9: Analysis v1
+  └─ Replace analyse_pair_stub() with Claude API call
+
+Weeks 11+: Backend
+  └─ Add database (PostgreSQL), API, frontend
+
+================================================================================
+READING ORDER (For New Developers)
+================================================================================
+
+1. V0_PLAN.md (understand the vision)
+2. README_ARCHITECTURE.txt (understand the system)
+3. PIPELINE_FLOW.txt (understand the data flow)
+4. core/types.py (understand the data shapes)
+5. core/pipeline.py (understand the orchestration)
+6. tests/test_pipeline.py (run and see it work)
+7. Dive into individual stages (ingestion, extraction, etc.)
+
+================================================================================
+FILE STATUS LEGEND
+================================================================================
+
+✓ Complete: Implemented and tested
+✗ Stubbed: Placeholder, to be replaced
+⊘ Not in v0: Planned for later phases
+○ Placeholder: Pre-v0, to be updated
+
+================================================================================
+END OF MANIFEST
+================================================================================
+
+Created: 2026-09-13
+Status: v0 Complete (Days 1–8)
+Next: Week 3 (Extraction v1)
+
+================================================================================

@@ -1,0 +1,176 @@
+================================================================================
+PROJECT STRUCTURE — LegalAgent v0
+================================================================================
+
+LegalAgent/
+├── core/                           # Pipeline implementation (8 layers)
+│   ├── __init__.py                 # Package exports
+│   ├── types.py                    # Data shapes (Clause, Finding, Run)
+│   ├── ingestion.py                # Load & normalize contracts
+│   ├── extraction.py               # Regex-based clause parsing
+│   ├── classification.py           # Keyword-based labeling
+│   ├── candidate_selection.py      # BM25 + xref + type_matrix
+│   ├── pipeline.py                 # Orchestration (main analyse() function)
+│   └── [analysis.py]               # STUB: LLM analysis (coming day 9)
+│
+├── tests/
+│   ├── fixtures/                   # Test contracts
+│   │   └── [acme_msa.pdf]          # CUAD sample (add manually)
+│   └── test_pipeline.py            # Smoke test: validates all layers
+│
+├── __main__.py                      # CLI entry point
+│   └── Usage: python -m legalagent analyse contract.pdf
+│
+├── README_ARCHITECTURE.txt          # Architecture guide (this repo)
+├── PROJECT_STRUCTURE.txt            # This file
+├── V0_PLAN.md                       # Original 12-day implementation plan
+│
+├── [DATA_MODEL.md]                  # FUTURE: Database schema
+├── [API.md]                         # FUTURE: API specification
+└── [requirements.txt]               # Dependencies: pdfplumber, python-docx
+
+================================================================================
+WHAT'S IMPLEMENTED (Days 1–8)
+================================================================================
+
+✓ Core Types       (Day 1–2)   core/types.py
+  └─ Clause, Finding, Run — final shapes, mirrored in DB/API
+
+✓ Ingestion        (Day 3–4)   core/ingestion.py
+  └─ PDF/DOCX/TXT → normalized_text (canonical document)
+
+✓ Extraction       (Day 5–6)   core/extraction.py
+  └─ Regex-based clause splitting (decimal numbering: 5.2, 1.2.3)
+  └─ Cross-reference detection (Section N.M → clause_id resolution)
+
+✓ Classification   (Day 7)     core/classification.py
+  └─ Keyword dictionary (substring match, case-insensitive)
+  └─ Populates Clause.labels with confidence=1.0
+
+✓ Candidate Select (Day 8)     core/candidate_selection.py
+  └─ BM25 scoring (top-k similar clauses)
+  └─ xref-based pairing (resolved cross-references)
+  └─ Type matrix (label pairs that conflict)
+
+✓ Pipeline         (Days 1–8)  core/pipeline.py
+  └─ Orchestrates all layers: file → Run/Clauses/Findings
+
+✓ CLI              (Days 1–12) __main__.py
+  └─ python -m legalagent analyse contract.pdf
+
+✓ Smoke Test       (Days 1–12) tests/test_pipeline.py
+  └─ End-to-end validation: extraction → classification → candidates
+
+================================================================================
+WHAT'S STUBBED (To be implemented)
+================================================================================
+
+STUB: Analysis        (Day 9)
+  └─ Location: core/pipeline.py (analyse_pair_stub)
+  └─ Stub returns None (no finding)
+  └─ Next: LLM call per pair + JSON parsing + offset validation
+
+STUB: Risk Scoring    (Day 10)
+  └─ Location: core/pipeline.py (score_risk)
+  └─ Stub uses lookup table (conflict → high/0.9, dependency → medium/0.6)
+  └─ Next: Learned scoring model
+
+STUB: Explanation     (Day 10)
+  └─ Location: core/pipeline.py (explain)
+  └─ Stub uses f-string template
+  └─ Next: Retrieval-grounded rationale (RAG)
+
+FUTURE: Output JSON   (Days 11–12)
+  └─ Location: core/output.py (to be created)
+  └─ Format: GET /runs/{id}/findings response body (exact)
+
+================================================================================
+KEY FILES BY RESPONSIBILITY
+================================================================================
+
+Data Shapes (FINAL):
+  → core/types.py
+
+Integration Points:
+  → core/pipeline.py (orchestrates all layers)
+  → __main__.py (CLI, user-facing)
+
+Ingestion:
+  → core/ingestion.py (PDF/DOCX/TXT parsing, normalization)
+
+Extraction (Parsing):
+  → core/extraction.py (regex, decimal numbering, xref detection)
+
+Classification (Labeling):
+  → core/classification.py (keyword dictionary)
+
+Candidate Selection (Pair Scoring):
+  → core/candidate_selection.py (BM25, xref, type_matrix)
+
+Testing:
+  → tests/test_pipeline.py (smoke test, validates integration)
+
+Documentation:
+  → README_ARCHITECTURE.txt (this guide)
+  → V0_PLAN.md (original plan)
+  → PROJECT_STRUCTURE.txt (this file)
+
+================================================================================
+HOW TO RUN
+================================================================================
+
+1. Setup:
+   pip install pdfplumber python-docx
+
+2. Smoke Test (validates all layers):
+   python tests/test_pipeline.py
+
+3. Analyze a Contract (CLI):
+   python -m legalagent analyse tests/fixtures/sample.pdf
+   python -m legalagent analyse contract.pdf --top-k 5 -o output.json
+
+4. Output Format (JSON):
+   {
+     "run": {
+       "id": "run_...",
+       "contract_id": "...",
+       "config": {"retrieval_method": "bm25", "top_k": 5},
+       "stats": {"clauses": 47, "pairs": 28, "findings": 6, "no_issue": 22}
+     },
+     "items": [
+       {
+         "relation_type": "conflict",
+         "severity": "high",
+         "risk_score": 0.9,
+         "target_clause": {"id": "...", "number": "5.2", "heading": "..."},
+         "related_clauses": [{"id": "...", "number": "9.1", ...}],
+         ...
+       }
+     ]
+   }
+
+================================================================================
+DESIGN PRINCIPLES (Ponytail Mode)
+================================================================================
+
+1. Minimal Code: Fake stages in <50 lines if possible
+2. Integration First: Surface structural problems early
+3. Shapes Final: No renaming from v0 → product
+4. Ingestion Perfect: char_start/char_end are precious
+5. One Caller Per Stage: Each layer has one next layer
+6. Testable: One smoke test validates the whole chain
+
+================================================================================
+NEXT STEPS (Week 3+)
+================================================================================
+
+Week 3:  Extraction v1 (hierarchies, Roman numerals, lettered sub-clauses)
+Week 5:  Classification v1 (LegalBERT fine-tuned on CUAD)
+Week 6:  Retrieval v2 (dense embeddings + hybrid search)
+Day 9:   Analysis v1 (Claude API + structured JSON + validation)
+Week 10: Risk v2 + Explanations v2 (retrieval-grounded)
+Week 11: Database schema + migrations
+Week 12: API implementation (GET /contracts, GET /runs, POST /analysis)
+Week 13: Frontend
+
+================================================================================
