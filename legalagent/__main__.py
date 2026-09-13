@@ -11,8 +11,8 @@ import sys
 import json
 import argparse
 from pathlib import Path
-from core.pipeline import analyse
-from core.types import Run, Clause, Finding
+from legalagent.core.pipeline import analyse
+from legalagent.core.types import Run, Clause, Finding
 
 
 def format_finding(finding: Finding, clauses_by_id: dict) -> dict:

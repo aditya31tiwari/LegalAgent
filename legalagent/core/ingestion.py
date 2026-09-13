@@ -1,6 +1,10 @@
 import re
 from pathlib import Path
 
+# Form-feed marks a page boundary. pdfplumber pages are joined with it so
+# normalize() can tell how many pages a header/footer actually repeats across.
+PAGE_BREAK = "\f"
+
 
 def ingest(file_path: str) -> str:
     """
@@ -13,7 +17,7 @@ def ingest(file_path: str) -> str:
         try:
             import pdfplumber
             with pdfplumber.open(file_path) as pdf:
-                text = "\n".join(page.extract_text() or "" for page in pdf.pages)
+                text = PAGE_BREAK.join(page.extract_text() or "" for page in pdf.pages)
         except ImportError:
             raise ImportError("pdfplumber required for PDF ingestion")
     elif path.suffix.lower() == ".docx":
@@ -38,19 +42,24 @@ def normalize(text: str) -> str:
     3. Rejoin hyphenated line breaks
     4. Collapse whitespace runs, preserve paragraph breaks
     """
+    num_pages = max(1, text.count(PAGE_BREAK) + 1)
+    text = text.replace(PAGE_BREAK, "\n")
     lines = text.split("\n")
 
-    # 1. Strip repeating headers/footers (simple: drop lines that appear >80% of the time)
-    line_counts = {}
-    for line in lines:
-        stripped = line.strip()
-        if 5 < len(stripped) < 100:  # Skip very short/long lines
-            line_counts[stripped] = line_counts.get(stripped, 0) + 1
+    # 1. Strip repeating headers/footers: a line recurring on most PAGES
+    #    (not most lines — a header appears once per page, not once per line).
+    #    Meaningless with a single page — nothing "repeats across pages" then.
+    if num_pages > 1:
+        line_counts = {}
+        for line in lines:
+            stripped = line.strip()
+            if 5 < len(stripped) < 100:  # Skip very short/long lines
+                line_counts[stripped] = line_counts.get(stripped, 0) + 1
 
-    threshold = len(lines) * 0.8
-    headers_footers = {line for line, count in line_counts.items() if count > threshold}
+        threshold = num_pages * 0.8
+        headers_footers = {line for line, count in line_counts.items() if count > threshold}
 
-    lines = [line for line in lines if line.strip() not in headers_footers]
+        lines = [line for line in lines if line.strip() not in headers_footers]
 
     # 2. Drop standalone page numbers (e.g., "Page 5", "5", "[5]")
     lines = [line for line in lines if not re.match(r'^\s*\[?\s*\d+\s*\]?\s*$', line)]
