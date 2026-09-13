@@ -1,0 +1,269 @@
+================================================================================
+IMPLEMENTATION SUMMARY — LegalAgent v0 (Days 1–8)
+================================================================================
+
+Status: COMPLETE ✓
+
+What was implemented:
+  ✓ All 5 core pipeline layers (ingestion → extraction → classification →
+    candidate selection → analysis stub)
+  ✓ 3 final data shapes (Clause, Finding, Run) — mirrored in DB/API
+  ✓ CLI entry point (python -m legalagent analyse contract.pdf)
+  ✓ Smoke test validating all layers work together
+  ✓ Complete project documentation and architecture guide
+
+What was omitted (deliberate, marked with ponytail: comments):
+  ✓ LLM analysis layer (Day 9) — stubbed to return None
+  ✓ Risk scoring (Day 10) — stubbed to use lookup table only
+  ✓ Explanation generation (Day 10) — stubbed to use templates only
+  ✓ Database / API / Frontend — out of v0 scope
+
+================================================================================
+PIPELINE FLOW (File In → JSON Out)
+================================================================================
+
+Input: contract.pdf (or .docx, .txt)
+  |
+  v
+[1] INGESTION (core/ingestion.py)
+  ├─ pdfplumber / python-docx / plain read
+  ├─ Normalize: strip headers/footers, rejoin hyphens, collapse whitespace
+  └─ Output: normalized_text (canonical document)
+  |
+  v
+[2] EXTRACTION (core/extraction.py)
+  ├─ Regex matching: ^\d+(?:\.\d+)*\.?\s+
+  ├─ Split on matches, extract clauses and cross-references
+  ├─ Preserve char_start/char_end offsets (critical for hallucination-proof)
+  └─ Output: List[Clause]
+  |
+  v
+[3] CLASSIFICATION (core/classification.py)
+  ├─ Keyword dictionary (indemnification, liability, termination, etc.)
+  ├─ Substring match (case-insensitive)
+  ├─ Append labels to each clause
+  └─ Output: List[Clause] with labels
+  |
+  v
+[4] CANDIDATE SELECTION (core/candidate_selection.py)
+  ├─ Method 1: BM25 top-k scoring (text similarity)
+  ├─ Method 2: Cross-reference pairing (xref resolution)
+  ├─ Method 3: Type matrix (label pairs that conflict)
+  ├─ Dedupe pairs, cap at ~30
+  └─ Output: List[(clause_a, clause_b, ["bm25", "type_matrix", ...])]
+  |
+  v
+[5] ANALYSIS (core/pipeline.py — STUB)
+  ├─ Per-pair LLM call (stubbed: returns None)
+  ├─ No findings generated (all pairs marked no_issue)
+  └─ Output: List[Finding] (empty in v0)
+  |
+  v
+[6] OUTPUT (core/__main__.py)
+  ├─ JSON serialization (exact format of GET /runs/{id}/findings)
+  ├─ Ranking: by severity then risk_score
+  └─ Output: JSON (stdout or --output file)
+
+================================================================================
+TEST RESULTS
+================================================================================
+
+Smoke test output (fixture: 4 clauses, 7 pairs):
+  [OK] Extracted 4 clauses
+  [OK] Generated 7 candidate pairs
+  [OK] Found 0 findings, 7 no_issue
+  [OK] Clauses: ['1', '2', '3', '4']
+  [OK] Labels detected:
+    Clause 1: ['termination', 'survival']
+    Clause 2: ['limitation_of_liability', 'payment']
+    Clause 3: ['indemnification', 'survival']
+    Clause 4: ['confidentiality', 'survival']
+
+Key validations:
+  ✓ Clauses extracted with proper IDs, numbers, offsets
+  ✓ Cross-references detected and resolved
+  ✓ Labels classified via keywords
+  ✓ Candidate pairs generated via BM25 + type_matrix + xref
+  ✓ Run stats consistent: pairs == findings + no_issue
+  ✓ All layers work end-to-end
+
+================================================================================
+FILE STRUCTURE (What Was Created)
+================================================================================
+
+core/
+  ├── __init__.py                 # Package exports
+  ├── types.py                    # 3 dataclasses: Clause, Finding, Run (FINAL)
+  ├── ingestion.py                # normalize() + ingest(file_path) → text
+  ├── extraction.py               # extract(text) → List[Clause]
+  ├── classification.py           # classify(clauses) → List[Clause] w/ labels
+  ├── candidate_selection.py      # select_candidates(clauses) → List[pair]
+  └── pipeline.py                 # analyse(file) → (Run, List[Clause], List[Finding])
+
+__main__.py                        # CLI: python -m legalagent analyse contract.pdf
+
+tests/
+  ├── __init__.py
+  └── test_pipeline.py            # Smoke test (validates integration)
+
+Documentation/
+  ├── README_ARCHITECTURE.txt      # Full architecture guide (this repo)
+  ├── PROJECT_STRUCTURE.txt        # Directory structure + overview
+  └── IMPLEMENTATION_SUMMARY.txt   # This file
+
+Existing (pre-v0):
+  ├── V0_PLAN.md                   # Original 12-day plan
+  ├── DATA_MODEL.md                # Future DB schema
+  ├── API.md                        # Future API spec
+  └── CUAD.md                       # Clause taxonomy
+
+================================================================================
+HOW TO RUN
+================================================================================
+
+1. Install dependencies:
+   pip install pdfplumber python-docx
+
+2. Run smoke test (validates all layers):
+   python tests/test_pipeline.py
+
+3. Analyze a contract:
+   python -m legalagent analyse contract.pdf --top-k 5
+
+4. Example output (JSON):
+   {
+     "run": {
+       "id": "run_abc123",
+       "contract_id": "local",
+       "config": {"retrieval_method": "bm25", "top_k": 5},
+       "stats": {"clauses": 47, "pairs": 28, "findings": 6, "no_issue": 22}
+     },
+     "items": [
+       {
+         "id": "fnd_...",
+         "relation_type": "conflict",
+         "severity": "high",
+         "risk_score": 0.9,
+         "target_clause": {...},
+         "related_clauses": [...],
+         ...
+       }
+     ]
+   }
+
+================================================================================
+DESIGN DECISIONS (Ponytail Mode)
+================================================================================
+
+1. No LLM Analysis in v0
+   ├─ Reason: Integration matters more than accuracy at this stage
+   ├─ Benefit: Surfaces schema/offset/type problems immediately
+   ├─ Replacement: Stub returns None for all pairs
+   └─ Next: Day 9 adds Claude API call
+
+2. Keyword Classification Only
+   ├─ Reason: 50 lines, catches type_matrix conflicts
+   ├─ Accuracy: Will be wrong often (confidence=1.0 is honest)
+   ├─ Benefit: Type matrix fires, finding candidates generates
+   └─ Next: Week 5 adds LegalBERT fine-tuned on CUAD
+
+3. BM25 (Naive TF-IDF)
+   ├─ Implementation: O(n²) scoring, fast for ~50 clauses
+   ├─ Ponytail: Good enough to surface structural problems
+   ├─ Accuracy: Not optimized, ~30 candidate pairs kept per contract
+   └─ Next: Week 6 upgrades to dense + hybrid retrieval
+
+4. Type Matrix as YAML
+   ├─ 20 lines, 6 label pairs defined (indemnification ↔ liability, etc.)
+   ├─ Survives unchanged through v1 (no modification expected)
+   ├─ Drives pair generation even if BM25 misses them
+   └─ This is exactly how it scales to full taxonomy
+
+5. No Database
+   ├─ Reason: JSON on disk is a complete deliverable in v0
+   ├─ Data shapes are final, so DB schema works day 1 without redesign
+   ├─ Benefit: Runs locally, no DevOps overhead
+   └─ Next: Week 11 adds PostgreSQL persistence
+
+6. Single Smoke Test
+   ├─ No per-function unit tests (YAGNI)
+   ├─ One end-to-end test validates all layers
+   ├─ Assertions: offsets resolve, stats consistent, no_issue counted
+   └─ Any breakage shows up immediately (integration-first)
+
+================================================================================
+NEXT STEPS (Week 3+)
+================================================================================
+
+IMMEDIATE (After v0 merges):
+  □ Add real test contracts (CUAD samples with known outcomes)
+  □ Measure accuracy: precision, recall, F1 on type_matrix pairs
+  □ Identify extraction bugs (unresolved xrefs → signal)
+
+WEEK 3 (Extraction v1):
+  □ Support Roman numerals (I, II, III, IV, V, ...)
+  □ Support lettered sub-clauses ((a), (b), (c), ...)
+  □ Support hierarchies (parent_id population)
+
+WEEK 5 (Classification v1):
+  □ Fine-tune LegalBERT on CUAD taxonomy
+  □ Replace keyword dictionary with model predictions
+  □ Measure label accuracy vs CUAD ground truth
+
+WEEK 6 (Retrieval v2):
+  □ Dense embeddings (OpenAI or open-source)
+  □ Hybrid scoring: BM25 + semantic similarity
+  □ Increase candidate pairs if quality improves
+
+DAY 9 (Analysis v1):
+  □ Claude API integration
+  □ Prompt: "Do these clauses conflict?"
+  □ JSON parsing: extract relation_type, severity, rationale
+  □ Offset validation: evidence[].start/end must resolve to text
+  □ Caching: keyed by (clause_a_text, clause_b_text) hash
+
+WEEK 10 (Risk v2 + Explanation v2):
+  □ Learned risk_score (not lookup table)
+  □ Retrieval-grounded explanation (RAG: find similar findings)
+
+WEEKS 11+ (Backend):
+  □ PostgreSQL schema (from DATA_MODEL.md)
+  □ API layer (from API.md)
+  □ Frontend
+
+================================================================================
+METRICS
+================================================================================
+
+Codebase:
+  Lines of code: ~650 (core + pipeline)
+  Dependencies: pdfplumber, python-docx (both optional)
+  Time to run: <1 second on sample contracts
+
+Test results:
+  Clauses extracted: 4 (sample fixture)
+  Candidate pairs: 7
+  Labels detected: 8 across 4 clauses
+  No_issue rate: 100% (analysis is stubbed)
+
+Architecture:
+  Layers implemented: 5 of 8 (analysis v0 is stub)
+  Integration points: 7 (each layer calls next)
+  Data structures final: Yes (Clause, Finding, Run)
+
+================================================================================
+DONE
+================================================================================
+
+End of v0 implementation (Days 1–8).
+
+The pipeline is complete and working. All layers are connected. The data
+shapes are final and will survive the v0→product transition without renaming.
+
+Ready for:
+  - Week 2 testing: Analyze CUAD contracts, measure extraction accuracy
+  - Week 3+ upgrades: Hierarchies, LegalBERT, dense retrieval, LLM analysis
+
+Next: Week 3. Real v1 work begins.
+
+================================================================================
