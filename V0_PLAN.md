@@ -3,6 +3,7 @@
 One thing only: a contract file goes in one end, a list of flagged clause pairs with reasons
 comes out the other. Nothing in v0 needs to be good. Everything in v0 needs to be connected.
 
+
 Target: running by end of week 2.
 
 ## The rule for v0
