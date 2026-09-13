@@ -1,4 +1,4 @@
-from core.types import Clause
+from legalagent.core.types import Clause
 
 # Simple keyword dictionary for v0
 KEYWORDS = {

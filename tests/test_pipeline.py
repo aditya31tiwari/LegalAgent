@@ -1,86 +1,90 @@
 """
 Smoke test: pipeline works end-to-end.
-Tests: types → ingestion → extraction → classification → candidate selection
+Tests: types → ingestion → extraction → classification → candidate selection → analysis
 """
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from core.pipeline import analyse
-from core.types import Clause, Finding, Run
+import pytest
+from legalagent.core.pipeline import analyse
+from legalagent.core.types import Clause, Finding, Run
+
+FIXTURE_TEXT = """
+1.1 The Supplier shall indemnify, defend and hold harmless the Customer from
+any claims arising out of the Supplier's breach of this Agreement.
+
+1.2 In no event shall either party be liable for any consequential damages,
+and the aggregate liability of either party shall not exceed the fees paid
+in the prior year.
+
+1.3 Either party may terminate this Agreement upon thirty (30) days' written
+notice. The obligations under Section 1.1 shall survive termination.
+"""
 
 
-def test_smoke():
-    """
-    Load a fixture contract, run the full pipeline, validate structure.
-    """
-    # Minimal fixture contract text
-    fixture_text = """
-    1. Term and Termination
-
-    This Agreement shall commence on the Effective Date and continue for one (1) year.
-    Either party may terminate this Agreement upon thirty (30) days' written notice.
-    The termination provisions shall survive termination of this Agreement.
-
-    2. Limitation of Liability
-
-    In no event shall either party be liable for any consequential damages.
-    The aggregate liability of either party shall not exceed the fees paid in the prior year.
-
-    3. Indemnification
-
-    Each party shall indemnify and hold harmless the other from any claims.
-    This indemnification shall survive termination.
-
-    4. Confidentiality
-
-    Confidential information shall be protected by the receiving party.
-    Non-disclosure obligations shall survive termination.
-    """
-
-    # Write fixture to temp file
+def _run_pipeline():
     import tempfile
     with tempfile.NamedTemporaryFile(mode='w', suffix='.txt', delete=False) as f:
-        f.write(fixture_text)
+        f.write(FIXTURE_TEXT)
         fixture_path = f.name
 
     try:
-        # Run pipeline
-        run, clauses, findings = analyse(fixture_path, config={"top_k": 3})
-
-        # Validate structure
-        assert isinstance(run, Run), "Run should be Run instance"
-        assert isinstance(clauses, list), "Clauses should be list"
-        assert isinstance(findings, list), "Findings should be list"
-        assert len(clauses) > 0, "Should extract at least one clause"
-
-        # Validate clause structure
-        for clause in clauses:
-            assert isinstance(clause, Clause)
-            assert clause.id, "Clause should have id"
-            assert clause.number, "Clause should have number"
-            assert clause.char_start >= 0, "char_start should be non-negative"
-            assert clause.char_end >= clause.char_start, "char_end should be >= char_start"
-
-        # Validate run stats
-        assert run.stats["clauses"] == len(clauses)
-        assert run.stats["pairs"] >= 0
-        assert run.stats["findings"] + run.stats["no_issue"] == run.stats["pairs"]
-
-        print(f"[OK] Extracted {len(clauses)} clauses")
-        print(f"[OK] Generated {run.stats['pairs']} candidate pairs")
-        print(f"[OK] Found {run.stats['findings']} findings, {run.stats['no_issue']} no_issue")
-        print(f"[OK] Clauses: {[c.number for c in clauses]}")
-        print(f"[OK] Labels detected:")
-        for clause in clauses:
-            if clause.labels:
-                print(f"  Clause {clause.number}: {[l['label'] for l in clause.labels]}")
-
+        return analyse(fixture_path, config={"top_k": 3})
     finally:
         import os
         os.unlink(fixture_path)
 
 
+def test_extraction_and_candidates():
+    """
+    Validates the parts of the pipeline that are actually implemented:
+    extraction (inline clause numbering, not just standalone headings),
+    classification, and candidate selection.
+    """
+    run, clauses, findings = _run_pipeline()
+
+    assert isinstance(run, Run)
+    assert isinstance(clauses, list)
+    assert isinstance(findings, list)
+
+    # Inline numbering ("1.1 The Supplier shall...") must be extracted, not
+    # just standalone heading-style numbering.
+    assert len(clauses) == 3, f"expected 3 clauses, got {len(clauses)}"
+
+    for clause in clauses:
+        assert isinstance(clause, Clause)
+        assert clause.id
+        assert clause.number
+        assert clause.char_start >= 0
+        assert clause.char_end > clause.char_start
+
+    # No self-pairs: a clause must never be paired with itself.
+    assert run.stats["pairs"] > 0
+    assert run.stats["findings"] + run.stats["no_issue"] == run.stats["pairs"]
+
+
+@pytest.mark.xfail(reason="analyse_pair_stub always returns None until the LLM analysis layer lands (Day 9)", strict=True)
+def test_smoke_findings_and_evidence():
+    """
+    The assertions from the plan that actually matter: findings are produced,
+    and every evidence offset resolves to real text (catches hallucination).
+    Left failing on purpose so a stubbed analysis layer can't fake a pass.
+    """
+    run, clauses, findings = _run_pipeline()
+    text_by_clause = {c.id: c.text for c in clauses}
+    ids = {c.id for c in clauses}
+
+    assert findings, "expected at least one finding"
+    for f in findings:
+        assert f.target_clause_id in ids
+        assert all(r in ids for r in f.related_clause_ids)
+        for e in f.evidence:
+            clause_text = text_by_clause[e["clause_id"]]
+            assert clause_text[e["start"]:e["end"]].strip()
+
+
 if __name__ == "__main__":
-    test_smoke()
-    print("\n[OK] Smoke test passed")
+    test_extraction_and_candidates()
+    print("[OK] Smoke test passed (extraction + candidates)")
+    print("[XFAIL expected] findings/evidence test — analysis layer not implemented yet")

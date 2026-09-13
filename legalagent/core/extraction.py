@@ -1,11 +1,16 @@
 import re
-from core.types import Clause
+from legalagent.core.types import Clause
 
-# Decimal numbering only (e.g., "5.2", "1.2.3")
-CLAUSE_RE = re.compile(r'^\s*(\d+(?:\.\d+)*)\s*\.?\s+([^\n]{0,80}?)\n', re.M)
+# Decimal numbering only (e.g., "5.2", "1.2.3"). Matches the number wherever it
+# starts a line — heading-on-its-own-line AND inline "1.1 The Supplier shall..."
+CLAUSE_RE = re.compile(r'^\s*(\d+(?:\.\d+)*)\.?\s+', re.M)
 
 # Cross-reference regex: "Section 5.2", "Clause 1.2", etc.
 XREF_RE = re.compile(r'(?:Section|Clause|Article|clause|§)\s+(\d+(?:\.\d+)*)', re.I)
+
+# A heading is only what's left of the first newline, and only if that first
+# line is short — otherwise the "heading" is just the start of inline clause text.
+_HEADING_MAX_LEN = 80
 
 
 def extract(text: str, contract_id: str = "local") -> list[Clause]:
@@ -15,18 +20,23 @@ def extract(text: str, contract_id: str = "local") -> list[Clause]:
     """
     clauses = []
     ordinal = 0
+    matches = list(CLAUSE_RE.finditer(text))
 
-    for match in CLAUSE_RE.finditer(text):
+    for i, match in enumerate(matches):
         number = match.group(1)
-        heading = match.group(2).strip()
 
-        # Find text run: from end of this match to start of next match
-        char_start = match.end()
-        remaining = text[char_start:]
-        next_match = CLAUSE_RE.search(remaining)
-        char_end = char_start + next_match.start() if next_match else len(text)
+        # Span starts at the clause number itself, so spans tile the document.
+        char_start = match.start()
+        char_end = matches[i + 1].start() if i + 1 < len(matches) else len(text)
 
         clause_text = text[char_start:char_end].strip()
+
+        # Heading: first line after the number, only if short (else it's just
+        # the start of inline clause text, not a real heading).
+        rest = text[match.end():char_end]
+        first_line = rest.split("\n", 1)[0].strip()
+        heading = first_line if 0 < len(first_line) <= _HEADING_MAX_LEN else None
+
         clause_id = f"{contract_id}::{number}"
 
         # Extract cross-references within this clause

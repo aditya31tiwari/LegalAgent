@@ -1,9 +1,9 @@
 import uuid
-from core.types import Run, Clause, Finding
-from core.ingestion import ingest
-from core.extraction import extract
-from core.classification import classify
-from core.candidate_selection import select_candidates
+from legalagent.core.types import Run, Clause, Finding
+from legalagent.core.ingestion import ingest
+from legalagent.core.extraction import extract
+from legalagent.core.classification import classify
+from legalagent.core.candidate_selection import select_candidates
 
 
 def analyse_pair_stub(clause_a: Clause, clause_b: Clause) -> Finding | None:

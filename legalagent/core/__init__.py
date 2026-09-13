@@ -15,7 +15,7 @@ Data shapes (final, mirrored in DB/API):
   - Run: metadata for one contract analysis run
 """
 
-from core.types import Clause, Finding, Run
-from core.pipeline import analyse
+from legalagent.core.types import Clause, Finding, Run
+from legalagent.core.pipeline import analyse
 
 __all__ = ["Clause", "Finding", "Run", "analyse"]

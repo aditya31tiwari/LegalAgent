@@ -1,0 +1,20 @@
+[project]
+name = "legalagent"
+version = "0.1.0"
+description = "Contract clause conflict analysis pipeline"
+requires-python = ">=3.11"
+dependencies = [
+    "pdfplumber>=0.11",
+    "python-docx>=1.1",
+    "rank-bm25>=0.2",
+]
+
+[project.scripts]
+legalagent = "legalagent.__main__:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["legalagent*"]
