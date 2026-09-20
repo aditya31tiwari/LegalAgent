@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LegalAgent — Cross-Clause Contract Intelligence</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:        #1a2332;
+      --navy-light:  #2a3a4e;
+      --charcoal:    #3d4f5f;
+      --slate:       #64748b;
+      --copper:      #9a7b4f;
+      --copper-light:#c4a97d;
+      --bg:          #fafaf8;
+      --bg-ivory:    #f5f3ef;
+      --border:      #e5e2dc;
+      --text:        #1a2332;
+      --text-sec:    #4a5568;
+      --text-muted:  #718096;
+      --risk-high:   #9b2c2c;
+      --safe:        #276749;
+      --font-serif:  'Playfair Display', Georgia, serif;
+      --font-sans:   'Inter', -apple-system, sans-serif;
+      --ease:        cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      color: var(--text);
+      background: var(--bg);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.6;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 64px;
+      background: rgba(250, 250, 248, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 48px;
+      z-index: 100;
+    }
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .nav-logo-icon {
+      width: 32px; height: 32px;
+      background: var(--navy);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: #fff;
+    }
+    .nav-logo-text {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-sec);
+      text-decoration: none;
+      transition: color 0.15s var(--ease);
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 8px 20px;
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s var(--ease);
+    }
+    .nav-cta:hover { background: var(--navy-light); }
+
+    /* ─── HERO ─── */
+    .hero {
+      padding: 160px 48px 100px;
+      max-width: 1200px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--copper);
+      padding: 5px 14px;
+      background: rgba(154, 123, 79, 0.08);
+      border: 1px solid rgba(154, 123, 79, 0.2);
+      border-radius: 20px;
+      margin-bottom: 28px;
+    }
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-size: 52px;
+      font-weight: 700;
+      line-height: 1.15;
+      color: var(--text);
+      margin-bottom: 20px;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .hero h1 em {
+      font-style: italic;
+      color: var(--copper);
+    }
+    .hero-subtitle {
+      font-size: 18px;
+      color: var(--text-sec);
+      max-width: 600px;
+      margin: 0 auto 40px;
+      line-height: 1.7;
+    }
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+    }
+    .btn-lg {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font-sans);
+      padding: 12px 28px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s var(--ease);
+    }
+    .btn-primary { background: var(--navy); color: #fff; }
+    .btn-primary:hover { background: var(--navy-light); }
+    .btn-outline {
+      background: transparent;
+      color: var(--text-sec);
+      border: 1px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--slate); color: var(--text); }
+
+    /* ─── STATS STRIP ─── */
+    .stats-strip {
+      max-width: 900px;
+      margin: 0 auto 100px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .stat-item {
+      background: var(--bg);
+      padding: 28px 20px;
+      text-align: center;
+    }
+    .stat-value {
+      font-family: var(--font-serif);
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+    .stat-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    /* ─── SECTION GENERIC ─── */
+    section {
+      padding: 80px 48px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .section-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--copper);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: var(--font-serif);
+      font-size: 36px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      line-height: 1.25;
+    }
+    .section-desc {
+      font-size: 16px;
+      color: var(--text-sec);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 48px;
+    }
+
+    /* ─── FEATURES ─── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+    .feature-card {
+      padding: 32px 28px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      transition: border-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
+    }
+    .feature-card:hover {
+      border-color: var(--copper-light);
+      box-shadow: 0 4px 20px rgba(26, 35, 50, 0.05);
+    }
+    .feature-icon {
+      width: 40px; height: 40px;
+      background: var(--bg-ivory);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      margin-bottom: 18px;
+    }
+    .feature-title {
+      font-family: var(--font-serif);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .feature-desc {
+      font-size: 13.5px;
+      color: var(--text-sec);
+      line-height: 1.65;
+    }
+
+    /* ─── HOW IT WORKS ─── */
+    .how-section {
+      background: var(--bg-ivory);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 80px 48px;
+      max-width: 100%;
+    }
+    .how-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .steps-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 32px;
+      margin-top: 48px;
+    }
+    .step-card {
+      position: relative;
+    }
+    .step-number {
+      font-family: var(--font-serif);
+      font-size: 48px;
+      font-weight: 700;
+      color: rgba(154, 123, 79, 0.15);
+      line-height: 1;
+      margin-bottom: 12px;
+    }
+    .step-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .step-desc {
+      font-size: 13px;
+      color: var(--text-sec);
+      line-height: 1.6;
+    }
+
+    /* ─── INDIAN LAW FOCUS ─── */
+    .law-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .law-card {
+      padding: 28px 24px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--copper);
+      border-radius: 6px;
+    }
+    .law-title {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .law-desc {
+      font-size: 13px;
+      color: var(--text-sec);
+      line-height: 1.6;
+    }
+    .law-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 2px 8px;
+      border-radius: 3px;
+      margin-top: 10px;
+    }
+    .badge-act { background: #fdf2f2; color: var(--risk-high); }
+    .badge-new { background: #f0fdf4; color: var(--safe); }
+
+    /* ─── TECH STACK ─── */
+    .tech-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 32px;
+    }
+    .tech-pill {
+      font-size: 12px;
+      font-weight: 500;
+      padding: 8px 16px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-sec);
+    }
+
+    /* ─── CTA SECTION ─── */
+    .cta-section {
+      text-align: center;
+      padding: 100px 48px;
+    }
+    .cta-section .section-title {
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .cta-section .section-desc {
+      margin-left: auto;
+      margin-right: auto;
+      margin-bottom: 32px;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 40px 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    .footer-left {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .footer-right {
+      display: flex;
+      gap: 24px;
+    }
+    .footer-right a {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+    .footer-right a:hover { color: var(--text); }
+
+    /* ─── ANIMATIONS ─── */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 900px) {
+      nav { padding: 0 24px; }
+      .hero { padding: 140px 24px 60px; }
+      .hero h1 { font-size: 36px; }
+      .stats-strip { grid-template-columns: repeat(2, 1fr); }
+      .features-grid { grid-template-columns: 1fr; }
+      .steps-row { grid-template-columns: repeat(2, 1fr); }
+      .law-grid { grid-template-columns: 1fr; }
+      section { padding: 60px 24px; }
+    }
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 28px; }
+      .nav-links { display: none; }
+      .stats-strip { grid-template-columns: 1fr; }
+      .steps-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ NAVIGATION ═══ -->
+  <nav>
+    <div class="nav-logo">
+      <div class="nav-logo-icon">⚖</div>
+      <span class="nav-logo-text">LegalAgent</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#how-it-works">How It Works</a></li>
+      <li><a href="#indian-law">Indian Law</a></li>
+      <li><a href="#technology">Technology</a></li>
+    </ul>
+    <a href="/app" class="nav-cta">Launch Dashboard →</a>
+  </nav>
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero">
+    <div class="hero-badge">Research Prototype — Indian Contract Intelligence</div>
+    <h1>Cross-Clause Risk Detection for <em>Indian Commercial Contracts</em></h1>
+    <p class="hero-subtitle">
+      LegalAgent surfaces hidden contradictions, statutory violations, and clause interdependencies 
+      that traditional document review misses — built specifically for Indian commercial law.
+    </p>
+    <div class="hero-actions">
+      <a href="/app" class="btn-lg btn-primary">Open Contract Dashboard →</a>
+      <a href="#features" class="btn-lg btn-outline">Explore Features</a>
+    </div>
+  </section>
+
+  <!-- ═══ STATS ═══ -->
+  <div class="stats-strip fade-up">
+    <div class="stat-item">
+      <div class="stat-value">41</div>
+      <div class="stat-label">CUAD Categories</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">6</div>
+      <div class="stat-label">Pipeline Stages</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">3</div>
+      <div class="stat-label">Retrieval Methods</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-value">∞</div>
+      <div class="stat-label">Clause Pairs Analysed</div>
+    </div>
+  </div>
+
+  <!-- ═══ FEATURES ═══ -->
+  <section id="features" class="fade-up">
+    <div class="section-label">Capabilities</div>
+    <h2 class="section-title">What LegalAgent Does</h2>
+    <p class="section-desc">
+      An AI-powered contract review engine that goes beyond single-clause analysis 
+      to detect cross-clause contradictions and map the full risk topology of a contract.
+    </p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔗</div>
+        <h3 class="feature-title">Cross-Clause Graph Analysis</h3>
+        <p class="feature-desc">
+          Builds an attributed knowledge graph G=(V,E) of clause interdependencies, 
+          surfacing conflicts invisible to linear document review.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📜</div>
+        <h3 class="feature-title">Indian Statutory Compliance</h3>
+        <p class="feature-desc">
+          Flags clauses void under Indian Contract Act (Section 27 non-competes, Section 73/74 penalties), 
+          DPDPA 2023, and BNS 2023.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚠</div>
+        <h3 class="feature-title">Contradiction Detection</h3>
+        <p class="feature-desc">
+          Identifies when a liability cap in one clause is nullified by uncapped indemnity in another, 
+          and similar inter-clause conflicts.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤖</div>
+        <h3 class="feature-title">Legal NLP Models</h3>
+        <p class="feature-desc">
+          Uses domain-specific embeddings (InLegal-SBERT, InLegalBERT) trained on Indian legal text 
+          for superior semantic clause matching.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <h3 class="feature-title">Visual Risk Topology</h3>
+        <p class="feature-desc">
+          Interactive clause interdependency graph with colour-coded edges for conflicts, 
+          statutory violations, cross-references, and semantic links.
+        </p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📋</div>
+        <h3 class="feature-title">Audit Memorandum Export</h3>
+        <p class="feature-desc">
+          Generates executive-ready legal risk memos with statutory citations, 
+          affected provisions, and recommended amendments.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ HOW IT WORKS ═══ -->
+  <div class="how-section" id="how-it-works">
+    <div class="how-inner fade-up">
+      <div class="section-label">Process</div>
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-desc">
+        A six-stage pipeline from raw contract text to actionable risk intelligence.
+      </p>
+
+      <div class="steps-row">
+        <div class="step-card">
+          <div class="step-number">01</div>
+          <h4 class="step-title">Ingest & Parse</h4>
+          <p class="step-desc">
+            Upload contract text. The system segments it into individual clauses 
+            and identifies section boundaries.
+          </p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">02</div>
+          <h4 class="step-title">Classify & Label</h4>
+          <p class="step-desc">
+            Each clause is classified against CUAD taxonomy — liability, indemnity, 
+            non-compete, termination, and 37 more categories.
+          </p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">03</div>
+          <h4 class="step-title">Select Candidates</h4>
+          <p class="step-desc">
+            BM25 and dense retrieval (InLegal-SBERT) identify clause pairs likely 
+            to contain contradictions or dependencies.
+          </p>
+        </div>
+        <div class="step-card">
+          <div class="step-number">04</div>
+          <h4 class="step-title">Analyse & Report</h4>
+          <p class="step-desc">
+            Cross-clause analysis checks for conflicts, statutory violations, 
+            and generates findings with citations and remedies.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ INDIAN LAW FOCUS ═══ -->
+  <section id="indian-law" class="fade-up">
+    <div class="section-label">Jurisdiction</div>
+    <h2 class="section-title">Built for Indian Commercial Law</h2>
+    <p class="section-desc">
+      LegalAgent encodes key provisions of Indian statutes that affect commercial contract validity and enforceability.
+    </p>
+
+    <div class="law-grid">
+      <div class="law-card">
+        <h4 class="law-title">Indian Contract Act, 1872</h4>
+        <p class="law-desc">
+          Section 27 (void non-competes), Section 73/74 (penalty vs. damages), 
+          Sections 124-125 (indemnity obligations). Post-termination restraints are void 
+          ab initio regardless of reasonableness.
+        </p>
+        <span class="law-badge badge-act">Core Statute</span>
+      </div>
+      <div class="law-card">
+        <h4 class="law-title">Digital Personal Data Protection Act, 2023</h4>
+        <p class="law-desc">
+          Contractual consent clauses must comply with DPDPA's affirmative consent framework. 
+          Blanket data processing permissions may be unenforceable.
+        </p>
+        <span class="law-badge badge-new">New Legislation</span>
+      </div>
+      <div class="law-card">
+        <h4 class="law-title">Bharatiya Nyaya Sanhita, 2023</h4>
+        <p class="law-desc">
+          Replaced the Indian Penal Code. Contract penalty clauses referencing IPC 
+          sections need re-mapping to BNS equivalents.
+        </p>
+        <span class="law-badge badge-new">New Legislation</span>
+      </div>
+      <div class="law-card">
+        <h4 class="law-title">Mediation Act, 2023</h4>
+        <p class="law-desc">
+          Mandatory pre-litigation mediation affects dispute resolution clauses. 
+          Arbitration-first provisions may need a mediation precondition.
+        </p>
+        <span class="law-badge badge-new">New Legislation</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ TECHNOLOGY ═══ -->
+  <section id="technology" class="fade-up">
+    <div class="section-label">Architecture</div>
+    <h2 class="section-title">Technology Stack</h2>
+    <p class="section-desc">
+      Combining domain-specific NLP with graph-based reasoning for contract intelligence.
+    </p>
+
+    <div class="tech-row">
+      <span class="tech-pill">InLegal-SBERT (IIT Kharagpur)</span>
+      <span class="tech-pill">InLegalBERT</span>
+      <span class="tech-pill">BGE-Small-EN v1.5</span>
+      <span class="tech-pill">BM25 Okapi</span>
+      <span class="tech-pill">Agglomerative Clustering</span>
+      <span class="tech-pill">FastAPI</span>
+      <span class="tech-pill">SQLite3</span>
+      <span class="tech-pill">Vis.js Network Graph</span>
+      <span class="tech-pill">CUAD Dataset</span>
+      <span class="tech-pill">Python 3.12</span>
+    </div>
+  </section>
+
+  <!-- ═══ CTA ═══ -->
+  <section class="cta-section fade-up">
+    <div class="section-label">Get Started</div>
+    <h2 class="section-title">Ready to Analyse Your First Contract?</h2>
+    <p class="section-desc">
+      Upload any Indian commercial contract and get instant cross-clause risk intelligence 
+      with statutory compliance checks.
+    </p>
+    <a href="/app" class="btn-lg btn-primary">Launch Contract Dashboard →</a>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer>
+    <div class="footer-left">
+      &copy; 2026 LegalAgent — Cross-Clause Contract Intelligence. Research Prototype.
+    </div>
+    <div class="footer-right">
+      <a href="/app">Dashboard</a>
+      <a href="#features">Features</a>
+      <a href="#indian-law">Indian Law</a>
+      <a href="#technology">Technology</a>
+    </div>
+  </footer>
+
+  <!-- ═══ SCROLL REVEAL ═══ -->
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    }, { threshold: 0.15 });
+
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LegalAgent — Contract Intelligence Platform</title>
+
+  <!-- Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Vis.js for Network Graph -->
+  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
+  <style>
+    /* ─── RESET ─── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ─── DESIGN TOKENS ─── */
+    :root {
+      --navy:        #1a2332;
+      --navy-light:  #2a3a4e;
+      --charcoal:    #3d4f5f;
+      --slate:       #64748b;
+      --slate-light: #94a3b8;
+      --warm-gray:   #a8a29e;
+      --bg-primary:  #fafaf8;
+      --bg-ivory:    #f5f3ef;
+      --bg-card:     #ffffff;
+      --bg-sidebar:  #f8f7f4;
+      --border:      #e5e2dc;
+      --border-light:#edeae4;
+      --text-primary:   #1a2332;
+      --text-secondary: #4a5568;
+      --text-muted:     #718096;
+      --text-faint:     #a0aec0;
+      --copper:      #9a7b4f;
+      --copper-light:#c4a97d;
+      --risk-high:      #9b2c2c;
+      --risk-high-bg:   #fdf2f2;
+      --risk-high-border:#e8c4c4;
+      --risk-statutory:      #7b3060;
+      --risk-statutory-bg:   #fdf2f8;
+      --risk-statutory-border:#dbb8cc;
+      --risk-medium:      #92610a;
+      --risk-medium-bg:   #fefcf3;
+      --risk-medium-border:#e0d0a8;
+      --safe:        #276749;
+      --safe-bg:     #f0fdf4;
+      --safe-border: #b8dbc9;
+      --edge-conflict:  #9b2c2c;
+      --edge-statutory: #7b3060;
+      --edge-xref:      #2b6cb0;
+      --edge-semantic:  #276749;
+      --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+      --font-sans:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --font-mono:  'JetBrains Mono', 'Fira Code', 'Consolas', monospace;
+      --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* ─── BASE ─── */
+    html, body { height: 100%; font-family: var(--font-sans); color: var(--text-primary); background: var(--bg-primary); -webkit-font-smoothing: antialiased; overflow: hidden; }
+    body { display: flex; flex-direction: column; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--slate-light); }
+    .serif { font-family: var(--font-serif); }
+    .mono  { font-family: var(--font-mono); }
+    .truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+    /* ─── HEADER ─── */
+    .app-header { height: 56px; background: var(--navy); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; position: relative; z-index: 40; }
+    .app-header::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 1px; background: rgba(154, 123, 79, 0.3); }
+    .logo-group { display: flex; align-items: center; gap: 14px; }
+    .logo-mark { width: 30px; height: 30px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+    .logo-text { color: #fff; font-family: var(--font-serif); font-size: 17px; font-weight: 600; letter-spacing: 0.02em; }
+    .logo-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.15); }
+    .header-breadcrumb { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,0.5); font-size: 12px; }
+    .header-breadcrumb .contract-title { color: rgba(255,255,255,0.85); font-weight: 500; max-width: 280px; }
+    .header-breadcrumb .jurisdiction-tag { font-size: 10px; padding: 2px 8px; border-radius: 3px; background: rgba(154,123,79,0.2); color: var(--copper-light); font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; }
+    .header-actions { display: flex; align-items: center; gap: 10px; }
+    .header-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: rgba(255,255,255,0.5); padding: 4px 10px; border-radius: 4px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #68d391; }
+    .header-select { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12); color: rgba(255,255,255,0.85); font-size: 12px; font-family: var(--font-sans); padding: 5px 28px 5px 10px; border-radius: 4px; cursor: pointer; outline: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23ffffff80' viewBox='0 0 24 24'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; transition: border-color 0.15s var(--ease); }
+    .header-select:hover { border-color: rgba(255,255,255,0.25); }
+    .header-select option { background: var(--navy); color: #fff; }
+    .header-btn { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; font-family: var(--font-sans); padding: 6px 14px; border-radius: 4px; border: none; cursor: pointer; transition: all 0.15s var(--ease); }
+    .header-btn svg { width: 14px; height: 14px; }
+    .header-btn-outline { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); color: rgba(255,255,255,0.8); }
+    .header-btn-outline:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .header-btn-primary { background: var(--copper); color: #fff; }
+    .header-btn-primary:hover { background: #8a6d43; }
+
+    /* ─── METRICS BAR ─── */
+    .metrics-bar { height: 42px; background: var(--bg-ivory); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; }
+    .metrics-group { display: flex; align-items: center; gap: 28px; }
+    .metric-item { display: flex; align-items: center; gap: 6px; }
+    .metric-label { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); }
+    .metric-value { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .metric-value.danger { color: var(--risk-high); }
+    .metric-value.statutory { color: var(--risk-statutory); }
+    .metrics-tagline { font-size: 12px; color: var(--text-muted); max-width: 420px; font-style: italic; }
+
+    /* ─── WORKSPACE ─── */
+    .workspace { flex: 1; display: flex; overflow: hidden; }
+    .resizer { width: 4px; background: var(--border); cursor: col-resize; flex-shrink: 0; position: relative; z-index: 20; transition: background 0.2s var(--ease); }
+    .resizer:hover, .resizer.active { background: var(--copper); }
+
+    /* ─── LEFT PANEL ─── */
+    .panel-left { display: flex; flex-direction: column; background: var(--bg-sidebar); overflow: hidden; min-width: 260px; max-width: 560px; }
+    .panel-header { padding: 12px 16px; border-bottom: 1px solid var(--border); background: var(--bg-card); }
+    .search-wrapper { position: relative; }
+    .search-wrapper svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); width: 14px; height: 14px; color: var(--text-faint); }
+    .search-input { width: 100%; padding: 7px 12px 7px 32px; font-size: 12px; font-family: var(--font-sans); color: var(--text-primary); background: var(--bg-ivory); border: 1px solid var(--border); border-radius: 4px; outline: none; transition: border-color 0.15s var(--ease); }
+    .search-input::placeholder { color: var(--text-faint); }
+    .search-input:focus { border-color: var(--copper); }
+    .panel-subheader { display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; border-bottom: 1px solid var(--border-light); background: var(--bg-ivory); }
+    .panel-subheader-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-muted); }
+    .panel-subheader-meta { font-size: 10px; font-family: var(--font-mono); color: var(--text-faint); }
+    .clause-feed { flex: 1; overflow-y: auto; padding: 10px 12px; }
+
+    /* Clause Cards */
+    .clause-card { padding: 12px 14px; margin-bottom: 8px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 5px; cursor: pointer; transition: all 0.2s var(--ease); position: relative; animation: fadeIn 0.25s var(--ease) both; }
+    .clause-card:hover { border-color: var(--slate-light); box-shadow: 0 1px 4px rgba(26,35,50,0.06); }
+    .clause-card.active { border-color: var(--navy); box-shadow: 0 0 0 1px var(--navy); }
+    .clause-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .clause-num { font-family: var(--font-mono); font-size: 11px; font-weight: 500; color: var(--navy); background: var(--bg-ivory); padding: 1px 6px; border-radius: 3px; border: 1px solid var(--border); }
+    .clause-tag { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 7px; border-radius: 3px; }
+    .tag-default { background: var(--bg-ivory); color: var(--text-muted); border: 1px solid var(--border); }
+    .tag-risk { background: var(--risk-high-bg); color: var(--risk-high); border: 1px solid var(--risk-high-border); }
+    .tag-statutory { background: var(--risk-statutory-bg); color: var(--risk-statutory); border: 1px solid var(--risk-statutory-border); }
+    .tag-commercial { background: var(--safe-bg); color: var(--safe); border: 1px solid var(--safe-border); }
+    .clause-title { font-size: 12.5px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; line-height: 1.35; }
+    .clause-excerpt { font-family: var(--font-serif); font-size: 12.5px; color: var(--text-secondary); line-height: 1.55; }
+    .clause-excerpt.clamped { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .clause-expand-btn { display: inline-block; margin-top: 6px; font-size: 11px; font-weight: 600; color: var(--copper); cursor: pointer; border: none; background: none; padding: 0; font-family: var(--font-sans); transition: color 0.12s var(--ease); }
+    .clause-expand-btn:hover { color: var(--navy); }
+    .view-contract-btn { font-size: 10px; font-weight: 600; font-family: var(--font-sans); padding: 3px 8px; border-radius: 3px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-muted); cursor: pointer; transition: all 0.12s var(--ease); }
+    .view-contract-btn:hover { border-color: var(--copper); color: var(--copper); }
+
+    /* ─── CENTER PANEL: GRAPH ─── */
+    .panel-center { flex: 1; display: flex; flex-direction: column; min-width: 320px; position: relative; background: var(--bg-primary); overflow: hidden; }
+    .graph-canvas { flex: 1; width: 100%; height: 100%; }
+    .graph-toolbar { position: absolute; top: 12px; left: 16px; right: 16px; display: flex; align-items: center; justify-content: space-between; pointer-events: none; z-index: 10; }
+    .graph-toolbar > * { pointer-events: auto; }
+    .graph-title-chip { display: flex; align-items: center; gap: 8px; padding: 6px 14px; background: rgba(255,255,255,0.92); border: 1px solid var(--border); border-radius: 5px; backdrop-filter: blur(8px); }
+    .graph-title-chip span:first-child { font-family: var(--font-serif); font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .graph-title-chip .graph-notation { font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); }
+    .filter-bar { display: flex; align-items: center; gap: 2px; padding: 3px; background: rgba(255,255,255,0.92); border: 1px solid var(--border); border-radius: 5px; backdrop-filter: blur(8px); }
+    .filter-chip { font-size: 11px; font-weight: 500; font-family: var(--font-sans); padding: 3px 10px; border-radius: 3px; border: none; cursor: pointer; background: transparent; color: var(--text-muted); transition: all 0.15s var(--ease); }
+    .filter-chip:hover { background: var(--bg-ivory); color: var(--text-primary); }
+    .filter-chip.active { background: var(--navy); color: #fff; }
+    .filter-sep { width: 1px; height: 16px; background: var(--border); margin: 0 4px; }
+    .filter-btn-fit { font-size: 11px; font-weight: 500; font-family: var(--font-sans); padding: 3px 8px; border-radius: 3px; border: none; cursor: pointer; background: transparent; color: var(--text-muted); }
+    .filter-btn-fit:hover { color: var(--text-primary); }
+    .graph-legend { position: absolute; bottom: 12px; left: 16px; right: 16px; display: flex; align-items: center; justify-content: space-between; pointer-events: none; z-index: 10; }
+    .graph-legend > * { pointer-events: auto; }
+    .legend-items { display: flex; align-items: center; gap: 16px; padding: 5px 14px; background: rgba(255,255,255,0.92); border: 1px solid var(--border); border-radius: 5px; backdrop-filter: blur(8px); }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 10.5px; color: var(--text-secondary); }
+    .legend-line { width: 14px; height: 2px; border-radius: 1px; }
+    .legend-hint { font-size: 10.5px; color: var(--text-faint); padding: 4px 10px; background: rgba(255,255,255,0.92); border: 1px solid var(--border); border-radius: 5px; backdrop-filter: blur(8px); }
+
+    /* ─── RIGHT PANEL: FINDINGS ─── */
+    .panel-right { display: flex; flex-direction: column; background: var(--bg-card); overflow: hidden; min-width: 300px; max-width: 620px; }
+    .findings-header { padding: 12px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+    .findings-title { font-family: var(--font-serif); font-size: 14px; font-weight: 600; color: var(--text-primary); }
+    .findings-pill { font-size: 10px; font-weight: 700; letter-spacing: 0.04em; padding: 3px 10px; border-radius: 3px; background: var(--risk-high-bg); color: var(--risk-high); border: 1px solid var(--risk-high-border); }
+    .findings-feed { flex: 1; overflow-y: auto; padding: 12px 14px; }
+
+    /* Finding Cards */
+    .finding-card { padding: 14px 16px; margin-bottom: 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 5px; border-left: 3px solid var(--risk-high); animation: fadeIn 0.3s var(--ease) both; transition: box-shadow 0.25s var(--ease), background 0.25s var(--ease); }
+    .finding-card.statutory { border-left-color: var(--risk-statutory); }
+    .finding-card.medium { border-left-color: var(--risk-medium); }
+    .finding-card.highlighted { box-shadow: 0 0 0 2px var(--copper); background: var(--bg-ivory); }
+    .finding-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+    .severity-badge { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 3px; }
+    .sev-high { background: var(--risk-high-bg); color: var(--risk-high); border: 1px solid var(--risk-high-border); }
+    .sev-statutory { background: var(--risk-statutory-bg); color: var(--risk-statutory); border: 1px solid var(--risk-statutory-border); }
+    .sev-medium { background: var(--risk-medium-bg); color: var(--risk-medium); border: 1px solid var(--risk-medium-border); }
+    .finding-relation { font-family: var(--font-mono); font-size: 10px; color: var(--text-faint); }
+    .finding-title { font-size: 13px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; line-height: 1.4; }
+    .finding-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.55; margin-bottom: 10px; }
+    .provision-box { padding: 10px 12px; background: var(--bg-ivory); border: 1px solid var(--border-light); border-radius: 4px; margin-bottom: 8px; }
+    .provision-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 4px; }
+    .provision-label.conflict { color: var(--risk-high); }
+    .provision-text { font-family: var(--font-serif); font-size: 12px; color: var(--text-primary); line-height: 1.5; padding-left: 10px; border-left: 2px solid var(--border); }
+    .provision-text.conflict-ref { border-left-color: var(--risk-high); }
+    .citation-box { padding: 10px 12px; background: var(--risk-statutory-bg); border: 1px solid var(--risk-statutory-border); border-radius: 4px; margin-bottom: 8px; }
+    .citation-label { font-size: 10px; font-weight: 700; color: var(--risk-statutory); margin-bottom: 4px; }
+    .citation-text { font-size: 11.5px; color: var(--text-primary); line-height: 1.55; }
+    .remedy-box { padding: 10px 12px; background: var(--safe-bg); border: 1px solid var(--safe-border); border-radius: 4px; }
+    .remedy-label { font-size: 10px; font-weight: 700; color: var(--safe); margin-bottom: 4px; }
+    .remedy-text { font-family: var(--font-serif); font-size: 12px; color: var(--text-primary); line-height: 1.55; }
+
+    /* ─── MODALS ─── */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(26,35,50,0.45); backdrop-filter: blur(4px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
+    .modal-overlay.open { display: flex; }
+    .modal-container { background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; width: 100%; max-width: 580px; box-shadow: 0 20px 60px rgba(26,35,50,0.18); overflow: hidden; }
+    .modal-container.wide { max-width: 700px; }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 20px; border-bottom: 1px solid var(--border); }
+    .modal-title { font-family: var(--font-serif); font-size: 16px; font-weight: 600; color: var(--text-primary); }
+    .modal-close { width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border: none; background: transparent; color: var(--text-muted); font-size: 18px; cursor: pointer; border-radius: 4px; }
+    .modal-close:hover { background: var(--bg-ivory); color: var(--text-primary); }
+    .modal-body { padding: 20px; }
+    .form-group { margin-bottom: 14px; }
+    .form-label { display: block; font-size: 11px; font-weight: 600; color: var(--text-secondary); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.04em; }
+    .form-input { width: 100%; padding: 8px 12px; font-size: 13px; font-family: var(--font-sans); color: var(--text-primary); background: var(--bg-ivory); border: 1px solid var(--border); border-radius: 4px; outline: none; transition: border-color 0.15s var(--ease); }
+    .form-input:focus { border-color: var(--copper); }
+    textarea.form-input { resize: vertical; min-height: 160px; font-family: var(--font-serif); font-size: 13px; line-height: 1.6; }
+    textarea.form-input.mono-textarea { font-family: var(--font-mono); font-size: 11.5px; line-height: 1.5; min-height: 280px; }
+    .modal-footer { display: flex; align-items: center; justify-content: flex-end; gap: 8px; padding: 14px 20px; border-top: 1px solid var(--border); }
+    .btn { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; font-family: var(--font-sans); padding: 7px 16px; border-radius: 4px; border: 1px solid transparent; cursor: pointer; transition: all 0.15s var(--ease); }
+    .btn-secondary { background: var(--bg-ivory); border-color: var(--border); color: var(--text-secondary); }
+    .btn-secondary:hover { background: var(--border-light); }
+    .btn-primary { background: var(--navy); color: #fff; }
+    .btn-primary:hover { background: var(--navy-light); }
+
+    /* Contract viewer modal */
+    .contract-viewer { max-height: 70vh; overflow-y: auto; padding: 0; }
+    .contract-viewer-clause { padding: 16px 20px; border-bottom: 1px solid var(--border-light); }
+    .contract-viewer-clause:last-child { border-bottom: none; }
+    .contract-viewer-clause:hover { background: var(--bg-ivory); }
+    .contract-viewer-num { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--copper); margin-bottom: 4px; }
+    .contract-viewer-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
+    .contract-viewer-text { font-family: var(--font-serif); font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+
+    .empty-state { padding: 40px 20px; text-align: center; color: var(--text-faint); font-size: 12px; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════ HEADER ═══════ -->
+  <header class="app-header">
+    <div class="logo-group">
+      <div class="logo-mark">⚖</div>
+      <span class="logo-text">LegalAgent</span>
+      <div class="logo-divider"></div>
+      <div class="header-breadcrumb">
+        <span>Contracts</span>
+        <span style="opacity:0.4">/</span>
+        <span class="contract-title truncate" id="header-contract-title">Indian Tech Services MSA</span>
+        <span class="jurisdiction-tag" id="header-jurisdiction-badge">India</span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <div class="header-status">
+        <span class="status-dot"></span>
+        <span class="mono" id="status-db-text">SQLite: contracts.db</span>
+      </div>
+      <select id="contract-select" class="header-select" onchange="handleContractSwitch()">
+        <option value="tech_msa">Indian Tech Services MSA (IT/SaaS)</option>
+        <option value="employment_nda">Executive Employment (Non-Compete)</option>
+        <option value="vendor_supply">Vendor Supply (Penalty Clause)</option>
+        <option value="lorem_ipsum_demo">Lorem Ipsum Synthetic Instrument</option>
+      </select>
+      <button onclick="openUploadModal()" class="header-btn header-btn-outline">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-width="2" stroke-linecap="round"/></svg>
+        New Contract
+      </button>
+      <button onclick="openExportModal()" class="header-btn header-btn-primary">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-width="2" stroke-linecap="round"/></svg>
+        Export Audit
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══════ METRICS BAR ═══════ -->
+  <div class="metrics-bar">
+    <div class="metrics-group">
+      <div class="metric-item"><span class="metric-label">Clauses</span><span class="metric-value" id="metric-clauses">—</span></div>
+      <div class="metric-item"><span class="metric-label">Contradictions</span><span class="metric-value danger" id="metric-conflicts">—</span></div>
+      <div class="metric-item"><span class="metric-label">Statutory Flags</span><span class="metric-value statutory" id="metric-statutory">—</span></div>
+      <div class="metric-item"><span class="metric-label">Graph Edges</span><span class="metric-value" id="metric-edges">—</span></div>
+    </div>
+    <div class="metrics-tagline truncate" id="metric-tagline">Master Services Agreement featuring liability clash with indemnity and statutory review.</div>
+  </div>
+
+  <!-- ═══════ THREE-PANEL WORKSPACE ═══════ -->
+  <div class="workspace" id="workspace-container">
+    <!-- LEFT: CLAUSE EXPLORER -->
+    <aside class="panel-left" id="panel-left" style="width: 350px;">
+      <div class="panel-header">
+        <div class="search-wrapper">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-width="2" stroke-linecap="round"/></svg>
+          <input type="text" id="clause-search" placeholder="Search clauses..." class="search-input" oninput="handleClauseSearch()">
+        </div>
+      </div>
+      <div class="panel-subheader">
+        <span class="panel-subheader-label">Clauses (<span id="feed-count">0</span>)</span>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <button class="view-contract-btn" onclick="openContractViewer()">View Full</button>
+          <span class="panel-subheader-meta">InLegal-SBERT</span>
+        </div>
+      </div>
+      <div class="clause-feed" id="clauses-container"></div>
+    </aside>
+
+    <div class="resizer" id="resizer-left"></div>
+
+    <!-- CENTER: GRAPH -->
+    <main class="panel-center" id="panel-center">
+      <div class="graph-toolbar">
+        <div class="graph-title-chip">
+          <span>Clause Interdependency Graph</span>
+          <span class="graph-notation">G=(V,E)</span>
+        </div>
+        <div class="filter-bar">
+          <button onclick="setGraphFilter('all', this)" class="filter-chip active">All</button>
+          <button onclick="setGraphFilter('conflict', this)" class="filter-chip">Conflicts</button>
+          <button onclick="setGraphFilter('statutory', this)" class="filter-chip">Statutory</button>
+          <button onclick="setGraphFilter('xref', this)" class="filter-chip">Cross-Refs</button>
+          <div class="filter-sep"></div>
+          <button onclick="fitGraphView()" class="filter-btn-fit" title="Zoom to Fit">Fit</button>
+        </div>
+      </div>
+      <div class="graph-canvas" id="network-canvas"></div>
+      <div class="graph-legend">
+        <div class="legend-items">
+          <div class="legend-item"><span class="legend-line" style="background:var(--edge-conflict)"></span><span>Contradiction</span></div>
+          <div class="legend-item"><span class="legend-line" style="background:var(--edge-statutory)"></span><span>Statute Void</span></div>
+          <div class="legend-item"><span class="legend-line" style="background:var(--edge-xref)"></span><span>Cross-Reference</span></div>
+          <div class="legend-item"><span class="legend-line" style="background:var(--edge-semantic)"></span><span>Semantic Link</span></div>
+        </div>
+        <div class="legend-hint">Click nodes or edges to inspect</div>
+      </div>
+    </main>
+
+    <div class="resizer" id="resizer-right"></div>
+
+    <!-- RIGHT: FINDINGS -->
+    <aside class="panel-right" id="panel-right" style="width: 400px;">
+      <div class="findings-header">
+        <span class="findings-title">Risk Findings & Indian Law Audit</span>
+        <span class="findings-pill" id="findings-total-pill">— ISSUES</span>
+      </div>
+      <div class="findings-feed" id="findings-container"></div>
+    </aside>
+  </div>
+
+  <!-- ═══════ UPLOAD MODAL ═══════ -->
+  <div class="modal-overlay" id="upload-modal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <span class="modal-title">Analyse Commercial Contract</span>
+        <button class="modal-close" onclick="closeUploadModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">Contract Title</label><input type="text" id="custom-contract-title" placeholder="e.g. Master Services Agreement v1.0" class="form-input"></div>
+        <div class="form-group"><label class="form-label">Jurisdiction</label><input type="text" id="custom-contract-jurisdiction" value="India" class="form-input"></div>
+        <div class="form-group"><label class="form-label">Contract Text</label><textarea id="custom-contract-text" class="form-input" placeholder="Paste clause text here. Separate clauses with double newlines."></textarea></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeUploadModal()">Cancel</button>
+        <button class="btn btn-primary" id="btn-submit-analyze" onclick="submitAnalyzeContract()">Run Graph Analysis</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ EXPORT MODAL ═══════ -->
+  <div class="modal-overlay" id="export-modal">
+    <div class="modal-container wide">
+      <div class="modal-header">
+        <span class="modal-title">Legal Risk Memorandum</span>
+        <button class="modal-close" onclick="closeExportModal()">✕</button>
+      </div>
+      <div class="modal-body"><textarea id="export-textarea" readonly class="form-input mono-textarea"></textarea></div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeExportModal()">Close</button>
+        <button class="btn btn-primary" onclick="copyExportMemo()">Copy to Clipboard</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ CONTRACT VIEWER MODAL ═══════ -->
+  <div class="modal-overlay" id="contract-viewer-modal">
+    <div class="modal-container wide">
+      <div class="modal-header">
+        <span class="modal-title" id="contract-viewer-title">Full Contract</span>
+        <button class="modal-close" onclick="closeContractViewer()">✕</button>
+      </div>
+      <div class="contract-viewer" id="contract-viewer-body"></div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeContractViewer()">Close</button></div>
+    </div>
+  </div>
+
+  <!-- ═══════ APPLICATION LOGIC ═══════ -->
+  <script>
+    let currentContractId = "tech_msa";
+    let contractData = null;
+    let networkInstance = null;
+    let currentGraphFilter = "all";
+    let searchQuery = "";
+
+    /* ── Panel Resizing ── */
+    function setupResizers() {
+      const container = document.getElementById('workspace-container');
+      const panelLeft = document.getElementById('panel-left');
+      const panelRight = document.getElementById('panel-right');
+      initResize('resizer-left', panelLeft, true);
+      initResize('resizer-right', panelRight, false);
+
+      function initResize(resizerId, panel, isLeft) {
+        const resizer = document.getElementById(resizerId);
+        let dragging = false;
+        resizer.addEventListener('mousedown', e => { dragging = true; resizer.classList.add('active'); document.body.style.cursor = 'col-resize'; document.body.style.userSelect = 'none'; e.preventDefault(); });
+        document.addEventListener('mousemove', e => {
+          if (!dragging) return;
+          const rect = container.getBoundingClientRect();
+          if (isLeft) { const w = e.clientX - rect.left; if (w >= 240 && w <= 560) panel.style.width = w + 'px'; }
+          else { const w = rect.right - e.clientX; if (w >= 280 && w <= 620) panel.style.width = w + 'px'; }
+          if (networkInstance) networkInstance.redraw();
+        });
+        document.addEventListener('mouseup', () => { if (dragging) { dragging = false; resizer.classList.remove('active'); document.body.style.cursor = ''; document.body.style.userSelect = ''; if (networkInstance) networkInstance.fit({ animation: { duration: 300 } }); } });
+      }
+    }
+
+    /* ── Data Loading ── */
+    async function loadContractData(id) {
+      try {
+        const res = await fetch(`/api/contracts/${id}`);
+        if (res.ok) { const data = await res.json(); if (data && data.clauses && data.clauses.length > 0) { document.getElementById('status-db-text').innerText = "SQLite Live"; return data; } }
+      } catch (err) { console.warn("Backend not reachable:", err); }
+      document.getElementById('status-db-text').innerText = "Offline";
+      return null;
+    }
+
+    async function handleContractSwitch() {
+      currentContractId = document.getElementById('contract-select').value;
+      contractData = await loadContractData(currentContractId);
+      if (contractData) renderAll();
+    }
+
+    function renderAll() {
+      if (!contractData) return;
+      document.getElementById('header-contract-title').innerText = contractData.contract.title;
+      document.getElementById('header-jurisdiction-badge').innerText = contractData.contract.jurisdiction || "India";
+      document.getElementById('metric-tagline').innerText = contractData.contract.description || "Commercial contract under review";
+      renderMetrics(); renderClauseList(); renderFindingsList(); renderNetworkGraph();
+    }
+
+    function renderMetrics() {
+      document.getElementById('metric-clauses').innerText = contractData.clauses.length;
+      document.getElementById('metric-edges').innerText = contractData.edges.length;
+      document.getElementById('feed-count').innerText = contractData.clauses.length;
+      const conflicts = contractData.findings.filter(f => f.relation_type === 'contractual_conflict').length;
+      const statutory = contractData.findings.filter(f => f.relation_type === 'statutory_violation').length;
+      document.getElementById('metric-conflicts').innerText = conflicts;
+      document.getElementById('metric-statutory').innerText = statutory;
+      document.getElementById('findings-total-pill').innerText = `${contractData.findings.length} ISSUE${contractData.findings.length !== 1 ? 'S' : ''} SURFACED`;
+    }
+
+    /* ── Clause List ── */
+    function renderClauseList() {
+      const container = document.getElementById('clauses-container');
+      container.innerHTML = "";
+      const filtered = contractData.clauses.filter(c => {
+        if (!searchQuery) return true;
+        const q = searchQuery.toLowerCase();
+        return c.text.toLowerCase().includes(q) || c.title.toLowerCase().includes(q) || (c.clause_num || c.num || "").toLowerCase().includes(q);
+      });
+      if (filtered.length === 0) { container.innerHTML = '<div class="empty-state">No provisions match your query.</div>'; return; }
+
+      filtered.forEach((c, idx) => {
+        const tagClass = getTagClass(c.tag);
+        const excerptId = `excerpt-${c.id}`;
+        const card = document.createElement('div');
+        card.className = 'clause-card';
+        card.id = `clause-item-${c.id}`;
+        card.style.animationDelay = `${idx * 30}ms`;
+        card.onclick = () => focusClause(c.id);
+        card.innerHTML = `
+          <div class="clause-card-top">
+            <span class="clause-num">Section ${c.clause_num || c.num}</span>
+            <span class="clause-tag ${tagClass}">${c.tag}</span>
+          </div>
+          <div class="clause-title">${c.title}</div>
+          <div class="clause-excerpt clamped" id="${excerptId}">${c.text}</div>
+          <button class="clause-expand-btn" onclick="event.stopPropagation(); toggleClauseExpand('${excerptId}', this)">Read more</button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function getTagClass(tag) {
+      if (tag.includes("Risk") || tag === "Liability") return "tag-risk";
+      if (tag.includes("Statutory") || tag.includes("Indemnity") || tag.includes("DPDPA") || tag === "Compliance") return "tag-statutory";
+      if (tag === "Commercial" || tag === "Payment") return "tag-commercial";
+      return "tag-default";
+    }
+
+    /* ── Findings List ── */
+    function renderFindingsList() {
+      const container = document.getElementById('findings-container');
+      container.innerHTML = "";
+      if (!contractData.findings || contractData.findings.length === 0) { container.innerHTML = '<div class="empty-state">No critical conflicts or statutory flags detected.</div>'; return; }
+
+      contractData.findings.forEach((f, idx) => {
+        let cardClass = '', sevClass = 'sev-high';
+        if (f.severity === 'statutory') { cardClass = 'statutory'; sevClass = 'sev-statutory'; }
+        else if (f.severity === 'medium') { cardClass = 'medium'; sevClass = 'sev-medium'; }
+
+        const card = document.createElement('div');
+        card.className = `finding-card ${cardClass}`;
+        card.id = `finding-${idx}`;
+        card.dataset.source = f.source_clause_ref || '';
+        card.dataset.target = f.target_clause_ref || '';
+        card.dataset.relationType = f.relation_type || '';
+        card.style.animationDelay = `${idx * 50}ms`;
+        card.innerHTML = `
+          <div class="finding-top">
+            <span class="severity-badge ${sevClass}">${f.severity.toUpperCase()}</span>
+            <span class="finding-relation">${f.relation_type}</span>
+          </div>
+          <div class="finding-title">${f.title}</div>
+          <div class="finding-desc">${f.description}</div>
+          <div class="provision-box"><div class="provision-label">Source Provision</div><div class="provision-text">${f.source_clause_ref}</div></div>
+          <div class="provision-box"><div class="provision-label conflict">Conflicting Target</div><div class="provision-text conflict-ref">${f.target_clause_ref}</div></div>
+          <div class="citation-box"><div class="citation-label">Statutory Authority</div><div class="citation-text">${f.statute_citation}</div></div>
+          <div class="remedy-box"><div class="remedy-label">Recommended Amendment</div><div class="remedy-text">${f.remedy_suggestion}</div></div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    /* ── Network Graph ── */
+    function renderNetworkGraph() {
+      const container = document.getElementById('network-canvas');
+      const nodes = new vis.DataSet(contractData.clauses.map(c => {
+        let bg = '#ffffff', border = '#64748b';
+        if (c.tag.includes("Risk") || c.tag === "Liability") { bg = '#fdf8f8'; border = '#9b2c2c'; }
+        else if (c.tag.includes("Indemnity") || c.tag.includes("Statutory") || c.tag.includes("DPDPA") || c.tag === "Compliance") { bg = '#fdf6fa'; border = '#7b3060'; }
+        else if (c.tag === "Commercial" || c.tag === "Payment") { bg = '#f6fcf8'; border = '#276749'; }
+        return { id: c.id, label: `Section ${c.clause_num || c.num}\n${c.title}`, shape: "box", margin: { top: 10, right: 14, bottom: 10, left: 14 }, borderWidth: 1.5, borderWidthSelected: 2.5, color: { background: bg, border: border, highlight: { background: '#f5f3ef', border: '#1a2332' } }, font: { color: '#1a2332', size: 11, face: 'Inter, sans-serif', align: 'center', multi: true }, shadow: { enabled: true, color: 'rgba(0,0,0,0.04)', size: 6, x: 0, y: 2 } };
+      }));
+
+      let edgeList = contractData.edges;
+      if (currentGraphFilter !== 'all') edgeList = edgeList.filter(e => (e.relation_type || e.type) === currentGraphFilter);
+      const edges = new vis.DataSet(edgeList.map(e => {
+        let color = '#64748b';
+        const rtype = e.relation_type || e.type;
+        if (rtype === 'conflict') color = '#9b2c2c'; else if (rtype === 'statutory') color = '#7b3060'; else if (rtype === 'xref') color = '#2b6cb0'; else if (rtype === 'semantic') color = '#276749';
+        return { from: e.source_clause_id || e.from, to: e.target_clause_id || e.to, label: e.label, color: { color, highlight: '#1a2332', opacity: 0.75 }, width: 1.5, dashes: !!e.dashes, font: { color: '#4a5568', size: 10, align: 'horizontal', background: '#fafaf8', strokeWidth: 0 }, arrows: { to: { enabled: true, scaleFactor: 0.55 } }, smooth: { type: 'continuous', roundness: 0.12 } };
+      }));
+
+      const options = {
+        physics: {
+          stabilization: { iterations: 300, updateInterval: 25 },
+          barnesHut: { gravitationalConstant: -8000, centralGravity: 0.08, springLength: 250, springConstant: 0.02, damping: 0.12, avoidOverlap: 0.6 },
+          minVelocity: 0.75
+        },
+        interaction: { hover: true, zoomView: true, dragView: true, tooltipDelay: 200 }
+      };
+
+      if (networkInstance) networkInstance.destroy();
+      networkInstance = new vis.Network(container, { nodes, edges }, options);
+
+      networkInstance.on("click", params => {
+        if (params.nodes.length > 0) focusClause(params.nodes[0]);
+        if (params.edges.length > 0) highlightFindingForEdge(params.edges[0]);
+      });
+    }
+
+    /* ── Highlight Finding from Edge Click ── */
+    function highlightFindingForEdge(edgeId) {
+      const edgeData = networkInstance.body.data.edges.get(edgeId);
+      if (!edgeData) return;
+      const fromId = edgeData.from, toId = edgeData.to;
+      const fromClause = contractData.clauses.find(c => c.id === fromId);
+      const toClause = contractData.clauses.find(c => c.id === toId);
+
+      document.querySelectorAll('.finding-card.highlighted').forEach(el => el.classList.remove('highlighted'));
+
+      let matched = false;
+      document.querySelectorAll('.finding-card').forEach(card => {
+        const src = card.dataset.source || '', tgt = card.dataset.target || '';
+        const matchesFrom = fromId && (src.includes(fromId) || (fromClause && src.includes(fromClause.clause_num || fromClause.num)));
+        const matchesTo = toId && (tgt.includes(toId) || (toClause && tgt.includes(toClause.clause_num || toClause.num)));
+        if (matchesFrom || matchesTo) {
+          card.classList.add('highlighted');
+          if (!matched) { card.scrollIntoView({ behavior: 'smooth', block: 'center' }); matched = true; }
+          setTimeout(() => card.classList.remove('highlighted'), 3000);
+        }
+      });
+    }
+
+    /* ── Clause Focus ── */
+    function focusClause(id) {
+      document.querySelectorAll('.clause-card').forEach(el => el.classList.remove('active'));
+      const el = document.getElementById(`clause-item-${id}`);
+      if (el) { el.classList.add('active'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+      if (networkInstance) { networkInstance.focus(id, { scale: 1.1, animation: { duration: 350 } }); networkInstance.selectNodes([id]); }
+    }
+
+    /* ── Graph Filters ── */
+    function setGraphFilter(type, btn) {
+      currentGraphFilter = type;
+      document.querySelectorAll('.filter-chip').forEach(el => el.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+      renderNetworkGraph();
+    }
+    function fitGraphView() { if (networkInstance) networkInstance.fit({ animation: { duration: 350 } }); }
+    function handleClauseSearch() { searchQuery = document.getElementById('clause-search').value; renderClauseList(); }
+
+    /* ── Clause Expand/Collapse ── */
+    function toggleClauseExpand(excerptId, btn) {
+      const el = document.getElementById(excerptId);
+      if (!el) return;
+      if (el.classList.contains('clamped')) { el.classList.remove('clamped'); btn.innerText = 'Show less'; }
+      else { el.classList.add('clamped'); btn.innerText = 'Read more'; }
+    }
+
+    /* ── Full Contract Viewer ── */
+    function openContractViewer() {
+      if (!contractData) return;
+      document.getElementById('contract-viewer-title').innerText = contractData.contract.title || 'Contract';
+      const body = document.getElementById('contract-viewer-body');
+      body.innerHTML = '';
+      contractData.clauses.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'contract-viewer-clause';
+        div.innerHTML = `<div class="contract-viewer-num">Section ${c.clause_num || c.num}</div><div class="contract-viewer-title">${c.title}</div><div class="contract-viewer-text">${c.text}</div>`;
+        body.appendChild(div);
+      });
+      document.getElementById('contract-viewer-modal').classList.add('open');
+    }
+    function closeContractViewer() { document.getElementById('contract-viewer-modal').classList.remove('open'); }
+
+    /* ── Modal Operations ── */
+    function openUploadModal() { document.getElementById('upload-modal').classList.add('open'); }
+    function closeUploadModal() { document.getElementById('upload-modal').classList.remove('open'); }
+
+    async function submitAnalyzeContract() {
+      const title = document.getElementById('custom-contract-title').value.trim() || "Custom Agreement";
+      const text = document.getElementById('custom-contract-text').value.trim();
+      const jurisdiction = document.getElementById('custom-contract-jurisdiction').value.trim() || "India";
+      if (!text) { alert("Please paste contract text to analyse."); return; }
+      const btn = document.getElementById('btn-submit-analyze');
+      btn.innerText = "Analysing..."; btn.disabled = true;
+      try {
+        const res = await fetch("/api/contracts/analyze", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, text, jurisdiction }) });
+        if (res.ok) { const result = await res.json(); closeUploadModal(); const select = document.getElementById('contract-select'); const opt = document.createElement('option'); opt.value = result.contract_id; opt.innerText = title; select.appendChild(opt); select.value = result.contract_id; handleContractSwitch(); }
+        else { alert("Analysis failed on backend."); }
+      } catch (err) { alert("Server error: " + err); }
+      finally { btn.innerText = "Run Graph Analysis"; btn.disabled = false; }
+    }
+
+    function openExportModal() {
+      if (!contractData) return;
+      let memo = `LEGAL RISK AUDIT MEMORANDUM: ${contractData.contract.title.toUpperCase()}\nJurisdiction: ${contractData.contract.jurisdiction}\nEngine: LegalAgent Cross-Clause GraphRAG (InLegal-SBERT + SQLite3)\nDate: ${new Date().toLocaleDateString()}\n\n1. EXECUTIVE FINDINGS SUMMARY\n${'─'.repeat(60)}\n`;
+      contractData.findings.forEach((f, i) => { memo += `${i+1}. [${f.severity.toUpperCase()}] ${f.title}\nProvisions: ${f.source_clause_ref} vs ${f.target_clause_ref}\nAnalysis: ${f.description}\nStatutory Authority: ${f.statute_citation}\nRecommended Amendment: ${f.remedy_suggestion}\n\n`; });
+      document.getElementById('export-textarea').value = memo;
+      document.getElementById('export-modal').classList.add('open');
+    }
+    function closeExportModal() { document.getElementById('export-modal').classList.remove('open'); }
+    function copyExportMemo() { const ta = document.getElementById('export-textarea'); ta.select(); navigator.clipboard.writeText(ta.value); alert("Legal memorandum copied to clipboard."); closeExportModal(); }
+
+    /* ── Init ── */
+    window.onload = function() { setupResizers(); handleContractSwitch(); };
+  </script>
+</body>
+</html>
