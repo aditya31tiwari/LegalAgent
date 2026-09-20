@@ -4,7 +4,7 @@ from legalagent.core.types import Clause
 KEYWORDS = {
     "indemnification": ["indemnif", "hold harmless", "defend"],
     "limitation_of_liability": ["limitation of liability", "in no event shall", "aggregate liability", "consequential damages"],
-    "termination": ["terminate", "termination for cause", "termination rights"],
+    "termination": ["terminate", "termination", "following termination", "post-termination", "termination rights"],
     "confidentiality": ["confidential information", "non-disclosure", "nda"],
     "governing_law": ["governed by the laws", "governing law", "jurisdiction"],
     "assignment": ["assign", "successors and assigns", "assignment and delegation"],

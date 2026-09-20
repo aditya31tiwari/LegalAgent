@@ -6,6 +6,42 @@ from pathlib import Path
 PAGE_BREAK = "\f"
 
 
+def pdf_to_markdown(file_path: str, use_ocr: bool = True) -> str:
+    """Extract a PDF into readable Markdown, OCR-ing scanned pages when available."""
+    try:
+        import pymupdf
+    except ImportError as exc:
+        raise ImportError("pymupdf is required for PDF-to-Markdown extraction") from exc
+
+    pages = []
+    with pymupdf.open(file_path) as document:
+        for page_number, page in enumerate(document, start=1):
+            blocks = page.get_text("dict").get("blocks", [])
+            native_text = page.get_text("text").strip()
+            if use_ocr and len(native_text) < 80:
+                try:
+                    ocr_textpage = page.get_textpage_ocr(language="eng", dpi=150, full=True)
+                    blocks = page.get_text("dict", textpage=ocr_textpage).get("blocks", [])
+                except RuntimeError:
+                    # Keep native extraction when the optional OCR data is unavailable.
+                    pass
+            lines = []
+            for block in blocks:
+                if block.get("type") != 0:
+                    continue
+                for line in block.get("lines", []):
+                    text = "".join(span.get("text", "") for span in line.get("spans", [])).strip()
+                    if not text:
+                        continue
+                    largest_size = max((span.get("size", 0) for span in line.get("spans", [])), default=0)
+                    is_bold = any("bold" in span.get("font", "").lower() for span in line.get("spans", []))
+                    if (is_bold or largest_size >= 14) and len(text) <= 100:
+                        text = f"## {text.lstrip('#').strip()}"
+                    lines.append(text)
+            pages.append(f"<!-- Page {page_number} -->\n\n" + "\n\n".join(lines))
+    return "\n\n".join(pages).strip() + "\n"
+
+
 def ingest(file_path: str) -> str:
     """
     Load and normalize contract text from PDF, DOCX, or TXT.
@@ -14,12 +50,9 @@ def ingest(file_path: str) -> str:
     path = Path(file_path)
 
     if path.suffix.lower() == ".pdf":
-        try:
-            import pdfplumber
-            with pdfplumber.open(file_path) as pdf:
-                text = PAGE_BREAK.join(page.extract_text() or "" for page in pdf.pages)
-        except ImportError:
-            raise ImportError("pdfplumber required for PDF ingestion")
+        markdown = pdf_to_markdown(file_path)
+        text = re.sub(r"<!--\s*Page\s+\d+\s*-->", "", markdown, flags=re.I)
+        text = re.sub(r"^#{1,6}\s+", "", text, flags=re.M)
     elif path.suffix.lower() == ".docx":
         try:
             from docx import Document

@@ -1,0 +1,327 @@
+from fastapi import FastAPI, HTTPException, UploadFile, File, Form
+from fastapi.staticfiles import StaticFiles
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
+from pydantic import BaseModel
+from typing import List, Optional
+import os
+import sys
+import uuid
+import json
+import numpy as np
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+# Add project root to sys.path
+PROJECT_ROOT = Path(__file__).parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
+
+from legalagent.db import (
+    get_db_connection,
+    fetch_all_contracts_summary,
+    fetch_contract_graph_json,
+    init_db,
+    seed_database,
+    DB_PATH,
+    fetch_clause_embeddings,
+    store_clause_embeddings,
+)
+from legalagent.core.embeddings import embed_texts
+
+load_dotenv(PROJECT_ROOT / ".env")
+
+app = FastAPI(
+    title="LegalAgent Core Intelligence API",
+    description="Cross-Clause Contract Risk Detection & Indian Statutory Compliance Engine",
+    version="0.4.0"
+)
+
+# Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+STATIC_DIR = Path(__file__).parent
+
+
+class AnalyzeRequest(BaseModel):
+    title: str
+    text: str
+    jurisdiction: Optional[str] = "India"
+
+
+@app.on_event("startup")
+def startup_event():
+    database_exists = DB_PATH.exists()
+    init_db()
+    if not database_exists:
+        seed_database()
+
+
+@app.get("/api/contracts/{contract_id}/embeddings")
+def get_contract_embeddings(contract_id: str, model: str = "bhavyagiri/InLegal-Sbert"):
+    """Return a compact 2D projection plus metadata for the embedding graph."""
+    data = fetch_contract_graph_json(contract_id)
+    if not data or not data.get("contract"):
+        raise HTTPException(status_code=404, detail="Contract not found")
+
+    stored = fetch_clause_embeddings(contract_id, model)
+    if len(stored) != len(data["clauses"]):
+        try:
+            vectors = embed_texts([clause["text"] for clause in data["clauses"]], model)
+        except Exception as exc:
+            raise HTTPException(status_code=503, detail=f"Embedding model unavailable: {exc}") from exc
+        stored = [
+            {
+                "clause_id": clause["id"],
+                "dimension": int(vectors[index].shape[0]),
+                "vector": vectors[index].tolist(),
+            }
+            for index, clause in enumerate(data["clauses"])
+        ]
+        store_clause_embeddings(contract_id, model, stored)
+
+    vectors = np.asarray([json.loads(item["vector_json"]) if "vector_json" in item else item["vector"] for item in stored], dtype=np.float32)
+    centered = vectors - vectors.mean(axis=0, keepdims=True)
+    if len(vectors) > 1:
+        _, _, components = np.linalg.svd(centered, full_matrices=False)
+        coordinates = centered @ components[:2].T
+    else:
+        coordinates = np.zeros((len(vectors), 2), dtype=np.float32)
+    scale = np.max(np.abs(coordinates), axis=0, keepdims=True)
+    coordinates = np.divide(coordinates, np.where(scale == 0, 1, scale))
+    clauses_by_id = {clause["id"]: clause for clause in data["clauses"]}
+    return {
+        "contract_id": contract_id,
+        "model": model,
+        "dimension": int(vectors.shape[1]) if len(vectors) else 0,
+        "stored_count": len(stored),
+        "points": [
+            {
+                "id": item["clause_id"],
+                "x": float(coordinates[index][0]),
+                "y": float(coordinates[index][1]),
+                "number": clauses_by_id[item["clause_id"]].get("clause_num", ""),
+                "title": clauses_by_id[item["clause_id"]].get("title", "Clause"),
+            }
+            for index, item in enumerate(stored)
+        ],
+    }
+
+
+@app.get("/api/contracts")
+def get_contracts():
+    """Returns list of all stored contracts with high-level statistics."""
+    summary = fetch_all_contracts_summary()
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    enriched = []
+    for c in summary:
+        cursor.execute("SELECT COUNT(*) as count FROM clauses WHERE contract_id = ?;", (c["id"],))
+        clause_count = cursor.fetchone()["count"]
+
+        cursor.execute("SELECT COUNT(*) as count FROM graph_edges WHERE contract_id = ?;", (c["id"],))
+        edge_count = cursor.fetchone()["count"]
+
+        cursor.execute("SELECT COUNT(*) as count FROM findings WHERE contract_id = ? AND severity IN ('high', 'statutory');", (c["id"],))
+        critical_count = cursor.fetchone()["count"]
+
+        cursor.execute("SELECT COUNT(*) as count FROM findings WHERE contract_id = ?;", (c["id"],))
+        total_findings = cursor.fetchone()["count"]
+
+        # Calculate a mock contract health score (100 - (critical * 25) - (total * 5))
+        health_score = max(15, 100 - (critical_count * 28) - (total_findings * 6))
+
+        enriched.append({
+            **c,
+            "clause_count": clause_count,
+            "edge_count": edge_count,
+            "critical_count": critical_count,
+            "total_findings": total_findings,
+            "health_score": health_score
+        })
+
+    conn.close()
+    return enriched
+
+
+@app.get("/api/contracts/{contract_id}")
+def get_contract_details(contract_id: str):
+    """Fetches full graph topology, clauses, and findings for a contract."""
+    data = fetch_contract_graph_json(contract_id)
+    if not data or not data.get("contract"):
+        raise HTTPException(status_code=404, detail="Contract not found")
+    
+    # Calculate health & severity metrics
+    findings = data.get("findings", [])
+    critical = sum(1 for f in findings if f.get("severity") in ("high", "statutory"))
+    health_score = max(10, 100 - (critical * 28) - (len(findings) * 5))
+    data["contract"]["health_score"] = health_score
+    data["contract"]["critical_count"] = critical
+    
+    return data
+
+
+@app.post("/api/contracts/analyze")
+def analyze_custom_contract(req: AnalyzeRequest):
+    """
+    Parses and analyzes user-submitted contract text, runs clause extraction & 
+    Indian statutory risk detection, and saves the new contract graph into SQLite.
+    """
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    contract_id = f"custom_{uuid.uuid4().hex[:6]}"
+    title = req.title or "Untitled Custom Agreement"
+    jurisdiction = req.jurisdiction or "India"
+
+    # 1. Simple heuristic paragraph/clause splitter
+    raw_paragraphs = [p.strip() for p in req.text.split("\n\n") if len(p.strip()) > 20]
+    if not raw_paragraphs:
+        raw_paragraphs = [req.text.strip()]
+
+    clauses_to_insert = []
+    for idx, para in enumerate(raw_paragraphs):
+        cid = f"{contract_id}_c{idx+1}"
+        num = f"{idx+1}.0"
+        title_snippet = para[:40].replace("\n", " ") + "..."
+        tag = "General"
+
+        lower = para.lower()
+        if "indemnif" in lower or "hold harmless" in lower:
+            tag = "Indemnity"
+        elif "limit" in lower and "liab" in lower:
+            tag = "Liability"
+        elif "non-compete" in lower or "restraint" in lower or "competing business" in lower:
+            tag = "High Risk"
+        elif "data" in lower or "personal data" in lower or "dpdpa" in lower:
+            tag = "Compliance"
+        elif "dispute" in lower or "arbitrat" in lower or "court" in lower:
+            tag = "Dispute"
+        elif "payment" in lower or "fee" in lower or "price" in lower:
+            tag = "Payment"
+
+        clauses_to_insert.append((cid, num, title_snippet, tag, para, idx+1))
+
+    # Insert contract
+    cursor.execute("""
+        INSERT INTO contracts (id, title, category, jurisdiction, description)
+        VALUES (?, ?, ?, ?, ?);
+    """, (contract_id, title, "User Uploaded / Custom Review", jurisdiction, f"Custom parsed agreement with {len(clauses_to_insert)} clauses evaluated."))
+
+    for c in clauses_to_insert:
+        cursor.execute("""
+            INSERT INTO clauses (id, contract_id, clause_num, title, tag, text, ordinal)
+            VALUES (?, ?, ?, ?, ?, ?, ?);
+        """, (c[0], contract_id, c[1], c[2], c[3], c[4], c[5]))
+
+    # Heuristic cross-clause contradiction & statutory check
+    edges_to_insert = []
+    findings_to_insert = []
+
+    cap_clause = next((c for c in clauses_to_insert if c[3] == "Liability"), None)
+    indemnity_clause = next((c for c in clauses_to_insert if c[3] == "Indemnity"), None)
+    non_compete_clause = next((c for c in clauses_to_insert if c[3] == "High Risk" or "compete" in c[4].lower()), None)
+
+    if cap_clause and indemnity_clause:
+        edges_to_insert.append((contract_id, cap_clause[0], indemnity_clause[0], "CONFLICT: Cap vs Indemnity", "conflict", "high", "#ef4444", 3.0, 0))
+        findings_to_insert.append((
+            f"{contract_id}_f1", contract_id, "Liability Cap Nullified by Uncapped Indemnity", "high", "contractual_conflict",
+            f"Section {cap_clause[1]} ({cap_clause[2]})", f"Section {indemnity_clause[1]} ({indemnity_clause[2]})",
+            "The limitation of liability clause imposes an aggregate ceiling, but the indemnification clause mandates uncapped defense without an exclusion carveout.",
+            "Indian Contract Act, 1872 (Sections 124 & 125): Indemnity claims are independent obligations; silent caps create immediate litigation risk on whether indemnity is subordinated to the cap.",
+            f"Amend Section {cap_clause[1]} to explicitly carve out Section {indemnity_clause[1]} indemnity obligations."
+        ))
+
+    if non_compete_clause and "india" in jurisdiction.lower():
+        edges_to_insert.append((contract_id, non_compete_clause[0], non_compete_clause[0], "STATUTORY VOID: Sec 27 ICA", "statutory", "high", "#ec4899", 3.5, 0))
+        findings_to_insert.append((
+            f"{contract_id}_f2", contract_id, "Post-Termination Non-Compete is Statutorily Void", "statutory", "statutory_violation",
+            f"Section {non_compete_clause[1]} (Non-Compete)", "Section 27, Indian Contract Act 1872",
+            "The clause imposes a restraint on trade or profession. Under Indian law, post-contractual non-competes are void ab initio and cannot be enforced.",
+            "Section 27, Indian Contract Act, 1872 & Percept D'Mark v. Zaheer Khan (2006) 4 SCC 227: All negative covenants post-termination are void, regardless of reasonableness.",
+            "Delete the post-termination non-compete restriction. Rely on non-disclosure of trade secrets and confidentiality obligations."
+        ))
+
+    # Add sequential flow edges if no edges detected
+    if not edges_to_insert and len(clauses_to_insert) > 1:
+        for i in range(len(clauses_to_insert) - 1):
+            edges_to_insert.append((
+                contract_id, clauses_to_insert[i][0], clauses_to_insert[i+1][0], "Sequential Clause Flow", "semantic", "low", "#0ea5e9", 1.5, 1
+            ))
+
+    for e in edges_to_insert:
+        cursor.execute("""
+            INSERT INTO graph_edges (contract_id, source_clause_id, target_clause_id, label, relation_type, severity, color, width, dashes)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+        """, e)
+
+    for f in findings_to_insert:
+        cursor.execute("""
+            INSERT INTO findings (id, contract_id, title, severity, relation_type, source_clause_ref, target_clause_ref, description, statute_citation, remedy_suggestion)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+        """, f)
+
+    conn.commit()
+    conn.close()
+
+    return {"status": "success", "contract_id": contract_id}
+
+
+@app.get("/api/export/{contract_id}")
+def export_audit_memo(contract_id: str):
+    """Generates an executive legal risk memo in Markdown."""
+    data = fetch_contract_graph_json(contract_id)
+    if not data or not data.get("contract"):
+        raise HTTPException(status_code=404, detail="Contract not found")
+
+    c = data["contract"]
+    findings = data.get("findings", [])
+
+    memo = f"# LEGAL RISK AUDIT MEMO: {c['title'].upper()}\n\n"
+    memo += f"**Jurisdiction:** {c['jurisdiction']}\n"
+    memo += f"**Category:** {c['category']}\n"
+    memo += f"**Evaluation Date:** {Path(DB_PATH).stat().st_mtime}\n"
+    memo += f"**Engine:** LegalAgent Cross-Clause GraphRAG (InLegal-SBERT + SQLite3)\n\n"
+    memo += "---\n\n"
+    memo += "## Executive Summary\n\n"
+    memo += f"Analysis of **{len(data['clauses'])} clauses** surfaced **{len(findings)} cross-clause risks** and statutory compliance red flags.\n\n"
+
+    for idx, f in enumerate(findings, 1):
+        memo += f"### {idx}. [{f['severity'].upper()}] {f['title']}\n"
+        memo += f"- **Target Provisions:** `{f['source_clause_ref']}` vs `{f['target_clause_ref']}`\n"
+        memo += f"- **Relation Type:** `{f['relation_type']}`\n"
+        memo += f"- **Risk Rationale:** {f['description']}\n"
+        memo += f"- **Statutory Authority:** {f['statute_citation']}\n"
+        memo += f"- **Recommended Redline:** *{f['remedy_suggestion']}*\n\n"
+
+    return JSONResponse(content={"markdown": memo, "filename": f"LegalAgent_Memo_{contract_id}.md"})
+
+
+# Serve the landing page at root and the dashboard at /app
+@app.get("/")
+def serve_landing():
+    return FileResponse(STATIC_DIR / "landing.html")
+
+
+@app.get("/app")
+def serve_app():
+    return FileResponse(STATIC_DIR / "index.html")
+
+
+if __name__ == "__main__":
+    import uvicorn
+    print("\n" + "="*65)
+    print(" 🚀 Launching LegalAgent FastAPI Full-Stack Engine")
+    print(" 🌐 Server URL    : http://localhost:8080")
+    print(" 📚 Swagger Docs  : http://localhost:8080/docs")
+    print(" 🗄️ SQLite Engine : contracts.db")
+    print("="*65 + "\n")
+    uvicorn.run("web.backend:app", host="0.0.0.0", port=8080, reload=False)
+

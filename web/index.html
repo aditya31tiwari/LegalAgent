@@ -194,6 +194,28 @@
     .remedy-label { font-size: 10px; font-weight: 700; color: var(--safe); margin-bottom: 4px; }
     .remedy-text { font-family: var(--font-serif); font-size: 12px; color: var(--text-primary); line-height: 1.55; }
 
+    /* ─── PIPELINE EXPLAINER ─── */
+    .pipeline-modal { max-width: 1120px; max-height: 92vh; }
+    .pipeline-body { padding: 20px; overflow-y: auto; max-height: calc(92vh - 122px); background: var(--bg-primary); }
+    .pipeline-intro { display:flex; align-items:flex-end; justify-content:space-between; gap:20px; margin-bottom:18px; }
+    .pipeline-kicker { font-size:10px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--copper); margin-bottom:5px; }
+    .pipeline-heading { font-family:var(--font-serif); font-size:25px; font-weight:500; }
+    .pipeline-copy { max-width:440px; font-size:12px; line-height:1.6; color:var(--text-secondary); }
+    .step-grid { display:grid; grid-template-columns:repeat(7, minmax(112px,1fr)); gap:8px; margin-bottom:18px; }
+    .step-card { min-height:132px; padding:12px; background:var(--bg-card); border:1px solid var(--border); border-top:3px solid var(--copper); border-radius:5px; position:relative; }
+    .step-card:not(:last-child)::after { content:'→'; position:absolute; right:-13px; top:51px; color:var(--copper); font-size:16px; z-index:2; }
+    .step-index { font:500 10px var(--font-mono); color:var(--copper); margin-bottom:10px; }
+    .step-title { font-size:12px; font-weight:700; line-height:1.3; margin-bottom:7px; }
+    .step-detail { font-size:10.5px; line-height:1.45; color:var(--text-muted); }
+    .viz-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .viz-panel { min-height:350px; background:var(--bg-card); border:1px solid var(--border); border-radius:5px; overflow:hidden; }
+    .viz-header { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid var(--border); }
+    .viz-title { font-family:var(--font-serif); font-size:15px; font-weight:600; }
+    .viz-meta { font:10px var(--font-mono); color:var(--text-muted); }
+    .viz-canvas { height:300px; }
+    .embedding-note { padding:0 14px 12px; color:var(--text-muted); font-size:10.5px; line-height:1.45; }
+    @media (max-width: 900px) { .step-grid { grid-template-columns:repeat(2, 1fr); } .step-card:not(:last-child)::after { display:none; } .viz-grid { grid-template-columns:1fr; } }
+
     /* ─── MODALS ─── */
     .modal-overlay { position: fixed; inset: 0; background: rgba(26,35,50,0.45); backdrop-filter: blur(4px); z-index: 100; display: none; align-items: center; justify-content: center; padding: 20px; }
     .modal-overlay.open { display: flex; }
@@ -259,6 +281,10 @@
       <button onclick="openUploadModal()" class="header-btn header-btn-outline">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-width="2" stroke-linecap="round"/></svg>
         New Contract
+      </button>
+      <button onclick="openPipelineModal()" class="header-btn header-btn-outline">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h16M17 9l3 3-3 3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Pipeline
       </button>
       <button onclick="openExportModal()" class="header-btn header-btn-primary">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-width="2" stroke-linecap="round"/></svg>
@@ -340,6 +366,36 @@
     </aside>
   </div>
 
+  <!-- ═══════ PIPELINE EXPLAINER ═══════ -->
+  <div class="modal-overlay" id="pipeline-modal">
+    <div class="modal-container pipeline-modal">
+      <div class="modal-header">
+        <span class="modal-title">How LegalAgent Reviews a Contract</span>
+        <button class="modal-close" onclick="closePipelineModal()">✕</button>
+      </div>
+      <div class="pipeline-body">
+        <div class="pipeline-intro">
+          <div><div class="pipeline-kicker">End-to-end analysis</div><div class="pipeline-heading">From contract text to defensible findings.</div></div>
+          <div class="pipeline-copy">Every finding is connected to the clauses that caused it, the Indian-law source that grounds it, and the embedding model that surfaced the relationship.</div>
+        </div>
+        <div class="step-grid">
+          <div class="step-card"><div class="step-index">01 / INPUT</div><div class="step-title">Contract</div><div class="step-detail">PDF, DOCX, TXT, or pasted agreement enters the review.</div></div>
+          <div class="step-card"><div class="step-index">02 / TEXT</div><div class="step-title">Normalize</div><div class="step-detail">One canonical text keeps every evidence offset stable.</div></div>
+          <div class="step-card"><div class="step-index">03 / STRUCTURE</div><div class="step-title">Extract</div><div class="step-detail">Numbered provisions become clause nodes with references.</div></div>
+          <div class="step-card"><div class="step-index">04 / RETRIEVE</div><div class="step-title">Embed</div><div class="step-detail">InLegal-SBERT maps clauses into a 768-dimensional space.</div></div>
+          <div class="step-card"><div class="step-index">05 / COMPARE</div><div class="step-title">Cross-clause</div><div class="step-detail">BM25, dense similarity, xrefs, and risk types shortlist pairs.</div></div>
+          <div class="step-card"><div class="step-index">06 / GROUND</div><div class="step-title">Indian law</div><div class="step-detail">Rules and retrieved statutes test enforceability and exposure.</div></div>
+          <div class="step-card"><div class="step-index">07 / EXPLAIN</div><div class="step-title">Finding</div><div class="step-detail">Gemini can explain a validated result with evidence and sources.</div></div>
+        </div>
+        <div class="viz-grid">
+          <section class="viz-panel"><div class="viz-header"><span class="viz-title">Pipeline stage graph</span><span class="viz-meta">DATA FLOW</span></div><div class="viz-canvas" id="pipeline-canvas"></div></section>
+          <section class="viz-panel"><div class="viz-header"><span class="viz-title">Clause embedding space</span><span class="viz-meta" id="embedding-meta">LOADING MODEL...</span></div><div class="viz-canvas" id="embedding-canvas"></div><div class="embedding-note">Each point is a stored clause vector projected into two dimensions for inspection. Nearby points have similar legal language; colors identify clause roles.</div></section>
+        </div>
+      </div>
+      <div class="modal-footer"><button class="btn btn-secondary" onclick="closePipelineModal()">Close</button></div>
+    </div>
+  </div>
+
   <!-- ═══════ UPLOAD MODAL ═══════ -->
   <div class="modal-overlay" id="upload-modal">
     <div class="modal-container">
@@ -393,6 +449,8 @@
     let networkInstance = null;
     let currentGraphFilter = "all";
     let searchQuery = "";
+    let embeddingNetwork = null;
+    let pipelineNetwork = null;
 
     /* ── Panel Resizing ── */
     function setupResizers() {
@@ -627,6 +685,39 @@
       document.getElementById('contract-viewer-modal').classList.add('open');
     }
     function closeContractViewer() { document.getElementById('contract-viewer-modal').classList.remove('open'); }
+
+    function openPipelineModal() {
+      document.getElementById('pipeline-modal').classList.add('open');
+      renderPipelineGraph();
+      loadEmbeddingGraph();
+    }
+    function closePipelineModal() { document.getElementById('pipeline-modal').classList.remove('open'); }
+
+    function renderPipelineGraph() {
+      const labels = ['Contract', 'Normalize', 'Extract', 'Embed', 'Compare', 'Indian law', 'Finding'];
+      const nodes = new vis.DataSet(labels.map((label, index) => ({ id:index, label:`${String(index + 1).padStart(2, '0')}\n${label}`, shape:'box', margin:10, color:{ background:index === 6 ? '#fdf2f2' : '#f5f3ef', border:index === 6 ? '#9b2c2c' : '#9a7b4f' }, font:{ color:'#1a2332', size:11, face:'Inter, sans-serif', multi:true } })));
+      const edges = new vis.DataSet(labels.slice(0, -1).map((_label, index) => ({ from:index, to:index + 1, arrows:'to', color:{ color:'#9a7b4f' }, width:2 })));
+      if (pipelineNetwork) pipelineNetwork.destroy();
+      pipelineNetwork = new vis.Network(document.getElementById('pipeline-canvas'), {nodes, edges}, { physics:{ enabled:false }, interaction:{ dragView:false, zoomView:false, selectable:false }, layout:{ hierarchical:{ direction:'LR', sortMethod:'directed', levelSeparation:65, nodeSpacing:38 } }, edges:{ smooth:{ type:'cubicBezier' } } });
+    }
+
+    async function loadEmbeddingGraph() {
+      const meta = document.getElementById('embedding-meta');
+      const canvas = document.getElementById('embedding-canvas');
+      try {
+        const res = await fetch(`/api/contracts/${currentContractId}/embeddings`);
+        if (!res.ok) throw new Error((await res.json()).detail || 'Embedding service unavailable');
+        const data = await res.json();
+        meta.innerText = `${data.model.split('/').pop()} · ${data.dimension}D · ${data.stored_count} STORED`;
+        const nodes = new vis.DataSet(data.points.map(point => ({ id:point.id, label:`${point.number}\n${point.title}`, x:point.x * 125, y:point.y * 105, shape:'dot', size:10, title:`Section ${point.number}: ${point.title}`, color:{ background:'#9a7b4f', border:'#1a2332', highlight:{ background:'#1a2332', border:'#9a7b4f' } }, font:{ size:9, color:'#1a2332', face:'Inter, sans-serif' } })));
+        if (embeddingNetwork) embeddingNetwork.destroy();
+        embeddingNetwork = new vis.Network(canvas, {nodes, edges:[]}, { physics:false, interaction:{ hover:true, zoomView:true, dragView:true }, nodes:{ borderWidth:1.5 } });
+        embeddingNetwork.on('click', params => { if (params.nodes.length) { closePipelineModal(); focusClause(params.nodes[0]); } });
+      } catch (error) {
+        meta.innerText = 'UNAVAILABLE';
+        canvas.innerHTML = `<div class="empty-state" style="padding:70px 20px;text-align:center">${error.message}<br><span style="font-size:10px">Start the backend and try again.</span></div>`;
+      }
+    }
 
     /* ── Modal Operations ── */
     function openUploadModal() { document.getElementById('upload-modal').classList.add('open'); }
