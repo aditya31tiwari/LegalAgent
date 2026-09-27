@@ -633,10 +633,10 @@ def serve_injections():
 if __name__ == "__main__":
     import uvicorn
     print("\n" + "="*65)
-    print(" 🚀 Launching LegalAgent FastAPI Full-Stack Engine")
-    print(" 🌐 Server URL    : http://localhost:8080")
-    print(" 📚 Swagger Docs  : http://localhost:8080/docs")
-    print(" 🗄️ SQLite Engine : contracts.db")
+    print(" [START] Launching LegalAgent FastAPI Full-Stack Engine")
+    print(" [URL] Server URL    : http://localhost:8080")
+    print(" [DOCS] Swagger Docs  : http://localhost:8080/docs")
+    print(" [DB] SQLite Engine : contracts.db")
     print("="*65 + "\n")
     uvicorn.run("web.backend:app", host="0.0.0.0", port=8080, reload=False)
 

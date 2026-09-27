@@ -137,10 +137,6 @@
     }
     .contract-list-card:hover { border-color: var(--copper); background: var(--bg-ivory); }
     .contract-list-card.active { border-color: var(--navy); background: #f0f4f8; }
-    .contract-list-card.active::before {
-      content: ''; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
-      width: 3px; height: 60%; background: var(--navy); border-radius: 0 2px 2px 0;
-    }
     .clc-score {
       flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
       display: flex; align-items: center; justify-content: center;
@@ -239,9 +235,7 @@
     .findings-feed { flex: 1; overflow-y: auto; padding: 12px 14px; }
 
     /* Finding Cards */
-    .finding-card { padding: 14px 16px; margin-bottom: 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 5px; border-left: 3px solid var(--risk-high); animation: fadeIn 0.3s var(--ease) both; transition: box-shadow 0.25s var(--ease), background 0.25s var(--ease); }
-    .finding-card.statutory { border-left-color: var(--risk-statutory); }
-    .finding-card.medium { border-left-color: var(--risk-medium); }
+    .finding-card { padding: 14px 16px; margin-bottom: 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; animation: fadeIn 0.3s var(--ease) both; transition: box-shadow 0.25s var(--ease), background 0.25s var(--ease); }
     .finding-card.highlighted { box-shadow: 0 0 0 2px var(--copper); background: var(--bg-ivory); }
     .finding-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
     .severity-badge { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 3px; }
@@ -254,8 +248,8 @@
     .provision-box { padding: 10px 12px; background: var(--bg-ivory); border: 1px solid var(--border-light); border-radius: 4px; margin-bottom: 8px; }
     .provision-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 4px; }
     .provision-label.conflict { color: var(--risk-high); }
-    .provision-text { font-family: var(--font-serif); font-size: 12px; color: var(--text-primary); line-height: 1.5; padding-left: 10px; border-left: 2px solid var(--border); }
-    .provision-text.conflict-ref { border-left-color: var(--risk-high); }
+    .provision-text { font-family: var(--font-serif); font-size: 12px; color: var(--text-primary); line-height: 1.5; padding: 4px 0; }
+    .provision-text.conflict-ref { color: var(--risk-high); font-weight: 500; }
     .citation-box { padding: 10px 12px; background: var(--risk-statutory-bg); border: 1px solid var(--risk-statutory-border); border-radius: 4px; margin-bottom: 8px; }
     .citation-label { font-size: 10px; font-weight: 700; color: var(--risk-statutory); margin-bottom: 4px; }
     .citation-text { font-size: 11.5px; color: var(--text-primary); line-height: 1.55; }
@@ -408,7 +402,7 @@
   <aside class="contracts-sidebar" id="contracts-sidebar">
     <div class="sidebar-header">
       <span class="sidebar-title">Contract Portfolio</span>
-      <button class="sidebar-close" onclick="closeContractsDrawer()" title="Close drawer">✕</button>
+      <button class="sidebar-close" onclick="closeContractsDrawer()" title="Close drawer">&times;</button>
     </div>
     <div class="sidebar-body">
       <button class="sidebar-upload-btn" onclick="closeContractsDrawer(); openUploadModal();">
@@ -424,7 +418,9 @@
   <!-- ═══════ HEADER ═══════ -->
   <header class="app-header">
     <div class="logo-group">
-      <div class="logo-mark">⚖</div>
+      <div class="logo-mark">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M6 8l6-5 6 5M6 8l-3 7h6l-3-7zm12 0l-3 7h6l-3-7z"/></svg>
+      </div>
       <span class="logo-text">LegalAgent</span>
       <div class="logo-divider"></div>
       <div class="header-breadcrumb">
@@ -435,6 +431,11 @@
       </div>
     </div>
     <div class="header-actions">
+      <div class="header-status">
+        <span class="status-dot"></span>
+        <span class="mono" id="status-db-text">SQLite Live</span>
+      </div>
+
       <button onclick="toggleContractsDrawer()" class="header-btn header-btn-outline" title="Browse portfolio of contracts">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke-width="2" stroke-linecap="round"/></svg>
         Contracts (<span id="header-contracts-count">6</span>)
@@ -450,7 +451,7 @@
       </select>
 
       <a href="/injections" target="_blank" class="header-btn header-btn-outline" style="text-decoration:none;" title="Adversarial Injection Benchmark Dossier">
-        <span style="color:var(--copper-light);font-size:12px;">⚡</span> Injections
+        Injections
       </a>
 
       <button onclick="openUploadModal()" class="header-btn header-btn-primary">
@@ -546,7 +547,7 @@
     <div class="modal-container pipeline-modal">
       <div class="modal-header">
         <span class="modal-title">How LegalAgent Reviews a Contract</span>
-        <button class="modal-close" onclick="closePipelineModal()">✕</button>
+        <button class="modal-close" onclick="closePipelineModal()">&times;</button>
       </div>
       <div class="pipeline-body">
         <div class="pipeline-intro">
@@ -576,7 +577,7 @@
     <div class="modal-container wide" style="max-width:640px;">
       <div class="modal-header">
         <span class="modal-title">Live Contract Analysis</span>
-        <button class="modal-close" id="upload-modal-close" onclick="closeUploadModal()">✕</button>
+        <button class="modal-close" id="upload-modal-close" onclick="closeUploadModal()">&times;</button>
       </div>
       <div class="modal-body" style="padding:18px 20px;">
 
@@ -598,7 +599,9 @@
                ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)">
             <input type="file" id="file-upload-input" accept=".txt,.pdf,.docx"
                    onchange="handleFileSelect(event)" style="z-index:2;">
-            <div class="dropzone-icon">📄</div>
+            <div class="dropzone-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--copper);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+            </div>
             <div class="dropzone-text">Drag & drop a .txt, .pdf, or .docx file — or click to browse</div>
             <div class="dropzone-filename" id="dropzone-filename"></div>
           </div>
@@ -606,7 +609,7 @@
           <div style="display:flex; justify-content:space-between; align-items:center; margin:-2px 0 6px;">
             <span style="color:var(--text-muted); font-size:11px;">Contract clause text:</span>
             <button type="button" onclick="loadSampleContractText()" class="btn btn-secondary" style="padding:3px 10px; font-size:11px; color:var(--copper); border-color:var(--copper-light);">
-              ⚡ Insert Sample Contract with Planted Traps
+              Insert Sample Contract with Planted Traps
             </button>
           </div>
           <div class="form-group" style="margin:0;">
@@ -629,7 +632,7 @@
 
           <!-- Result card shown on complete -->
           <div class="analysis-result-card" id="analysis-result-card">
-            <div class="result-title">✓ Analysis Complete — Contract Graph Ready</div>
+            <div class="result-title">Analysis Complete — Contract Graph Ready</div>
             <div class="result-stats" id="result-stats-row"></div>
           </div>
         </div>
@@ -649,7 +652,7 @@
     <div class="modal-container wide">
       <div class="modal-header">
         <span class="modal-title">Legal Risk Memorandum</span>
-        <button class="modal-close" onclick="closeExportModal()">✕</button>
+        <button class="modal-close" onclick="closeExportModal()">&times;</button>
       </div>
       <div class="modal-body"><textarea id="export-textarea" readonly class="form-input mono-textarea"></textarea></div>
       <div class="modal-footer">
@@ -664,7 +667,7 @@
     <div class="modal-container wide">
       <div class="modal-header">
         <span class="modal-title" id="contract-viewer-title">Full Contract</span>
-        <button class="modal-close" onclick="closeContractViewer()">✕</button>
+        <button class="modal-close" onclick="closeContractViewer()">&times;</button>
       </div>
       <div class="contract-viewer" id="contract-viewer-body"></div>
       <div class="modal-footer"><button class="btn btn-secondary" onclick="closeContractViewer()">Close</button></div>
@@ -708,9 +711,17 @@
     async function loadContractData(id) {
       try {
         const res = await fetch(`/api/contracts/${id}`);
-        if (res.ok) { const data = await res.json(); if (data && data.clauses && data.clauses.length > 0) { document.getElementById('status-db-text').innerText = "SQLite Live"; return data; } }
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.clauses && data.clauses.length > 0) {
+            const statusEl = document.getElementById('status-db-text');
+            if (statusEl) statusEl.innerText = "SQLite Live";
+            return data;
+          }
+        }
       } catch (err) { console.warn("Backend not reachable:", err); }
-      document.getElementById('status-db-text').innerText = "Offline";
+      const statusEl = document.getElementById('status-db-text');
+      if (statusEl) statusEl.innerText = "Offline";
       return null;
     }
 
@@ -1148,14 +1159,14 @@ You may also paste specific clauses directly below if desired.`;
 
       // Pre-create the pipeline stages
       const STAGE_DEFS = [
-        { id: "received", label: "Contract Ingestion", icon: "📄" },
-        { id: "ingestion", label: "Text Normalization", icon: "⚙️" },
-        { id: "extraction", label: "Clause & Offset Extraction", icon: "📑" },
-        { id: "classification", label: "Classification & Tagging", icon: "🏷️" },
-        { id: "candidates", label: "Candidate Pair Shortlisting", icon: "🔍" },
-        { id: "analysis", label: "Cross-Clause Conflict Analysis", icon: "⚡" },
-        { id: "statutory", label: "Indian Statutory Compliance Audit", icon: "⚖️" },
-        { id: "persisted", label: "Knowledge Graph Storage", icon: "🗄️" }
+        { id: "received", label: "Contract Ingestion", icon: "1" },
+        { id: "ingestion", label: "Text Normalization", icon: "2" },
+        { id: "extraction", label: "Clause & Offset Extraction", icon: "3" },
+        { id: "classification", label: "Classification & Tagging", icon: "4" },
+        { id: "candidates", label: "Candidate Pair Shortlisting", icon: "5" },
+        { id: "analysis", label: "Cross-Clause Conflict Analysis", icon: "6" },
+        { id: "statutory", label: "Indian Statutory Compliance Audit", icon: "7" },
+        { id: "persisted", label: "Knowledge Graph Storage", icon: "8" }
       ];
 
       const stageElements = {};
@@ -1240,7 +1251,7 @@ You may also paste specific clauses directly below if desired.`;
                   stageElements[k].classList.remove('active');
                   stageElements[k].classList.add('done');
                   const icon = stageElements[k].querySelector('.stage-icon');
-                  if (icon) icon.innerText = '✓';
+                  if (icon) icon.innerText = 'OK';
                 }
               });
 
@@ -1252,7 +1263,7 @@ You may also paste specific clauses directly below if desired.`;
                   stageElements[k].classList.remove('active');
                   stageElements[k].classList.add('done');
                   const icon = stageElements[k].querySelector('.stage-icon');
-                  if (icon) icon.innerText = '✓';
+                  if (icon) icon.innerText = 'OK';
                 });
 
                 // Render result card
@@ -1317,7 +1328,7 @@ You may also paste specific clauses directly below if desired.`;
         const resCard = document.getElementById('analysis-result-card');
         resCard.classList.add('visible');
         resCard.classList.add('error-card');
-        resCard.querySelector('.result-title').innerText = "⚠️ Analysis Interrupted";
+        resCard.querySelector('.result-title').innerText = "Analysis Interrupted";
         document.getElementById('result-stats-row').innerHTML = `<div style="font-size:12px;color:#991b1b;">Error: ${err.message}</div>`;
         document.getElementById('btn-submit-analyze').disabled = false;
         document.getElementById('btn-submit-analyze').innerText = "Try Again";

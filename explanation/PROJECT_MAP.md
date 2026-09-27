@@ -9,17 +9,21 @@
 
 ```
 LegalAgent/
-├── DEMO_GUIDE.md                   ← Panelist demo walkthrough (read this first)
-├── CONTEXT.md                      ← Architecture overview and design rationale
-├── HANDOFF.md                      ← Developer/agent session handoff state
-├── ARCHITECTURE_FLOW.md            ← Detailed SBERT + pipeline data-flow diagram
-├── UPDATE.md                       ← Chronological session log of what was built
 ├── README.md                       ← Project introduction
 ├── pyproject.toml                  ← Python package metadata and entry points
 ├── requirements.txt                ← Pip dependencies
 ├── .env                            ← GEMINI_API_KEY (gitignored, never commit)
 ├── .env.example                    ← Safe template for .env
 ├── contracts.db                    ← SQLite database (gitignored)
+│
+├── explanation/                    ← Architecture & demo explanations
+│   ├── INDEX.md                    ← Master documentation index (read this first)
+│   ├── DEMO_GUIDE.md               ← Panelist demo walkthrough
+│   ├── PROJECT_MAP.md              ← Every file and its purpose
+│   ├── CONTEXT.md                  ← Architecture overview and design rationale
+│   ├── ARCHITECTURE_FLOW.md        ← Detailed SBERT + pipeline data-flow diagram
+│   ├── HANDOFF.md                  ← Developer/agent session handoff state
+│   └── UPDATE.md                   ← Chronological session log of what was built
 │
 ├── legalagent/                     ← Core Python package
 │   ├── __init__.py

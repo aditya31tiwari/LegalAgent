@@ -22,33 +22,36 @@ Depending on what you want to achieve, start with the recommended entry document
 
 | Your Goal | Recommended Starting Document | Follow-Up Documents |
 |:---|:---|:---|
-| **Presenting to an Evaluation Panel** | [`DEMO_GUIDE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/DEMO_GUIDE.md) | [`research/04_ASSESSMENT_PROTOTYPE_SPEC.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/research/04_ASSESSMENT_PROTOTYPE_SPEC.md) |
-| **Understanding the Core Architecture** | [`ARCHITECTURE_FLOW.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/ARCHITECTURE_FLOW.md) | [`CONTEXT.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/CONTEXT.md), [`README.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/README.md) |
-| **Exploring the Codebase & Modules** | [`PROJECT_MAP.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/PROJECT_MAP.md) | [`docs/DATA_MODEL.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/docs/DATA_MODEL.md), [`docs/API.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/docs/API.md) |
+| **Deep Dive into Every File & Feature** | [`CODEBASE_EXPLANATION.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/CODEBASE_EXPLANATION.md) | [`PROJECT_MAP.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/PROJECT_MAP.md), [`ARCHITECTURE_FLOW.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/ARCHITECTURE_FLOW.md) |
+| **Presenting to an Evaluation Panel** | [`DEMO_GUIDE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/DEMO_GUIDE.md) | [`research/04_ASSESSMENT_PROTOTYPE_SPEC.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/research/04_ASSESSMENT_PROTOTYPE_SPEC.md) |
+| **Understanding the Core Architecture** | [`ARCHITECTURE_FLOW.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/ARCHITECTURE_FLOW.md) | [`CONTEXT.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/CONTEXT.md), [`README.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/README.md) |
+| **Exploring the Codebase & Modules** | [`PROJECT_MAP.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/PROJECT_MAP.md) | [`docs/DATA_MODEL.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/docs/DATA_MODEL.md), [`docs/API.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/docs/API.md) |
 | **Studying Indian Legal Reasoning** | [`research/INDIAN_LAW_RESEARCH.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/research/INDIAN_LAW_RESEARCH.md) | [`research/01_LEGAL_STATUTORY_RESEARCH.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/research/01_LEGAL_STATUTORY_RESEARCH.md) |
 | **Evaluating NLP Models & Fine-Tuning** | [`research/02_MODEL_SELECTION_AND_BENCHMARKING.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/research/02_MODEL_SELECTION_AND_BENCHMARKING.md) | [`research/06_FINE_TUNING_AND_TEMPORAL_MODEL_PLAN.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/research/06_FINE_TUNING_AND_TEMPORAL_MODEL_PLAN.md) |
 | **Benchmarking & Testing Robustness** | [`data/demo/india/custom_benchmark/README.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/data/demo/india/custom_benchmark/README.md) | [`data/demo/india/official/SOURCES.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/data/demo/india/official/SOURCES.md) |
-| **Handoff & Development State** | [`HANDOFF.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/HANDOFF.md) | [`UPDATE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/UPDATE.md), [`research/NEXT_STEPS.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/research/NEXT_STEPS.md) |
+| **Handoff & Development State** | [`HANDOFF.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/HANDOFF.md) | [`UPDATE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/UPDATE.md), [`research/NEXT_STEPS.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/research/NEXT_STEPS.md) |
 
 ---
 
 ## 📚 Complete Markdown Directory
 
-### 1. Operations & Presentation Hubs (Root)
+### 1. Operations & Explanation Hubs (`explanation/`)
 
-* [`README.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/README.md)  
+* [`CODEBASE_EXPLANATION.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/CODEBASE_EXPLANATION.md)  
+  Exhaustive in-depth and general technical explanations for every single file, module, algorithm, class, regex, endpoint, and feature in the project.
+* [`README.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/README.md) *(Repository Root)*  
   High-level product pitch, philosophy of cross-clause analysis over single-clause classification, pipeline stages, and setup instructions.
-* [`DEMO_GUIDE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/DEMO_GUIDE.md)  
+* [`DEMO_GUIDE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/DEMO_GUIDE.md)  
   Step-by-step panelist presentation script (10–15 min demo + 5 min Q&A). Covers Contract 1 (Tech MSA), Contract 2 (NDA Non-Compete), Contract 3 (Pune Metro PPP), and Contract 4 (NHAI Highway), plus fallback fixes.
-* [`PROJECT_MAP.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/PROJECT_MAP.md)  
+* [`PROJECT_MAP.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/PROJECT_MAP.md)  
   Exhaustive structural index of every file in the project, module responsibilities, SQLite schema summary, and key CLI commands.
-* [`CONTEXT.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/CONTEXT.md)  
+* [`CONTEXT.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/CONTEXT.md)  
   System design context, component responsibilities, error diagnosis protocol, and immediate engineering roadmap.
-* [`ARCHITECTURE_FLOW.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/ARCHITECTURE_FLOW.md)  
+* [`ARCHITECTURE_FLOW.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/ARCHITECTURE_FLOW.md)  
   Detailed end-to-end dataflow diagrams, InLegal-SBERT embedding sequence charts, runtime caching flow, and pipeline reading order.
-* [`HANDOFF.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/HANDOFF.md)  
+* [`HANDOFF.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/HANDOFF.md)  
   Developer session state, current git branch status, commands to verify system health, and upcoming tasks.
-* [`UPDATE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/UPDATE.md)  
+* [`UPDATE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/UPDATE.md)  
   Chronological log of features built, architectural milestones reached, and resolved issues.
 
 ---
@@ -134,3 +137,4 @@ venv/bin/python scripts/pdf_to_markdown.py input.pdf output.md
 # 6. Re-seed SQLite Database to Factory Defaults
 venv/bin/python -c "from legalagent.db import init_db, seed_database; init_db(); seed_database()"
 ```
+

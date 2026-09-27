@@ -2,6 +2,11 @@
 
 **An Agentic Contract Review System for Cross-Clause Risk Detection**
 
+> 🧭 **Documentation Hub**: See [**`explanation/INDEX.md`**](explanation/INDEX.md) for the complete master documentation index, persona-based reading guides, and quick reference maps.  
+> 📖 **Full Codebase Guide**: See [**`explanation/CODEBASE_EXPLANATION.md`**](explanation/CODEBASE_EXPLANATION.md) for exhaustive file-by-file technical & algorithmic breakdowns.  
+> ⚖️ **Live Panel Walkthrough**: See [**`explanation/DEMO_GUIDE.md`**](explanation/DEMO_GUIDE.md) for the step-by-step panelist presentation script.  
+> 🗺️ **Codebase File Index**: See [**`explanation/PROJECT_MAP.md`**](explanation/PROJECT_MAP.md) for the directory tree and module breakdowns.
+
 Most contract review tools read one clause at a time. LegalAgent reads clauses *against each other* — because a liability cap in Section 5 can be quietly cancelled out by an indemnity clause in Section 12, and no clause-by-clause tool will ever catch that.
 
 ---

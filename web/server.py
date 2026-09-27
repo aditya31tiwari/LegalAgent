@@ -13,10 +13,10 @@ def main():
     port = 8080
     host = "0.0.0.0"
     print("\n" + "="*70)
-    print(" ⚖️   LegalAgent Enterprise Intelligence Engine")
-    print(f" 🌐  Web Application  : http://localhost:{port}")
-    print(f" 📚  Swagger REST API : http://localhost:{port}/docs")
-    print(f" 🗄️   SQLite Database  : {PROJECT_ROOT / 'contracts.db'}")
+    print(" [LEGAL]   LegalAgent Enterprise Intelligence Engine")
+    print(f" [URL]  Web Application  : http://localhost:{port}")
+    print(f" [DOCS]  Swagger REST API : http://localhost:{port}/docs")
+    print(f" [DB]   SQLite Database  : {PROJECT_ROOT / 'contracts.db'}")
     print("="*70 + "\n")
     uvicorn.run("web.backend:app", host=host, port=port, reload=False, log_level="info")
 
