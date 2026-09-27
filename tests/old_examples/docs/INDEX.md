@@ -71,6 +71,8 @@ PROJECT_MAP.md
   **The system diagrams**: ASCII and conceptual flowcharts showing the 8-stage ingestion-to-graph pipeline, embedding sequence charts, and runtime caching mechanism.
 * [`PROJECT_MAP.md`](./PROJECT_MAP.md)  
   **The structural index**: Complete directory of every file in the project, database schemas, and CLI operations.
+* [`DATABASE_SCHEMA.md`](./DATABASE_SCHEMA.md)  
+  **The SQLite data model**: Complete entity-relationship diagram, table definitions (`contracts`, `clauses`, `graph_edges`, `findings`, `clause_embeddings`), foreign key cascading rules, and useful CLI inspection queries.
 * [`CONTEXT.md`](./CONTEXT.md)  
   High-level system design philosophy and historical design decisions.
 * [`HANDOFF.md`](./HANDOFF.md)  

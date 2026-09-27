@@ -52,9 +52,9 @@ Follow this sequential reading pathway across the documentation suite in this di
   |  (Hard questions: LLM hallucination, O(N^2) reduction, InLegal-SBERT vs BERT,
   |   and Phase 2–4 LoRA fine-tuning on 32.5M judgments)
   v
-[Step 5: Structural Directory]
-./PROJECT_MAP.md
-  |  (Every file, folder, SQLite table, and CLI command indexed)
+[Step 5: Structural Directory & Database Schema]
+./PROJECT_MAP.md -> ./DATABASE_SCHEMA.md
+  |  (Every file, folder, SQLite table, ER diagram, and CLI command indexed)
 ```
 
 ---
