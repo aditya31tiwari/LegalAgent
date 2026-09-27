@@ -16,9 +16,13 @@ LegalAgent/
 ├── .env.example                    ← Safe template for .env
 ├── contracts.db                    ← SQLite database (gitignored)
 │
-├── explanation/                    ← Architecture & demo explanations
-│   ├── INDEX.md                    ← Master documentation index (read this first)
+├── tests/old_examples/docs/        ← Reference guides & research documentation
+│   ├── START_HERE.md               ← Master project guide and panel presentation
+│   ├── INDEX.md                    ← Master documentation index
 │   ├── DEMO_GUIDE.md               ← Panelist demo walkthrough
+│   ├── CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md ← Indian law & contract anatomy guide
+│   ├── PANEL_DEFENSE_AND_FUTURE_ROADMAP.md   ← Viva defense & future plan
+│   ├── CODEBASE_EXPLANATION.md     ← File-by-file codebase technical guide
 │   ├── PROJECT_MAP.md              ← Every file and its purpose
 │   ├── CONTEXT.md                  ← Architecture overview and design rationale
 │   ├── ARCHITECTURE_FLOW.md        ← Detailed SBERT + pipeline data-flow diagram

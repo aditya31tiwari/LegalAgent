@@ -29,31 +29,31 @@ $$G = (V, E)$$
 
 ## 2. Master Reading Order: 5 Steps to Full Mastery
 
-Follow this sequential reading pathway across the documentation suite in `explanation/`:
+Follow this sequential reading pathway across the documentation suite in `tests/old_examples/docs/`:
 
 ```
 [Step 1: Legal Foundations]
-explanation/CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md
+tests/old_examples/docs/CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md
   |  (Understand what contracts are, articles vs clauses,
   |   and Indian statutory rules: Sec 27 ICA, Sec 74 LD, DPDPA 2023, Stamp Act)
   v
 [Step 2: Architecture & Codebase Deep-Dive]
-explanation/ARCHITECTURE_FLOW.md -> explanation/CODEBASE_EXPLANATION.md
+tests/old_examples/docs/ARCHITECTURE_FLOW.md -> tests/old_examples/docs/CODEBASE_EXPLANATION.md
   |  (Understand the G=(V,E) graph, 8-stage pipeline, InLegal-SBERT,
   |   and exact file-by-file technical explanations)
   v
 [Step 3: Live Panel Presentation & Walkthrough]
-explanation/DEMO_GUIDE.md
+tests/old_examples/docs/DEMO_GUIDE.md
   |  (Step-by-step presentation script, server commands,
   |   and actual paths to all 6 verified sample contracts)
   v
 [Step 4: Panel Defense & Viva Q&A]
-explanation/PANEL_DEFENSE_AND_FUTURE_ROADMAP.md
+tests/old_examples/docs/PANEL_DEFENSE_AND_FUTURE_ROADMAP.md
   |  (Hard questions: LLM hallucination, O(N^2) reduction, InLegal-SBERT vs BERT,
   |   and Phase 2–4 LoRA fine-tuning on 32.5M judgments)
   v
 [Step 5: Structural Directory]
-explanation/PROJECT_MAP.md
+tests/old_examples/docs/PROJECT_MAP.md
   |  (Every file, folder, SQLite table, and CLI command indexed)
 ```
 

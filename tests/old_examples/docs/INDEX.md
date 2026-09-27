@@ -41,36 +41,36 @@ PROJECT_MAP.md
 
 | Step | Your Objective | Primary Document | What You Will Learn |
 |:---:|:---|:---|:---|
-| **1** | **Understand Contracts & Indian Law** | [`CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md) | What are articles, clauses, provisos, and recitals; Indian Contract Act (Sec 23, 27, 74, 124/125), DPDPA 2023, Mediation Act 2023, and Stamp Act rules. |
-| **2** | **Understand the Core Architecture** | [`ARCHITECTURE_FLOW.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/ARCHITECTURE_FLOW.md) | End-to-end dataflow diagrams, graph building, candidate filtering, and InLegal-SBERT embedding pipeline. |
-| **2b** | **Deep-Dive into Every Source File** | [`CODEBASE_EXPLANATION.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/CODEBASE_EXPLANATION.md) | Exhaustive, file-by-file, function-by-function technical breakdown of all 22 Python, JS, and HTML modules. |
-| **3** | **Presenting Live to the Panel** | [`DEMO_GUIDE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/DEMO_GUIDE.md) | 10–15 min step-by-step script, server commands, live upload instructions, and actual paths to all 6 verified sample contracts. |
-| **4** | **Defending Viva / Tough Questions** | [`PANEL_DEFENSE_AND_FUTURE_ROADMAP.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/PANEL_DEFENSE_AND_FUTURE_ROADMAP.md) | Concrete answers to challenging panel questions, benchmark metrics, and LoRA/temporal fine-tuning research roadmap. |
-| **5** | **Looking up Any File or Module** | [`PROJECT_MAP.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/PROJECT_MAP.md) | Exhaustive repository directory, module duties, SQLite schema summary, and CLI commands. |
+| **1** | **Understand Contracts & Indian Law** | [`CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md) | What are articles, clauses, provisos, and recitals; Indian Contract Act (Sec 23, 27, 74, 124/125), DPDPA 2023, Mediation Act 2023, and Stamp Act rules. |
+| **2** | **Understand the Core Architecture** | [`ARCHITECTURE_FLOW.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/ARCHITECTURE_FLOW.md) | End-to-end dataflow diagrams, graph building, candidate filtering, and InLegal-SBERT embedding pipeline. |
+| **2b** | **Deep-Dive into Every Source File** | [`CODEBASE_EXPLANATION.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/CODEBASE_EXPLANATION.md) | Exhaustive, file-by-file, function-by-function technical breakdown of all 22 Python, JS, and HTML modules. |
+| **3** | **Presenting Live to the Panel** | [`DEMO_GUIDE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/DEMO_GUIDE.md) | 10–15 min step-by-step script, server commands, live upload instructions, and actual paths to all 6 verified sample contracts. |
+| **4** | **Defending Viva / Tough Questions** | [`PANEL_DEFENSE_AND_FUTURE_ROADMAP.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/PANEL_DEFENSE_AND_FUTURE_ROADMAP.md) | Concrete answers to challenging panel questions, benchmark metrics, and LoRA/temporal fine-tuning research roadmap. |
+| **5** | **Looking up Any File or Module** | [`PROJECT_MAP.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/PROJECT_MAP.md) | Exhaustive repository directory, module duties, SQLite schema summary, and CLI commands. |
 
 ---
 
 ## Detailed Directory by Knowledge Domain
 
-### 1. Master Explanation Hub (`explanation/`)
+### 1. Master Explanation Hub (`tests/old_examples/docs/`)
 
-* [`CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md)  
+* [`CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md)  
   **The legal foundation**: Explains contract anatomy (preamble, recitals, articles, clauses, provisos, boilerplate, execution), the 4 project contract archetypes (PPP DBFOT, Tech MSA, Executive NDA, Vendor Supply), and the 7 key Indian legal doctrines (Sec 27 void non-competes, Sec 74 penalties vs liquidated damages, liability cap vs indemnity clashes, DPDPA 2023 ₹250 Cr penalties, Mediation Act 2023, BNS 2023 vs IPC 420, and the SC 7-Judge stamp duty bench).
-* [`DEMO_GUIDE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/DEMO_GUIDE.md)  
+* [`DEMO_GUIDE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/DEMO_GUIDE.md)  
   **The presentation manual**: Step-by-step panelist presentation script (10–15 min demo + 5 min Q&A). Includes server commands, live manual upload workflow, side-by-side comparator instructions, and actual absolute file paths to all verified contract samples.
-* [`PANEL_DEFENSE_AND_FUTURE_ROADMAP.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/PANEL_DEFENSE_AND_FUTURE_ROADMAP.md)  
+* [`PANEL_DEFENSE_AND_FUTURE_ROADMAP.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/PANEL_DEFENSE_AND_FUTURE_ROADMAP.md)  
   **The viva defense guide**: Defends against tough panel critiques (why not standard GPT-4, why InLegal-SBERT, how $O(N^2)$ candidate pairs are pruned by 85–92%, how OCR noise is handled, and the multi-phase roadmap for LoRA fine-tuning on 32.5M Indian judgment chunks).
-* [`CODEBASE_EXPLANATION.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/CODEBASE_EXPLANATION.md)  
+* [`CODEBASE_EXPLANATION.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/CODEBASE_EXPLANATION.md)  
   **The technical reference**: Exhaustive, file-by-file technical explanations for every single Python module, REST endpoint, regex pattern, database query, and UI component in the repository.
-* [`ARCHITECTURE_FLOW.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/ARCHITECTURE_FLOW.md)  
+* [`ARCHITECTURE_FLOW.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/ARCHITECTURE_FLOW.md)  
   **The system diagrams**: ASCII and conceptual flowcharts showing the 8-stage ingestion-to-graph pipeline, embedding sequence charts, and runtime caching mechanism.
-* [`PROJECT_MAP.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/PROJECT_MAP.md)  
+* [`PROJECT_MAP.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/PROJECT_MAP.md)  
   **The structural index**: Complete directory of every file in the project, database schemas, and CLI operations.
-* [`CONTEXT.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/CONTEXT.md)  
+* [`CONTEXT.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/CONTEXT.md)  
   High-level system design philosophy and historical design decisions.
-* [`HANDOFF.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/HANDOFF.md)  
+* [`HANDOFF.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/HANDOFF.md)  
   Session state, git branch tracking (`aryan-sethi`), and verification commands.
-* [`UPDATE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/UPDATE.md)  
+* [`UPDATE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/UPDATE.md)  
   Chronological log of milestones achieved and bugs resolved.
 
 ---
@@ -116,15 +116,15 @@ All broken/garbled OCR conversions from scanned PDFs have been permanently remov
 
 ---
 
-### 4. Legal Research & Machine Learning Strategy (`research/`)
+### 4. Legal Research & Machine Learning Strategy (`tests/old_examples/docs/`)
 
-* [`research/INDIAN_LAW_RESEARCH.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/research/INDIAN_LAW_RESEARCH.md) — Master statutory research foundation.
-* [`research/01_LEGAL_STATUTORY_RESEARCH.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/research/01_LEGAL_STATUTORY_RESEARCH.md) — Deep legal analysis of ICA 1872, DPDPA 2023, and landmark case law.
-* [`research/02_MODEL_SELECTION_AND_BENCHMARKING.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/research/02_MODEL_SELECTION_AND_BENCHMARKING.md) — Benchmark comparison of InLegal-SBERT vs general-domain embedding models.
-* [`research/03_CROSS_CLAUSE_GRAPH_AND_RISK_DETECTION.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/research/03_CROSS_CLAUSE_GRAPH_AND_RISK_DETECTION.md) — Graph formulation $G=(V,E)$ and candidate reduction mathematics.
-* [`research/04_ASSESSMENT_PROTOTYPE_SPEC.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/research/04_ASSESSMENT_PROTOTYPE_SPEC.md) — Original prototype specification for panel assessment.
-* [`research/05_EXISTING_PROJECTS_AND_COMPETITIVE_ANALYSIS.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/research/05_EXISTING_PROJECTS_AND_COMPETITIVE_ANALYSIS.md) — Competitive analysis contrasting LegalAgent with US/UK legaltech tools.
-* [`research/06_FINE_TUNING_AND_TEMPORAL_MODEL_PLAN.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/research/06_FINE_TUNING_AND_TEMPORAL_MODEL_PLAN.md) — Future training plan for LoRA fine-tuning on 32.5M Indian judgment chunks.
+* [`INDIAN_LAW_RESEARCH.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/INDIAN_LAW_RESEARCH.md) — Master statutory research foundation.
+* [`01_LEGAL_STATUTORY_RESEARCH.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/01_LEGAL_STATUTORY_RESEARCH.md) — Deep legal analysis of ICA 1872, DPDPA 2023, and landmark case law.
+* [`02_MODEL_SELECTION_AND_BENCHMARKING.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/02_MODEL_SELECTION_AND_BENCHMARKING.md) — Benchmark comparison of InLegal-SBERT vs general-domain embedding models.
+* [`03_CROSS_CLAUSE_GRAPH_AND_RISK_DETECTION.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/03_CROSS_CLAUSE_GRAPH_AND_RISK_DETECTION.md) — Graph formulation $G=(V,E)$ and candidate reduction mathematics.
+* [`04_ASSESSMENT_PROTOTYPE_SPEC.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/04_ASSESSMENT_PROTOTYPE_SPEC.md) — Original prototype specification for panel assessment.
+* [`05_EXISTING_PROJECTS_AND_COMPETITIVE_ANALYSIS.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/05_EXISTING_PROJECTS_AND_COMPETITIVE_ANALYSIS.md) — Competitive analysis contrasting LegalAgent with US/UK legaltech tools.
+* [`06_FINE_TUNING_AND_TEMPORAL_MODEL_PLAN.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/tests/old_examples/docs/06_FINE_TUNING_AND_TEMPORAL_MODEL_PLAN.md) — Future training plan for LoRA fine-tuning on 32.5M Indian judgment chunks.
 
 ---
 
