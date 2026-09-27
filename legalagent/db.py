@@ -212,6 +212,88 @@ def seed_database():
             ]
         },
 
+        # --- PUNE METRO LINE III PPP CONCESSION AGREEMENT (2019) ---
+        "pune_metro_ppp": {
+            "title": "Pune Metro Line III — PPP Concession Agreement (2019)",
+            "category": "Infrastructure & PPP",
+            "jurisdiction": "India (Maharashtra)",
+            "description": "Signed concession agreement between PMRDA and Pune IT City Metro Rail Limited for Hinjawadi–Shivajinagar metro line. Real Government of India PPP contract with adversarial clauses included for risk detection demonstration.",
+            "clauses": [
+                ("pm1", "1.1", "Definitions & Interpretation", "General", "In this Agreement, 'Authority' means Pune Metropolitan Region Development Authority (PMRDA). 'Concessionaire' means Pune IT City Metro Rail Limited. 'Project' means Pune Metro Line III from Hinjawadi to Shivajinagar. All statutory references include amendments thereto.", 1),
+                ("pm2", "4.1", "Concession Grant & Exclusivity", "Commercial", "The Authority grants the Concessionaire an exclusive 35-year concession to design, build, finance, operate, and transfer Pune Metro Line III. Exclusivity is limited to the Hinjawadi–Shivajinagar corridor. Competing alignments within 2 km require Authority consent.", 2),
+                ("pm3", "8.2", "Revenue Share & Ridership Guarantee", "Payment", "The Concessionaire shall pay annual revenue share as specified in Schedule 3. The Authority provides a minimum ridership guarantee of 80,000 passenger trips per day for Years 1–10. Shortfalls are compensated from the Grant Annuity Fund within 60 days of audit.", 3),
+                ("pm4", "14.1", "Force Majeure & Risk Allocation", "Risk", "Force Majeure events — including acts of God, war, civil unrest, pandemic, or government actions beyond reasonable control — excuse performance for the affected party. Land acquisition risk resides with the Authority. Construction cost overruns beyond 5% variation remain with the Concessionaire.", 4),
+                ("pm5", "18.3", "Termination for Authority Default", "Term", "If the Authority fails to perform its obligations including land handover, payment of Grant Annuity, or grant of statutory approvals within the specified timelines, the Concessionaire may terminate after a 90-day cure notice. Termination payment equals outstanding senior debt plus 150% equity return.", 5),
+                ("pm6", "22.1", "Dispute Resolution — Arbitration", "Dispute", "All disputes shall be resolved by a three-member arbitral tribunal under the Arbitration and Conciliation Act, 1996. The seat of arbitration is Pune, Maharashtra. Parties waive recourse to civil courts except for urgent interim relief under Section 9 of the Act.", 6),
+                ("pm7", "91.1", "Limitation of Liability (Adversarial Test Clause)", "Liability", "The aggregate liability of the Authority shall not exceed INR 1,000 for any claim under this Agreement, including claims arising from fraud, death, personal injury, gross negligence, or statutory penalties. [NOTE: Synthetically injected clause — not in original signed agreement. Included for robustness testing.]", 7),
+                ("pm8", "91.2", "Unlimited Indemnity (Adversarial Test Clause)", "Indemnity", "The Concessionaire shall defend, indemnify, and hold harmless the Authority against every claim, loss, fine, penalty, and expense without any financial limitation whatsoever, and notwithstanding any cap in Clause 91.1. [NOTE: Synthetically injected clause for risk detection testing.]", 8),
+                ("pm9", "91.3", "Post-Termination Non-Compete (Adversarial Test Clause)", "High Risk", "For 36 months following termination of this Agreement for any reason, the Concessionaire shall not compete with, advise, or participate in any competing infrastructure, metro, or transport business in India. [NOTE: Void ab initio under Section 27, Indian Contract Act, 1872.]", 9),
+                ("pm10", "91.4", "Survival of Restrictions (Adversarial Test Clause)", "Survival", "Clauses 91.2 (Unlimited Indemnity) and 91.3 (Post-Termination Non-Compete) shall survive termination of this Agreement indefinitely and remain fully enforceable after termination notwithstanding any other provision.", 10),
+                ("pm11", "91.6", "Capped DPDPA Penalties (Adversarial Test Clause)", "DPDPA Risk", "Any penalty imposed on either party under the Digital Personal Data Protection Act, 2023 in connection with this Agreement or the Project shall be limited to INR 10,000. [NOTE: DPDPA Board penalties up to INR 250 Crore cannot be contractually capped.]", 11),
+                ("pm12", "27.1", "Governing Law", "Governing Law", "This Agreement is governed exclusively by the laws of India. The courts of Pune, Maharashtra have jurisdiction over matters not subject to arbitration under Clause 22.1.", 12),
+            ],
+            "edges": [
+                ("pm7", "pm8", "CRITICAL CONFLICT: INR 1,000 Cap vs Unlimited Indemnity", "conflict", "high", "#ef4444", 3.0, 0),
+                ("pm9", "pm10", "STATUTORY VOID: Section 27 ICA — Post-Termination Restraint", "statutory", "high", "#ec4899", 3.0, 0),
+                ("pm11", "pm8", "DPDPA Cap Contradiction vs Indemnity Scope", "statutory", "high", "#ec4899", 2.5, 1),
+                ("pm7", "pm12", "Illusory Cap vs Indian Courts — Enforceability Gap", "semantic", "low", "#10b981", 1.5, 1),
+                ("pm5", "pm6", "Termination Trigger — Arbitration Nexus", "xref", "low", "#38bdf8", 1.5, 0),
+                ("pm3", "pm4", "Revenue Guarantee vs Force Majeure Risk Interaction", "semantic", "low", "#10b981", 1.5, 1),
+            ],
+            "findings": [
+                ("fpm1", "Illusory Liability Cap vs Uncapped Indemnity (Clauses 91.1/91.2)", "high", "contractual_conflict", "91.1 (Limitation of Liability)", "91.2 (Unlimited Indemnity)",
+                 "Clause 91.1 caps Authority liability at INR 1,000 — even for fraud, death, and statutory violations — while Clause 91.2 simultaneously mandates unlimited indemnification from the Concessionaire with an express 'notwithstanding' override of Clause 91.1. This creates an irreconcilable and commercially absurd conflict.",
+                 "Indian Contract Act, 1872 (Sections 124–125): Indemnity is a primary, independent obligation that cannot be silently subordinated to a liability cap unless an express carveout is included. An INR 1,000 cap on fraud and personal injury liability is contrary to public policy under Section 23 ICA.",
+                 "Delete Clause 91.1 in its entirety. Replace with a commercially realistic aggregate liability cap (e.g., equal to Total Project Cost or fees paid in the preceding 24 months), with express carveouts for fraud, wilful misconduct, personal injury/death, and indemnity obligations under Clause 91.2."),
+                ("fpm2", "Post-Termination Non-Compete Void Ab Initio — Section 27 ICA (Clauses 91.3/91.4)", "statutory", "statutory_violation", "91.3 (Non-Compete)", "91.4 (Survival)",
+                 "Clause 91.3 imposes a 36-month post-termination restriction on participating in any competing infrastructure business in India. Clause 91.4 purports to extend this restriction indefinitely after termination. Both provisions are void and unenforceable under Section 27 of the Indian Contract Act, 1872.",
+                 "Section 27, Indian Contract Act, 1872: Every agreement restraining a person from exercising a lawful profession, trade, or business is void. Confirmed by the Supreme Court in Percept D'Mark (India) Pvt. Ltd. v. Zaheer Khan (2006) 4 SCC 227, which held that post-employment non-compete covenants have no place in Indian law.",
+                 "Delete Clauses 91.3 and 91.4. Protect legitimate interests through (a) trade secret and IP non-disclosure obligations under a separate NDA, (b) non-solicitation of key PMRDA personnel for 12 months (enforceable), and (c) assignment restrictions on project-specific intellectual property."),
+                ("fpm3", "Contractual Cap on DPDPA Statutory Penalties is Unenforceable (Clause 91.6)", "statutory", "statutory_violation", "91.6 (Capped DPDPA Penalties)", "DPDPA 2023",
+                 "Clause 91.6 purports to limit DPDPA statutory penalties to INR 10,000 between the parties. The Digital Personal Data Protection Act, 2023 empowers the Data Protection Board to levy penalties up to INR 250 Crore. These are public-law sanctions that cannot be contractually limited by private agreement.",
+                 "Digital Personal Data Protection Act, 2023 (Schedule: Grounds for penalties — Items 1–7): Penalties for significant data fiduciary violations range from INR 50 Crore to INR 250 Crore. Parties cannot contract out of regulatory enforcement obligations owed to a statutory authority.",
+                 "Delete Clause 91.6. The parties may separately agree on contractual indemnification for losses caused by the other party's data breach (e.g., Concessionaire causing a passenger data breach triggers indemnity to PMRDA for civil liability), but cannot limit the quantum of fines imposed directly by the Data Protection Board of India."),
+            ]
+        },
+
+        # --- MODEL 4-LANING HIGHWAY CONCESSION AGREEMENT (NHAI MODEL CONTRACT) ---
+        "highway_concession": {
+            "title": "NHAI Model Concession Agreement — 4-Laning of National Highways (BOT-Toll)",
+            "category": "Infrastructure & PPP",
+            "jurisdiction": "India (Central Government — NHAI)",
+            "description": "Government of India Model Concession Agreement for four-laning of national highways under Build-Operate-Transfer (Toll) mode. Issued by Ministry of Road Transport & Highways through NHAI. Includes standard risk matrix, toll terms, and termination payment framework. Demonstrates a well-structured PPP with Indian-law compliant liquidated damages.",
+            "clauses": [
+                ("hw1", "1.1", "Definitions & Interpretation", "General", "In this Agreement, 'Authority' means National Highways Authority of India (NHAI). 'Concessionaire' means the BOT developer awarded the concession. 'Project Highway' means the 4-lane national highway section in Schedule A. 'Total Project Cost' means costs certified by the Independent Engineer.", 1),
+                ("hw2", "5.1", "Grant of Concession (BOT-Toll)", "Commercial", "NHAI grants the Concessionaire an exclusive right to develop, finance, construct, maintain, and operate the Project Highway for a Concession Period of 30 years from the Appointed Date. Toll collection rights vest exclusively in the Concessionaire from the Commercial Operation Date (COD).", 2),
+                ("hw3", "10.2", "Toll Rates & Traffic Guarantee", "Payment", "The Concessionaire shall collect user fees at rates notified by NHAI and revised annually in line with the Wholesale Price Index (WPI). NHAI guarantees minimum traffic of 60% of DPR-projected volume for Years 1–5. Revenue shortfall below guarantee shall be compensated from the Viability Gap Fund within 90 days of annual audit.", 3),
+                ("hw4", "14.1", "Construction Obligations & Milestones", "Commercial", "Financial Closure must be achieved within 180 days of the Concession Grant. Construction must commence within 30 days of Financial Closure. Scheduled Completion is 30 months from commencement. Extensions beyond approved milestones require NHAI's written consent and Independent Engineer certification.", 4),
+                ("hw5", "15.3", "Liquidated Damages for Construction Delay", "Risk", "Construction delays beyond Scheduled Completion attract liquidated damages of 0.1% of Total Project Cost per week of delay, subject to a maximum of 10% of Total Project Cost. These liquidated damages constitute NHAI's exclusive remedy for delay and represent a genuine pre-estimate of delay loss.", 5),
+                ("hw6", "16.1", "Limitation of Concessionaire Liability", "Liability", "The Concessionaire's aggregate liability to NHAI under this Agreement shall not exceed the Total Project Cost. This limitation shall not apply to fraud, wilful misconduct, death or personal injury caused by negligence, or indemnity obligations under Clause 18.1.", 6),
+                ("hw7", "18.1", "Indemnity by Concessionaire", "Indemnity", "The Concessionaire shall indemnify and hold harmless NHAI against all third-party claims, losses, damages, and expenses arising from construction, operation, or maintenance of the Project Highway. This indemnity obligation is expressly excluded from the aggregate cap in Clause 16.1.", 7),
+                ("hw8", "23.1", "Termination for Concessionaire Default", "Term", "NHAI may terminate the concession on a Concessionaire Default event (including failure to achieve Financial Closure, construction abandonment, or persistent toll misappropriation) after a 60-day cure notice. Termination Payment equals 90% of outstanding senior project debt only — equity is forfeited.", 8),
+                ("hw9", "23.3", "Termination for NHAI Default", "Term", "If NHAI fails to provide land, statutory approvals, or Grant Annuity within timelines, the Concessionaire may terminate after a 90-day cure notice. Termination Payment equals outstanding senior debt plus Adjusted Equity plus 150% of Sponsor's Base Return.", 9),
+                ("hw10", "28.1", "Dispute Resolution Board & Arbitration", "Dispute", "Disputes shall be referred first to the Dispute Resolution Board (DRB) under Schedule G. DRB decisions bind parties unless challenged by arbitration within 30 days. Arbitration under Arbitration and Conciliation Act, 1996 with seat at New Delhi.", 10),
+                ("hw11", "30.1", "Governing Law", "Governing Law", "This Agreement is governed by the laws of India. The courts of New Delhi have exclusive jurisdiction over matters falling outside the arbitration scope under Clause 28.1.", 11),
+            ],
+            "edges": [
+                ("hw6", "hw7", "Coherent Cap Carveout for Indemnity (Well-Drafted)", "semantic", "low", "#10b981", 1.5, 1),
+                ("hw5", "hw6", "LD Cap Subordinated to Aggregate Cap — Consistent", "xref", "low", "#38bdf8", 1.5, 0),
+                ("hw8", "hw9", "Termination Payment Asymmetry — NHAI vs Concessionaire Default", "conflict", "medium", "#f59e0b", 2.0, 1),
+                ("hw3", "hw5", "Revenue Guarantee — Delay Penalty Interaction", "semantic", "low", "#10b981", 1.5, 1),
+                ("hw10", "hw11", "DRB-Arbitration-Courts Tiered Dispute Mechanism", "xref", "low", "#38bdf8", 1.5, 0),
+            ],
+            "findings": [
+                ("fhw1", "Asymmetric Termination Payments Disadvantage Concessionaire", "medium", "contractual_conflict", "23.1 (Concessionaire Default Termination)", "23.3 (NHAI Default Termination)",
+                 "On Concessionaire default (Clause 23.1), the termination payment covers only 90% of senior debt — equity is entirely forfeited. On NHAI default (Clause 23.3), the Concessionaire recovers full debt, Adjusted Equity, AND 150% Sponsor Return. This asymmetry significantly disadvantages private parties and has been litigated in multiple High Courts.",
+                 "Indian Contract Act, 1872 (Section 74) and NHAI v. Sole Arbitrator (various HC judgments 2019–2024): Courts have scrutinised asymmetric termination matrices in BOT agreements and in some cases granted equity recovery even under concessionaire-default scenarios where Authority breach was contributory.",
+                 "Re-negotiate Clause 23.1 to include a proportional equity recovery mechanism (e.g., 50–75% of Adjusted Equity), reduced by a fault-severity factor certified by an Independent Engineer — rather than a blanket forfeiture of all equity on any Concessionaire Default event."),
+                ("fhw2", "Liquidated Damages Rate Requires Contemporaneous Loss Evidence", "medium", "statutory_violation", "15.3 (Liquidated Damages for Delay)", "16.1 (Aggregate Liability Cap)",
+                 "Clause 15.3 states liquidated damages at 0.1% per week capped at 10% of Total Project Cost represent 'a genuine pre-estimate of delay loss.' However, no contemporaneous evidence of how this rate was calculated is referenced in the Agreement or Schedules.",
+                 "Section 74, Indian Contract Act, 1872 & Kailash Nath Associates v. DDA (2015) 4 SCC 136: For liquidated damages to be enforceable, they must represent a genuine pre-estimate of loss. The party claiming LD must prove actual loss suffered (unless the clause expressly says it is a genuine pre-estimate and is reasonable). Clauses stating 'genuine pre-estimate' without evidentiary basis are still subject to judicial reduction.",
+                 "Prepare and maintain a cost model or technical note calculating actual delay costs (including opportunity cost of toll revenue loss, financing charges, and administrative overhead) as the basis for the 0.1% per week rate. Attach the calculation as a confidential annex to support enforceability in any arbitration."),
+            ]
+        },
+
         # --- LOREM IPSUM DEMO CONTRACT ---
         "lorem_ipsum_demo": {
             "title": "Lorem Ipsum Synthetic Legal Instrument",

@@ -171,107 +171,181 @@ def get_contract_details(contract_id: str):
 @app.post("/api/contracts/analyze")
 def analyze_custom_contract(req: AnalyzeRequest):
     """
-    Parses and analyzes user-submitted contract text, runs clause extraction & 
-    Indian statutory risk detection, and saves the new contract graph into SQLite.
+    Parses and analyses user-submitted contract text. Runs through core.pipeline
+    (ingestion → extraction → classification → candidate selection → analysis) and
+    persists the resulting graph to SQLite. Falls back to heuristic analysis if the
+    pipeline raises an error.
     """
+    import tempfile, uuid as _uuid
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    contract_id = f"custom_{uuid.uuid4().hex[:6]}"
+    contract_id = f"custom_{_uuid.uuid4().hex[:6]}"
     title = req.title or "Untitled Custom Agreement"
     jurisdiction = req.jurisdiction or "India"
 
-    # 1. Simple heuristic paragraph/clause splitter
-    raw_paragraphs = [p.strip() for p in req.text.split("\n\n") if len(p.strip()) > 20]
-    if not raw_paragraphs:
-        raw_paragraphs = [req.text.strip()]
+    # ── 1. Try the unified core pipeline ──────────────────────────────────────
+    pipeline_ok = False
+    pipeline_clauses: list = []
+    pipeline_findings: list = []
 
-    clauses_to_insert = []
-    for idx, para in enumerate(raw_paragraphs):
-        cid = f"{contract_id}_c{idx+1}"
-        num = f"{idx+1}.0"
-        title_snippet = para[:40].replace("\n", " ") + "..."
-        tag = "General"
+    try:
+        from legalagent.core.pipeline import analyse as pipeline_analyse
+        from legalagent.core.ingestion import normalize
 
-        lower = para.lower()
-        if "indemnif" in lower or "hold harmless" in lower:
-            tag = "Indemnity"
-        elif "limit" in lower and "liab" in lower:
-            tag = "Liability"
-        elif "non-compete" in lower or "restraint" in lower or "competing business" in lower:
-            tag = "High Risk"
-        elif "data" in lower or "personal data" in lower or "dpdpa" in lower:
-            tag = "Compliance"
-        elif "dispute" in lower or "arbitrat" in lower or "court" in lower:
-            tag = "Dispute"
-        elif "payment" in lower or "fee" in lower or "price" in lower:
-            tag = "Payment"
+        # Write text to a temporary .txt file so pipeline.ingest() can read it
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".txt",
+                                        delete=False, encoding="utf-8") as tmp:
+            tmp.write(req.text)
+            tmp_path = tmp.name
 
-        clauses_to_insert.append((cid, num, title_snippet, tag, para, idx+1))
+        config = {"retrieval_method": "bm25", "top_k": 10, "jurisdiction": jurisdiction}
+        run, pipeline_clauses, pipeline_findings = pipeline_analyse(
+            tmp_path, config, contract_id=contract_id
+        )
+        Path(tmp_path).unlink(missing_ok=True)
+        pipeline_ok = True
 
-    # Insert contract
-    cursor.execute("""
-        INSERT INTO contracts (id, title, category, jurisdiction, description)
-        VALUES (?, ?, ?, ?, ?);
-    """, (contract_id, title, "User Uploaded / Custom Review", jurisdiction, f"Custom parsed agreement with {len(clauses_to_insert)} clauses evaluated."))
+    except Exception as exc:
+        print(f"[backend] core.pipeline failed ({exc}), falling back to heuristic")
 
-    for c in clauses_to_insert:
-        cursor.execute("""
-            INSERT INTO clauses (id, contract_id, clause_num, title, tag, text, ordinal)
-            VALUES (?, ?, ?, ?, ?, ?, ?);
-        """, (c[0], contract_id, c[1], c[2], c[3], c[4], c[5]))
+    # ── 2. Insert contract row ─────────────────────────────────────────────────
+    n_clauses = len(pipeline_clauses) if pipeline_ok else len(
+        [p for p in req.text.split("\n\n") if len(p.strip()) > 20] or [req.text.strip()]
+    )
+    cursor.execute(
+        "INSERT INTO contracts (id, title, category, jurisdiction, description) VALUES (?,?,?,?,?);",
+        (contract_id, title, "User Uploaded / Custom Review", jurisdiction,
+         f"Custom agreement: {n_clauses} clauses analysed via {'core.pipeline' if pipeline_ok else 'heuristic'}."),
+    )
 
-    # Heuristic cross-clause contradiction & statutory check
-    edges_to_insert = []
-    findings_to_insert = []
+    # ── 3a. Pipeline path — persist clauses, edges, findings ──────────────────
+    if pipeline_ok:
+        # Map core Clause → DB row
+        LABEL_TO_TAG = {
+            "indemnification": "Indemnity", "liability_limitation": "Liability",
+            "termination": "Term", "survival": "Survival",
+            "confidentiality": "IP", "governing_law": "Governing Law",
+            "assignment": "General", "warranty": "Risk", "non_compete": "High Risk",
+            "data_protection": "Compliance", "dispute_resolution": "Dispute",
+            "payment": "Payment",
+        }
+        for cl in pipeline_clauses:
+            tag = "General"
+            if cl.labels:
+                first_label = cl.labels[0].get("label", "")
+                tag = LABEL_TO_TAG.get(first_label, "General")
+            cursor.execute(
+                "INSERT INTO clauses (id, contract_id, clause_num, title, tag, text, ordinal) VALUES (?,?,?,?,?,?,?);",
+                (cl.id, contract_id, cl.number or str(cl.ordinal),
+                 (cl.heading or f"Clause {cl.number or cl.ordinal}")[:80],
+                 tag, cl.text[:2000], cl.ordinal),
+            )
 
-    cap_clause = next((c for c in clauses_to_insert if c[3] == "Liability"), None)
-    indemnity_clause = next((c for c in clauses_to_insert if c[3] == "Indemnity"), None)
-    non_compete_clause = next((c for c in clauses_to_insert if c[3] == "High Risk" or "compete" in c[4].lower()), None)
+        SEVERITY_MAP = {"high": "#ef4444", "medium": "#f59e0b", "low": "#10b981"}
+        TYPE_TO_ETYPE = {
+            "conflict": "conflict", "dependency": "xref",
+            "overlap": "semantic", "ambiguity": "semantic", "no_issue": "semantic",
+        }
+        for f in pipeline_findings:
+            if not f.related_clause_ids:
+                continue
+            src = f.target_clause_id
+            tgt = f.related_clause_ids[0]
+            etype = TYPE_TO_ETYPE.get(f.relation_type, "semantic")
+            color = SEVERITY_MAP.get(f.severity, "#64748b")
+            cursor.execute(
+                "INSERT INTO graph_edges (contract_id, source_clause_id, target_clause_id, label, relation_type, severity, color, width, dashes) VALUES (?,?,?,?,?,?,?,?,?);",
+                (contract_id, src, tgt, f.relation_type.upper().replace("_", " "), etype, f.severity, color, 2.0, 0),
+            )
+            statute = "; ".join(r.get("text", "") for r in f.refs) if f.refs else "Indian Contract Act, 1872"
+            remedy = f.rationale[:300] if f.rationale else "Review and redraft the identified clauses."
+            cursor.execute(
+                "INSERT INTO findings (id, contract_id, title, severity, relation_type, source_clause_ref, target_clause_ref, description, statute_citation, remedy_suggestion) VALUES (?,?,?,?,?,?,?,?,?,?);",
+                (f.id, contract_id,
+                 f.relation_type.replace("_", " ").title()[:120],
+                 f.severity, f.relation_type, src, tgt,
+                 f.rationale[:600], statute[:400], remedy[:400]),
+            )
 
-    if cap_clause and indemnity_clause:
-        edges_to_insert.append((contract_id, cap_clause[0], indemnity_clause[0], "CONFLICT: Cap vs Indemnity", "conflict", "high", "#ef4444", 3.0, 0))
-        findings_to_insert.append((
-            f"{contract_id}_f1", contract_id, "Liability Cap Nullified by Uncapped Indemnity", "high", "contractual_conflict",
-            f"Section {cap_clause[1]} ({cap_clause[2]})", f"Section {indemnity_clause[1]} ({indemnity_clause[2]})",
-            "The limitation of liability clause imposes an aggregate ceiling, but the indemnification clause mandates uncapped defense without an exclusion carveout.",
-            "Indian Contract Act, 1872 (Sections 124 & 125): Indemnity claims are independent obligations; silent caps create immediate litigation risk on whether indemnity is subordinated to the cap.",
-            f"Amend Section {cap_clause[1]} to explicitly carve out Section {indemnity_clause[1]} indemnity obligations."
-        ))
+    # ── 3b. Heuristic fallback ─────────────────────────────────────────────────
+    else:
+        raw_paragraphs = [p.strip() for p in req.text.split("\n\n") if len(p.strip()) > 20] or [req.text.strip()]
+        clauses_to_insert: list = []
+        for idx, para in enumerate(raw_paragraphs):
+            cid = f"{contract_id}_c{idx+1}"
+            num = f"{idx+1}.0"
+            title_snippet = para[:40].replace("\n", " ") + "..."
+            tag = "General"
+            lower = para.lower()
+            if "indemnif" in lower or "hold harmless" in lower:
+                tag = "Indemnity"
+            elif "limit" in lower and "liab" in lower:
+                tag = "Liability"
+            elif "non-compete" in lower or "restraint" in lower or "competing business" in lower:
+                tag = "High Risk"
+            elif "data" in lower or "dpdpa" in lower:
+                tag = "Compliance"
+            elif "dispute" in lower or "arbitrat" in lower:
+                tag = "Dispute"
+            elif "payment" in lower or "fee" in lower:
+                tag = "Payment"
+            clauses_to_insert.append((cid, num, title_snippet, tag, para, idx + 1))
+            cursor.execute(
+                "INSERT INTO clauses (id, contract_id, clause_num, title, tag, text, ordinal) VALUES (?,?,?,?,?,?,?);",
+                (cid, contract_id, num, title_snippet, tag, para, idx + 1),
+            )
 
-    if non_compete_clause and "india" in jurisdiction.lower():
-        edges_to_insert.append((contract_id, non_compete_clause[0], non_compete_clause[0], "STATUTORY VOID: Sec 27 ICA", "statutory", "high", "#ec4899", 3.5, 0))
-        findings_to_insert.append((
-            f"{contract_id}_f2", contract_id, "Post-Termination Non-Compete is Statutorily Void", "statutory", "statutory_violation",
-            f"Section {non_compete_clause[1]} (Non-Compete)", "Section 27, Indian Contract Act 1872",
-            "The clause imposes a restraint on trade or profession. Under Indian law, post-contractual non-competes are void ab initio and cannot be enforced.",
-            "Section 27, Indian Contract Act, 1872 & Percept D'Mark v. Zaheer Khan (2006) 4 SCC 227: All negative covenants post-termination are void, regardless of reasonableness.",
-            "Delete the post-termination non-compete restriction. Rely on non-disclosure of trade secrets and confidentiality obligations."
-        ))
+        edges_to_insert, findings_to_insert = [], []
+        cap_clause = next((c for c in clauses_to_insert if c[3] == "Liability"), None)
+        indemnity_clause = next((c for c in clauses_to_insert if c[3] == "Indemnity"), None)
+        non_compete_clause = next((c for c in clauses_to_insert if c[3] == "High Risk" or "compete" in c[4].lower()), None)
 
-    # Add sequential flow edges if no edges detected
-    if not edges_to_insert and len(clauses_to_insert) > 1:
-        for i in range(len(clauses_to_insert) - 1):
-            edges_to_insert.append((
-                contract_id, clauses_to_insert[i][0], clauses_to_insert[i+1][0], "Sequential Clause Flow", "semantic", "low", "#0ea5e9", 1.5, 1
+        if cap_clause and indemnity_clause:
+            edges_to_insert.append((contract_id, cap_clause[0], indemnity_clause[0],
+                                    "CONFLICT: Cap vs Indemnity", "conflict", "high", "#ef4444", 3.0, 0))
+            findings_to_insert.append((
+                f"{contract_id}_f1", contract_id, "Liability Cap Nullified by Uncapped Indemnity",
+                "high", "contractual_conflict",
+                f"Section {cap_clause[1]} ({cap_clause[2]})",
+                f"Section {indemnity_clause[1]} ({indemnity_clause[2]})",
+                "The limitation of liability clause imposes an aggregate ceiling, but the indemnification clause mandates uncapped defense without an exclusion carveout.",
+                "Indian Contract Act, 1872 (Sections 124 & 125)",
+                f"Amend Section {cap_clause[1]} to explicitly carve out Section {indemnity_clause[1]} indemnity obligations.",
             ))
+        if non_compete_clause and "india" in jurisdiction.lower():
+            edges_to_insert.append((contract_id, non_compete_clause[0], non_compete_clause[0],
+                                    "STATUTORY VOID: Sec 27 ICA", "statutory", "high", "#ec4899", 3.5, 0))
+            findings_to_insert.append((
+                f"{contract_id}_f2", contract_id, "Post-Termination Non-Compete is Void Ab Initio",
+                "statutory", "statutory_violation",
+                f"Section {non_compete_clause[1]} (Non-Compete)", "Section 27, Indian Contract Act 1872",
+                "Post-contractual non-competes are void under Indian law.",
+                "Section 27 ICA & Percept D'Mark v. Zaheer Khan (2006)",
+                "Delete post-termination non-compete; rely on NDA and trade-secret protections.",
+            ))
+        if not edges_to_insert and len(clauses_to_insert) > 1:
+            for i in range(len(clauses_to_insert) - 1):
+                edges_to_insert.append((
+                    contract_id, clauses_to_insert[i][0], clauses_to_insert[i + 1][0],
+                    "Sequential Clause Flow", "semantic", "low", "#0ea5e9", 1.5, 1,
+                ))
 
-    for e in edges_to_insert:
-        cursor.execute("""
-            INSERT INTO graph_edges (contract_id, source_clause_id, target_clause_id, label, relation_type, severity, color, width, dashes)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
-        """, e)
-
-    for f in findings_to_insert:
-        cursor.execute("""
-            INSERT INTO findings (id, contract_id, title, severity, relation_type, source_clause_ref, target_clause_ref, description, statute_citation, remedy_suggestion)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
-        """, f)
+        for e in edges_to_insert:
+            cursor.execute(
+                "INSERT INTO graph_edges (contract_id, source_clause_id, target_clause_id, label, relation_type, severity, color, width, dashes) VALUES (?,?,?,?,?,?,?,?,?);",
+                e,
+            )
+        for f in findings_to_insert:
+            cursor.execute(
+                "INSERT INTO findings (id, contract_id, title, severity, relation_type, source_clause_ref, target_clause_ref, description, statute_citation, remedy_suggestion) VALUES (?,?,?,?,?,?,?,?,?,?);",
+                f,
+            )
 
     conn.commit()
     conn.close()
-
-    return {"status": "success", "contract_id": contract_id}
+    return {"status": "success", "contract_id": contract_id,
+            "engine": "core.pipeline" if pipeline_ok else "heuristic"}
 
 
 @app.get("/api/export/{contract_id}")
