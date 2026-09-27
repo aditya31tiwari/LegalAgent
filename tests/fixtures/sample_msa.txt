@@ -1,0 +1,88 @@
+MASTER SERVICES AGREEMENT
+
+This Master Services Agreement is entered into between Acme Industries Inc. and
+Northwind Supply Co.
+
+1.1 Definitions. In this Agreement, "Deliverables" means the software, documentation
+and materials to be produced by the Supplier as described in each Statement of Work.
+"Confidential Information" has the meaning given in Section 6.1.
+
+1.2 Order of Precedence. In the event of a conflict between this Agreement and any
+Statement of Work, this Agreement shall prevail except where the Statement of Work
+expressly states otherwise and is signed by both parties.
+
+2.1 Provision of Services. The Supplier shall perform the Services with reasonable
+skill and care in accordance with each Statement of Work agreed under Section 1.2.
+
+2.2 Acceptance. The Customer shall have thirty (30) days from delivery to test the
+Deliverables against the acceptance criteria. Deliverables not rejected in writing
+within that period shall be deemed accepted.
+
+3.1 Fees. The Customer shall pay the fees set out in the applicable Statement of Work.
+All invoices are payable within forty-five (45) days of receipt.
+
+3.2 Late Payment. Interest shall accrue on any overdue payment under Section 3.1 at
+the rate of one and a half percent (1.5%) per month. Suspension of Services for
+non-payment shall not constitute a breach by the Supplier.
+
+4.1 Warranty. The Supplier represents and warrants that the Deliverables will conform
+in all material respects to the specifications for a period of twelve (12) months
+following acceptance under Section 2.2.
+
+4.2 Exclusive Remedy. The Customer's sole and exclusive remedy for breach of the
+warranty in Section 4.1 shall be repair or replacement of the non-conforming
+Deliverables, or refund of the fees paid for them.
+
+5.1 Limitation of Liability. In no event shall either party be liable for any indirect,
+incidental or consequential damages. The aggregate liability of either party arising
+out of this Agreement shall not exceed the total fees paid in the twelve (12) months
+preceding the claim.
+
+5.2 Exclusions. The limitation of liability in Section 5.1 shall not apply to breaches
+of confidentiality, infringement of intellectual property rights, or the indemnity
+obligations set out in Section 7.1.
+
+6.1 Confidential Information. Each party shall keep confidential all non-public
+information disclosed by the other party and shall not disclose it to any third party
+without prior written consent.
+
+6.2 Duration of Confidentiality. The obligations in Section 6.1 shall continue for
+five (5) years following termination of this Agreement, and indefinitely in respect
+of trade secrets.
+
+7.1 Indemnification. The Supplier shall indemnify, defend and hold harmless the
+Customer against any and all claims, losses, damages and expenses arising out of any
+allegation that the Deliverables infringe the intellectual property rights of a
+third party.
+
+7.2 Indemnity Procedure. The Customer shall promptly notify the Supplier of any claim
+for which indemnity is sought under Section 7.1 and shall grant the Supplier sole
+control of the defence and settlement of that claim.
+
+8.1 Intellectual Property. All intellectual property rights in the Deliverables shall
+vest in the Customer upon payment in full of the applicable fees under Section 3.1.
+The Supplier retains all rights in its pre-existing materials.
+
+8.2 Exclusive License. The Supplier grants the Customer a sole and exclusive license
+to use the Supplier's pre-existing materials to the extent necessary to exploit the
+Deliverables described in Section 8.1.
+
+9.1 Termination for Convenience. Either party may terminate this Agreement upon sixty
+(60) days prior written notice to the other party.
+
+9.2 Termination for Cause. Either party may terminate this Agreement immediately upon
+written notice if the other party commits a material breach that remains uncured for
+thirty (30) days.
+
+9.3 Survival. The provisions of Section 5.1, Section 6.1, Section 7.1 and Section 8.1
+shall survive termination or expiry of this Agreement.
+
+10.1 Assignment. Neither party may assign or transfer this Agreement without the prior
+written consent of the other party, except to a successor in connection with a merger
+or sale of substantially all of its assets.
+
+10.2 Force Majeure. Neither party shall be liable for any failure to perform caused by
+an event beyond its reasonable control, including acts of God, war, or natural disaster.
+
+10.3 Governing Law. This Agreement shall be governed by the laws of the State of
+Delaware, and the parties submit to the exclusive jurisdiction of its courts.

@@ -1,0 +1,73 @@
+# CLAUSE-20 — contract clause types for conflict detection.
+#
+# Derived from LEDGAR (LexGLUE, 100 labels) and CUAD (41 categories).
+# Neither source taxonomy was built for conflict detection, so neither is used
+# as-is. This file is the target taxonomy; label_map.yaml is the translation.
+#
+# SELECTION CRITERION (a label exists only if both hold):
+#   1. it can plausibly clash with, or depend on, at least one other label
+#      -- i.e. it appears in conflict_pairs below;
+#   2. >= MIN_SUPPORT examples survive de-duplication in the merged corpus.
+# Criterion 1 removes boilerplate a conflict detector cannot use (Headings,
+# Counterparts, Severability). Criterion 2 removes the long tail. Both are
+# mechanical, so the taxonomy is reproducible rather than a matter of taste.
+#
+# Labels demoted to `other` by criterion 2 are recorded in the dataset card at
+# build time -- the taxonomy is an output of the build, not only an input.
+
+version: 1
+min_support: 300          # criterion 2 threshold, per label, in the train split
+
+labels:
+  - indemnification
+  - limitation_of_liability
+  - warranty
+  - termination
+  - term_and_renewal
+  - survival
+  - confidentiality
+  - ip_ownership
+  - license_grant
+  - assignment_change_of_control
+  - exclusivity_and_restraint
+  - payment_and_fees
+  - tax
+  - governing_law
+  - dispute_resolution
+  - audit_and_records
+  - insurance
+  - notices
+  - amendment_and_integration
+  - compliance_and_law
+  - other                 # sink; never counts toward criterion 2
+
+# Known taxonomy gap, stated rather than hidden: force_majeure is a clause type
+# this project cares about, and NEITHER source dataset carries a label for it.
+# It cannot be trained from CLAUSE-20 and stays on the keyword rule in
+# legalagent/core/classification.py. Any evaluation must exclude it.
+known_gaps:
+  - force_majeure
+
+# Criterion 1 evidence, and the upgrade for TYPE_MATRIX in
+# legalagent/core/candidate_selection.py. Weight = how much a hit here is worth
+# as a candidate-pair signal, not a probability.
+# Key is the two labels joined by '+', unordered: YAML cannot use a list as a
+# key. Split on '+' to read it back.
+conflict_pairs:
+  limitation_of_liability+indemnification: 0.9
+  limitation_of_liability+warranty: 0.7
+  limitation_of_liability+insurance: 0.5
+  termination+survival: 0.6
+  termination+term_and_renewal: 0.7
+  termination+payment_and_fees: 0.5
+  survival+confidentiality: 0.6
+  assignment_change_of_control+confidentiality: 0.5
+  assignment_change_of_control+license_grant: 0.6
+  exclusivity_and_restraint+assignment_change_of_control: 0.6
+  exclusivity_and_restraint+license_grant: 0.7
+  ip_ownership+license_grant: 0.8
+  payment_and_fees+tax: 0.6
+  payment_and_fees+audit_and_records: 0.5
+  governing_law+dispute_resolution: 0.7
+  amendment_and_integration+notices: 0.4
+  compliance_and_law+warranty: 0.5

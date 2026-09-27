@@ -68,3 +68,12 @@ graphify-out/
 data/demo/.cache/
 data/raw/CUAD_v1.json
 .agents/workflows/graphify.md
+
+# CLAUSE-20 build outputs (rebuild with clause20/build.py)
+clause20/data/
+
+# Downloaded source datasets (CUAD, LEDGAR) -- see clause20/build.py
+dataset/
+
+# Local notes, not shared
+PROJECT_STATUS.txt
