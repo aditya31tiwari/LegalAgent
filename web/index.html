@@ -383,13 +383,119 @@
 
 
     /* Contract viewer modal */
-    .contract-viewer { max-height: 70vh; overflow-y: auto; padding: 0; }
-    .contract-viewer-clause { padding: 16px 20px; border-bottom: 1px solid var(--border-light); }
-    .contract-viewer-clause:last-child { border-bottom: none; }
-    .contract-viewer-clause:hover { background: var(--bg-ivory); }
-    .contract-viewer-num { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--copper); margin-bottom: 4px; }
-    .contract-viewer-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
-    .contract-viewer-text { font-family: var(--font-serif); font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+    .contract-viewer { max-height: unset; padding: 0; }
+    .cv-preamble-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+    .cv-doc-title {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .cv-doc-meta {
+      text-align: center;
+      font-size: 11.5px;
+      color: var(--copper);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      margin-bottom: 16px;
+    }
+    .cv-parties-block {
+      font-family: var(--font-serif);
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      border-top: 1px solid var(--border-light);
+      padding-top: 14px;
+      margin-bottom: 14px;
+    }
+    .cv-recitals-block {
+      font-family: var(--font-serif);
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: var(--slate);
+      background: var(--bg-ivory);
+      border-radius: 4px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+    }
+    .contract-viewer-clause {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 18px 22px;
+      margin-bottom: 16px;
+      transition: all 0.2s ease;
+    }
+    .contract-viewer-clause:hover {
+      border-color: var(--copper);
+    }
+    .contract-viewer-clause.highlight-match {
+      border-color: var(--copper);
+      box-shadow: 0 0 0 2px rgba(154, 123, 79, 0.25);
+    }
+    .contract-viewer-clause.dimmed {
+      opacity: 0.35;
+    }
+    .cv-clause-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 8px;
+    }
+    .contract-viewer-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--copper);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .contract-viewer-title {
+      font-family: var(--font-serif);
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 10px;
+    }
+    .contract-viewer-text {
+      font-family: var(--font-serif);
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      white-space: pre-line;
+    }
+    .cv-signature-block {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px 24px;
+      margin-top: 24px;
+      margin-bottom: 10px;
+    }
+    .cv-sig-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 16px;
+    }
+    .cv-sig-col {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
 
     .empty-state { padding: 40px 20px; text-align: center; color: var(--text-faint); font-size: 12px; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
@@ -663,14 +769,35 @@
   </div>
 
   <!-- ═══════ CONTRACT VIEWER MODAL ═══════ -->
-  <div class="modal-overlay" id="contract-viewer-modal">
-    <div class="modal-container wide">
-      <div class="modal-header">
-        <span class="modal-title" id="contract-viewer-title">Full Contract</span>
+  <div class="modal-overlay" id="contract-viewer-modal" onclick="handleCvOverlayClick(event)">
+    <div class="modal-container wide" style="max-width: 980px; height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-header" style="flex-shrink: 0;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span class="modal-title" id="contract-viewer-title">Full Contract Instrument</span>
+          <span id="contract-viewer-badge" style="background:#f5f3ef; border:1px solid #e2ded5; color:#1a2332; font-size:11px; padding:2px 8px; border-radius:4px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;"></span>
+        </div>
         <button class="modal-close" onclick="closeContractViewer()">&times;</button>
       </div>
-      <div class="contract-viewer" id="contract-viewer-body"></div>
-      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeContractViewer()">Close</button></div>
+
+      <!-- Live Search & Actions Toolbar -->
+      <div style="background:#fcfbf9; border-bottom:1px solid var(--border); padding:8px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-shrink:0;">
+        <div style="position:relative; flex:1; max-width:420px;">
+          <input type="text" id="cv-search-input" placeholder="Search across all clauses and text..." oninput="filterContractViewerText()" style="width:100%; padding:6px 12px 6px 30px; font-size:12px; border:1px solid var(--border); border-radius:4px; background:#fff; outline:none;">
+          <svg style="position:absolute; left:9px; top:8px; width:13px; height:13px; color:#64748b;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span id="cv-clause-count" style="font-size:11.5px; color:var(--text-muted); font-weight:500;"></span>
+          <button class="btn btn-secondary" id="btn-copy-contract" style="font-size:11.5px; padding:5px 12px;" onclick="copyFullContractText()">Copy Full Text</button>
+        </div>
+      </div>
+
+      <!-- Scrollable Contract Instrument Body -->
+      <div class="contract-viewer" id="contract-viewer-body" style="flex:1; overflow-y:auto; padding:24px 28px; background:#fafaf8; scroll-behavior:smooth;"></div>
+      
+      <div class="modal-footer" style="padding:10px 20px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+        <span style="font-size:11px; color:var(--text-muted);">LegalAgent Contract Architecture &bull; Official Executed Legal Text</span>
+        <button class="btn btn-secondary" onclick="closeContractViewer()">Close</button>
+      </div>
     </div>
   </div>
 
@@ -835,7 +962,7 @@
           id: c.id,
           label: `Section ${c.clause_num || c.num}\n${c.title}`,
           shape: "box",
-          margin: { top: 12, right: 16, bottom: 12, left: 16 },
+          margin: { top: 10, right: 14, bottom: 10, left: 14 },
           borderWidth: 2,
           borderWidthSelected: 3,
           color: {
@@ -873,20 +1000,20 @@
           dashes: !!e.dashes,
           font: { color: '#334155', size: 11, align: 'horizontal', background: '#fafaf8', strokeWidth: 0 },
           arrows: { to: { enabled: true, scaleFactor: 0.7 } },
-          smooth: { type: 'continuous', roundness: 0.15 }
+          smooth: { enabled: true, type: 'curvedCW', roundness: 0.18 }
         };
       }));
 
       const options = {
         physics: {
-          stabilization: { iterations: 200, updateInterval: 25 },
+          stabilization: { iterations: 260, updateInterval: 25 },
           barnesHut: {
-            gravitationalConstant: -2200,
-            centralGravity: 0.35,
-            springLength: 115,
-            springConstant: 0.04,
-            damping: 0.15,
-            avoidOverlap: 0.8
+            gravitationalConstant: -4200,
+            centralGravity: 0.12,
+            springLength: 195,
+            springConstant: 0.035,
+            damping: 0.12,
+            avoidOverlap: 1.0
           },
           minVelocity: 0.75
         },
@@ -957,20 +1084,189 @@
     }
 
     /* ── Full Contract Viewer ── */
+    const CONTRACT_PREAMBLES = {
+      "tech_msa": {
+        formalTitle: "MASTER SERVICES AGREEMENT (IT & CLOUD SERVICES)",
+        meta: "AGREEMENT REF: CL-BRL-MSA-2024-001 &bull; BENGALURU, KARNATAKA &bull; EFFECTIVE APRIL 1, 2024",
+        parties: "<strong>THIS MASTER SERVICES AGREEMENT</strong> is made at Bengaluru, Karnataka on this 1st day of April 2024, by and between:<br><strong>1. CloudLogic Enterprise Solutions India Pvt. Ltd.</strong>, having its registered office at Outer Ring Road, Bellandur, Bengaluru 560103 ("Vendor"); and<br><strong>2. Bharat Retail Logistics Limited</strong>, having its corporate office at MG Road, Bengaluru 560001 ("Customer").",
+        recitals: "<strong>WHEREAS:</strong><br>(A) Vendor provides enterprise cloud infrastructure, managed database hosting, and high-availability SaaS platforms under ISO/IEC 27001 standards.<br>(B) Customer operates omni-channel logistics networks and desires to engage Vendor to deliver Tier-3 cloud services.<br><strong>NOW, THEREFORE</strong>, the Parties hereby agree as follows:",
+        sigParty1: "CloudLogic Enterprise Solutions India Pvt. Ltd.",
+        sigParty2: "Bharat Retail Logistics Limited"
+      },
+      "pune_metro_ppp": {
+        formalTitle: "CONCESSION AGREEMENT FOR PUNE METRO LINE III (HINJAWADI–SHIVAJINAGAR)",
+        meta: "GOVERNMENT OF MAHARASHTRA &bull; PMRDA/3316/CR 54/UD-7 &bull; PUNE &bull; SEPTEMBER 21, 2019",
+        parties: "<strong>THIS CONCESSION AGREEMENT</strong> is entered into at Pune on this 21st day of September 2019, by and between:<br><strong>1. Pune Metropolitan Region Development Authority (PMRDA)</strong>, constituted pursuant to the Maharashtra Metropolitan Region Development Authority Act, 2016 ("Authority"); and<br><strong>2. Pune IT City Metro Rail Limited</strong>, a public limited special purpose company incorporated under the Companies Act, 2013 by the Consortium of TRIL Urban Transport Private Limited and Siemens Project Ventures GmbH ("Concessionaire").",
+        recitals: "<strong>WHEREAS:</strong><br>(A) The Authority resolved to provide a mass rapid rail transit corridor of 23.205 km on elevated viaduct from Hinjawadi to Shivajinagar on DBFOT basis.<br>(B) The Consortium of TRIL Urban Transport and Siemens Project Ventures was selected pursuant to international competitive bidding.<br>(C) Synthetic test covenants (Article 91) were appended strictly for automated risk analysis validation.<br><strong>NOW, THEREFORE</strong>, the Parties agree as follows:",
+        sigParty1: "Pune Metropolitan Region Development Authority",
+        sigParty2: "Pune IT City Metro Rail Limited (TRIL & Siemens)"
+      },
+      "employment_nda": {
+        formalTitle: "EXECUTIVE EMPLOYMENT & RESTRICTIVE COVENANTS AGREEMENT",
+        meta: "APEX FINANCIAL TECHNOLOGIES &bull; MUMBAI, MAHARASHTRA &bull; CONFIDENTIAL INSTRUMENT",
+        parties: "<strong>THIS EXECUTIVE EMPLOYMENT AGREEMENT</strong> is made at Mumbai, Maharashtra, by and between <strong>Apex Financial Technologies India Private Limited</strong> ("Company") and the individual identified as Chief Technology Officer ("Executive").",
+        recitals: "<strong>WHEREAS:</strong> Company desires to employ Executive and entrust proprietary technical trade secrets, and Executive agrees to devote primary business efforts to Company operations subject to the terms hereof.<br><strong>NOW, THEREFORE</strong>, the Parties agree:",
+        sigParty1: "Apex Financial Technologies India Pvt. Ltd.",
+        sigParty2: "Executive (Chief Technology Officer)"
+      },
+      "vendor_supply": {
+        formalTitle: "COMMERCIAL SUPPLY & INDUSTRIAL PROCUREMENT AGREEMENT",
+        meta: "CONTRACT REF: PMC-AIA-2024-VSA &bull; PUNE, MAHARASHTRA",
+        parties: "<strong>THIS COMMERCIAL SUPPLY AGREEMENT</strong> is executed at Pune, Maharashtra, between <strong>Precision Machining & Components India Pvt. Ltd.</strong> ("Supplier") and <strong>Apex Industrial Automations Ltd.</strong> ("Purchaser").",
+        recitals: "<strong>WHEREAS:</strong> Supplier manufactures automation robotics tooling, and Purchaser desires to purchase components under regular purchase orders subject to strict delivery schedules.<br><strong>NOW, THEREFORE</strong>, the Parties agree:",
+        sigParty1: "Precision Machining & Components India Pvt. Ltd.",
+        sigParty2: "Apex Industrial Automations Ltd."
+      },
+      "highway_concession": {
+        formalTitle: "MODEL CONCESSION AGREEMENT — FOUR-LANING OF NATIONAL HIGHWAYS (BOT-TOLL)",
+        meta: "NATIONAL HIGHWAYS AUTHORITY OF INDIA (NHAI) &bull; MINISTRY OF ROAD TRANSPORT & HIGHWAYS",
+        parties: "<strong>THIS CONCESSION AGREEMENT</strong> is entered into between the <strong>National Highways Authority of India</strong> ("NHAI") and the Concessionaire selected for execution of Four-Laning on Build-Operate-Transfer (BOT-Toll) mode.",
+        recitals: "<strong>WHEREAS:</strong> NHAI is entrusted with the development of National Highways and has awarded the concession pursuant to competitive bidding under the National Highways Act, 1956.<br><strong>NOW, THEREFORE</strong>, the Parties agree:",
+        sigParty1: "National Highways Authority of India",
+        sigParty2: "Highway Concessionaire SPV"
+      }
+    };
+
     function openContractViewer() {
       if (!contractData) return;
-      document.getElementById('contract-viewer-title').innerText = contractData.contract.title || 'Contract';
+      
+      const c = contractData.contract;
+      document.getElementById('contract-viewer-title').innerText = c.title || 'Full Contract';
+      document.getElementById('contract-viewer-badge').innerText = c.jurisdiction || 'India';
+      document.getElementById('cv-clause-count').innerText = `${contractData.clauses.length} Sections / Articles`;
+      
+      const searchInput = document.getElementById('cv-search-input');
+      if (searchInput) searchInput.value = '';
+
       const body = document.getElementById('contract-viewer-body');
       body.innerHTML = '';
-      contractData.clauses.forEach(c => {
+
+      // 1. Render Preamble Block
+      const preambleData = CONTRACT_PREAMBLES[c.id];
+      if (preambleData) {
+        const pBox = document.createElement('div');
+        pBox.className = 'cv-preamble-box';
+        pBox.innerHTML = 
+          `<div class="cv-doc-title">${preambleData.formalTitle}</div>` +
+          `<div class="cv-doc-meta">${preambleData.meta}</div>` +
+          `<div class="cv-parties-block">${preambleData.parties}</div>` +
+          `<div class="cv-recitals-block">${preambleData.recitals}</div>`;
+        body.appendChild(pBox);
+      } else {
+        const pBox = document.createElement('div');
+        pBox.className = 'cv-preamble-box';
+        pBox.innerHTML = 
+          `<div class="cv-doc-title">${c.title}</div>` +
+          `<div class="cv-doc-meta">${c.category} &bull; ${c.jurisdiction}</div>` +
+          `<div class="cv-parties-block">${c.description || 'Full legal instrument text.'}</div>`;
+        body.appendChild(pBox);
+      }
+
+      // 2. Render All Full Clauses
+      contractData.clauses.forEach((cl, idx) => {
         const div = document.createElement('div');
         div.className = 'contract-viewer-clause';
-        div.innerHTML = `<div class="contract-viewer-num">Section ${c.clause_num || c.num}</div><div class="contract-viewer-title">${c.title}</div><div class="contract-viewer-text">${c.text}</div>`;
+        div.id = `cv-clause-${cl.id || idx}`;
+        
+        let tagBadge = cl.tag ? `<span style="font-size:10.5px; font-weight:600; padding:2px 7px; border-radius:3px; background:#f5f3ef; border:1px solid #e2ded5; color:#64748b;">${cl.tag}</span>` : '';
+        
+        div.innerHTML = 
+          `<div class="cv-clause-header">` +
+            `<span class="contract-viewer-num">Section ${cl.clause_num || cl.num}</span>` +
+            `${tagBadge}` +
+          `</div>` +
+          `<div class="contract-viewer-title">${cl.title}</div>` +
+          `<div class="contract-viewer-text">${cl.text}</div>`;
         body.appendChild(div);
       });
+
+      // 3. Render Execution & Signature Block
+      const sigBox = document.createElement('div');
+      sigBox.className = 'cv-signature-block';
+      const p1 = preambleData ? preambleData.sigParty1 : 'Authorized Representative (Party 1)';
+      const p2 = preambleData ? preambleData.sigParty2 : 'Authorized Representative (Party 2)';
+      sigBox.innerHTML = 
+        `<div style="font-family:var(--font-serif); font-size:13px; font-style:italic; color:var(--text-secondary); text-align:center;">` +
+          `IN WITNESS WHEREOF, the Parties hereto have caused this Agreement to be executed by their respective duly authorized officers as of the date first above written.` +
+        `</div>` +
+        `<div class="cv-sig-grid">` +
+          `<div class="cv-sig-col">` +
+            `<strong>SIGNED, SEALED AND DELIVERED</strong><br>` +
+            `For and on behalf of:<br>` +
+            `<strong>${p1}</strong><br><br>` +
+            `By: ___________________________<br>` +
+            `Name: Authorized Signatory<br>` +
+            `Title: Managing Director & CEO<br>` +
+            `In the presence of: 1. _______________` +
+          `</div>` +
+          `<div class="cv-sig-col">` +
+            `<strong>SIGNED, SEALED AND DELIVERED</strong><br>` +
+            `For and on behalf of:<br>` +
+            `<strong>${p2}</strong><br><br>` +
+            `By: ___________________________<br>` +
+            `Name: Authorized Signatory<br>` +
+            `Title: Chief Executive Officer<br>` +
+            `In the presence of: 2. _______________` +
+          `</div>` +
+        `</div>`;
+      body.appendChild(sigBox);
+
       document.getElementById('contract-viewer-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
     }
-    function closeContractViewer() { document.getElementById('contract-viewer-modal').classList.remove('open'); }
+
+    function closeContractViewer() {
+      document.getElementById('contract-viewer-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function handleCvOverlayClick(e) {
+      if (e.target.id === 'contract-viewer-modal') {
+        closeContractViewer();
+      }
+    }
+
+    function filterContractViewerText() {
+      const q = (document.getElementById('cv-search-input').value || '').toLowerCase().trim();
+      const clauses = document.querySelectorAll('.contract-viewer-clause');
+      
+      let matchCount = 0;
+      clauses.forEach(c => {
+        const text = c.innerText.toLowerCase();
+        if (!q) {
+          c.classList.remove('dimmed');
+          c.classList.remove('highlight-match');
+        } else if (text.includes(q)) {
+          c.classList.remove('dimmed');
+          c.classList.add('highlight-match');
+          matchCount++;
+        } else {
+          c.classList.add('dimmed');
+          c.classList.remove('highlight-match');
+        }
+      });
+
+      const countSpan = document.getElementById('cv-clause-count');
+      if (q) {
+        countSpan.innerText = `${matchCount} of ${clauses.length} matches`;
+      } else {
+        countSpan.innerText = `${clauses.length} Sections / Articles`;
+      }
+    }
+
+    function copyFullContractText() {
+      if (!contractData) return;
+      const body = document.getElementById('contract-viewer-body');
+      if (!body) return;
+      
+      const plainText = body.innerText;
+      navigator.clipboard.writeText(plainText).then(() => {
+        const btn = document.getElementById('btn-copy-contract');
+        const orig = btn.innerText;
+        btn.innerText = 'Copied to Clipboard!';
+        setTimeout(() => { btn.innerText = orig; }, 2000);
+      });
+    }
 
     function openPipelineModal() {
       document.getElementById('pipeline-modal').classList.add('open');
