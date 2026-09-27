@@ -41,6 +41,7 @@ PROJECT_MAP.md
 
 | Step | Your Objective | Primary Document | What You Will Learn |
 |:---:|:---|:---|:---|
+| **0** | **Executive Panel Briefing** | [`PANEL_CONFIDENCE_DOSSIER.md`](./PANEL_CONFIDENCE_DOSSIER.md) | High-level 60-second pitch, core innovation, plain-English legal doctrine summaries, live demo choreography, and tough viva defenses. |
 | **1** | **Understand Contracts & Indian Law** | [`CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md`](./CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md) | What are articles, clauses, provisos, and recitals; Indian Contract Act (Sec 23, 27, 74, 124/125), DPDPA 2023, Mediation Act 2023, and Stamp Act rules. |
 | **2** | **Understand the Core Architecture** | [`ARCHITECTURE_FLOW.md`](./ARCHITECTURE_FLOW.md) | End-to-end dataflow diagrams, graph building, candidate filtering, and InLegal-SBERT embedding pipeline. |
 | **2b** | **Master the Algorithms & Mathematics** | [`ALGORITHMS_AND_MATHEMATICAL_FOUNDATIONS.md`](./ALGORITHMS_AND_MATHEMATICAL_FOUNDATIONS.md) | Okapi BM25, InLegal-SBERT cosine similarity, SVD 2D projection, Barnes-Hut quadtrees, and candidate pruning. |
@@ -55,6 +56,8 @@ PROJECT_MAP.md
 
 ### 1. Master Explanation Hub (`tests/old_examples/docs/`)
 
+* [`PANEL_CONFIDENCE_DOSSIER.md`](./PANEL_CONFIDENCE_DOSSIER.md)  
+  **The executive panel briefing**: High-level synthesis designed for immediate confidence in front of the panel: 60-second opening statement, plain-English legal explanations, 10-minute demo script, and tough question defenses.
 * [`START_HERE.md`](./START_HERE.md)  
   **The master entry point**: All-in-one executive summary, reading curriculum, and quick-start cheat-sheet.
 * [`CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md`](./CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md)  

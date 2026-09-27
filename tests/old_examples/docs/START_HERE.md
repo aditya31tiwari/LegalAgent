@@ -27,11 +27,16 @@ $$G = (V, E)$$
 
 ---
 
-## 2. Master Reading Order: 6 Steps to Full Mastery
+## 2. Master Reading Order: 7 Steps to Full Mastery
 
 Follow this sequential reading pathway across the documentation suite in this directory:
 
 ```
+[Step 0: Executive Panel Briefing — Read This First!]
+./PANEL_CONFIDENCE_DOSSIER.md
+  |  (High-level 60-second pitch, core innovation, plain-English legal doctrine summaries,
+  |   live demo choreography, and tough viva defenses for immediate panel confidence)
+  v
 [Step 1: Legal Foundations]
 ./CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md
   |  (Understand what contracts are, articles vs clauses,

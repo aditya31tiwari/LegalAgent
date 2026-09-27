@@ -276,3 +276,4 @@ TYPE_MATRIX = {
 | **Type Matrix** | Deterministic Knowledge | Encodes known catastrophic commercial legal traps with 100% precision. | Limited to pre-encoded category combinations. | Highest priority candidate allocation (never dropped). |
 | **Explicit Xref** | Directed Structural Regex | Follows literal contractual drafting intent (*"subject to..."*). | Dependent on correct clause numbering regex extraction. | Constructs backbone directed dependency edges. |
 | **Barnes-Hut** | Physical Simulation | Produces beautiful, readable, non-overlapping visual graph layouts. | Requires stabilization freezing to prevent rotation. | Powers the interactive visual graph canvas in the browser. |
+
