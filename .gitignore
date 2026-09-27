@@ -63,3 +63,8 @@ output/
 results/
 runs/
 temp/
+.agents/rules/graphify.md
+graphify-out/
+data/demo/.cache/
+data/raw/CUAD_v1.json
+.agents/workflows/graphify.md

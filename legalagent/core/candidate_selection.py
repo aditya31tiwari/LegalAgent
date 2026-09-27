@@ -20,6 +20,7 @@ def select_candidates(clauses: list[Clause], config: dict) -> list[tuple[str, st
     Returns list of (clause_a_id, clause_b_id, ["bm25", "type_matrix", ...])
     """
     k = config.get("top_k", 5)
+    retrieval_method = config.get("retrieval_method", "bm25")
     pairs: dict[tuple[str, str], set[str]] = {}
 
     def add_pair(a_id: str, b_id: str, method: str):
@@ -59,6 +60,16 @@ def select_candidates(clauses: list[Clause], config: dict) -> list[tuple[str, st
             )
             for score, clause_b_id in ranked[:k]:
                 add_pair(clause_a.id, clause_b_id, "bm25")
+
+    if retrieval_method in {"dense", "hybrid"}:
+        from legalagent.core.embeddings import related_pairs
+
+        for clause_a_id, clause_b_id, _score in related_pairs(
+            clauses,
+            top_k=k,
+            model_name=config.get("embedding_model", "bhavyagiri/InLegal-Sbert"),
+        ):
+            add_pair(clause_a_id, clause_b_id, "dense")
 
     # Cap by priority: xref/type_matrix pairs are always kept; BM25-only pairs
     # fill whatever room is left.

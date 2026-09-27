@@ -19,6 +19,7 @@ def extract(text: str, contract_id: str = "local") -> list[Clause]:
     Returns list of Clause objects with char_start/char_end from normalized_text.
     """
     clauses = []
+    seen_numbers: dict[str, int] = {}
     ordinal = 0
     matches = list(CLAUSE_RE.finditer(text))
 
@@ -37,7 +38,11 @@ def extract(text: str, contract_id: str = "local") -> list[Clause]:
         first_line = rest.split("\n", 1)[0].strip()
         heading = first_line if 0 < len(first_line) <= _HEADING_MAX_LEN else None
 
+        seen_numbers[number] = seen_numbers.get(number, 0) + 1
+        occurrence = seen_numbers[number]
         clause_id = f"{contract_id}::{number}"
+        if occurrence > 1:
+            clause_id = f"{clause_id}::{occurrence}"
 
         # Extract cross-references within this clause
         xrefs = []
@@ -66,8 +71,15 @@ def extract(text: str, contract_id: str = "local") -> list[Clause]:
 
     # Resolve cross-references
     clause_ids = {c.id for c in clauses}
+    first_clause_by_number = {}
+    for clause in clauses:
+        first_clause_by_number.setdefault(clause.number, clause.id)
     for clause in clauses:
         for xref in clause.xrefs:
-            xref["resolved"] = xref["clause_id"] in clause_ids
+            if xref["clause_id"] in clause_ids:
+                xref["resolved"] = True
+            elif xref["clause_id"].rsplit("::", 1)[-1] in first_clause_by_number:
+                xref["clause_id"] = first_clause_by_number[xref["clause_id"].rsplit("::", 1)[-1]]
+                xref["resolved"] = True
 
     return clauses

@@ -1,0 +1,9 @@
+INDIAN TECHNOLOGY SERVICES AGREEMENT
+
+1.1 Scope. The Supplier shall provide cloud hosting and support services to the Customer in India.
+
+5.2 Limitation of Liability. Except for amounts expressly stated otherwise, the aggregate liability of either party arising from this Agreement shall not exceed INR 10,00,000.
+
+9.1 Indemnity. The Supplier shall defend, indemnify, and hold harmless the Customer from all third-party claims, losses, and expenses, without any financial limitation and notwithstanding Section 5.2.
+
+14.1 Governing Law. This Agreement shall be governed by the laws of India and the courts of Bengaluru shall have jurisdiction.

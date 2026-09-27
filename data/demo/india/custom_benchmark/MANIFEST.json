@@ -1,0 +1,18 @@
+{
+  "description": "Synthetic Indian-law prototype benchmark with planted irregularities.",
+  "not_legal_advice": true,
+  "contracts": [
+    {
+      "file": "01_msa_cap_indemnity.txt",
+      "expected": ["cross_clause_conflict"]
+    },
+    {
+      "file": "02_employment_non_compete.txt",
+      "expected": ["section_27_statutory_violation", "termination_survival_dependency"]
+    },
+    {
+      "file": "03_clean_services_control.txt",
+      "expected": []
+    }
+  ]
+}

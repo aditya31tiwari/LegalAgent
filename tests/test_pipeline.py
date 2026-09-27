@@ -6,7 +6,6 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import pytest
 from legalagent.core.pipeline import analyse
 from legalagent.core.types import Clause, Finding, Run
 
@@ -64,12 +63,12 @@ def test_extraction_and_candidates():
     assert run.stats["findings"] + run.stats["no_issue"] == run.stats["pairs"]
 
 
-@pytest.mark.xfail(reason="analyse_pair_stub always returns None until the LLM analysis layer lands (Day 9)", strict=True)
 def test_smoke_findings_and_evidence():
     """
     The assertions from the plan that actually matter: findings are produced,
     and every evidence offset resolves to real text (catches hallucination).
-    Left failing on purpose so a stubbed analysis layer can't fake a pass.
+    Evidence is stored as offsets into each clause so generated explanations
+    cannot point at text outside the analyzed contract.
     """
     run, clauses, findings = _run_pipeline()
     text_by_clause = {c.id: c.text for c in clauses}
@@ -79,9 +78,27 @@ def test_smoke_findings_and_evidence():
     for f in findings:
         assert f.target_clause_id in ids
         assert all(r in ids for r in f.related_clause_ids)
+        assert f.target_clause_id not in f.related_clause_ids
         for e in f.evidence:
             clause_text = text_by_clause[e["clause_id"]]
             assert clause_text[e["start"]:e["end"]].strip()
+
+
+def test_statutory_non_compete_finding():
+    import tempfile
+    import os
+
+    text = "1.1 Following termination, the employee shall not compete with the company in India."
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False) as fixture:
+        fixture.write(text)
+        fixture_path = fixture.name
+    try:
+        _run, clauses, findings = analyse(fixture_path, {"jurisdiction": "India"})
+    finally:
+        os.unlink(fixture_path)
+
+    assert clauses
+    assert any(f.relation_type == "statutory_violation" and f.refs[0]["section"] == "Section 27" for f in findings)
 
 
 if __name__ == "__main__":

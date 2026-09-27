@@ -4,14 +4,7 @@ from legalagent.core.ingestion import ingest
 from legalagent.core.extraction import extract
 from legalagent.core.classification import classify
 from legalagent.core.candidate_selection import select_candidates
-
-
-def analyse_pair_stub(clause_a: Clause, clause_b: Clause) -> Finding | None:
-    """
-    Stub analysis: returns no_issue for now.
-    ponytail: stub until LLM layer is built; returns None to skip finding.
-    """
-    return None
+from legalagent.core.analysis import analyse_pair, analyse_statutory, validate_findings
 
 
 def analyse(file_path: str, config: dict, contract_id: str = "local") -> tuple[Run, list[Clause], list[Finding]]:
@@ -31,7 +24,8 @@ def analyse(file_path: str, config: dict, contract_id: str = "local") -> tuple[R
     # Candidate selection
     pairs = select_candidates(clauses, config)
 
-    # Analysis (stub: always returns findings list)
+    # Cross-clause analysis. This deterministic adapter is the testable baseline;
+    # a Gemini adapter can later implement the same Finding contract.
     findings = []
     no_issue_count = 0
 
@@ -39,11 +33,14 @@ def analyse(file_path: str, config: dict, contract_id: str = "local") -> tuple[R
         clause_a = next(c for c in clauses if c.id == clause_a_id)
         clause_b = next(c for c in clauses if c.id == clause_b_id)
 
-        finding = analyse_pair_stub(clause_a, clause_b)
+        finding = analyse_pair(clause_a, clause_b, surfaced_by)
         if finding is None:
             no_issue_count += 1
         else:
             findings.append(finding)
+
+    findings.extend(analyse_statutory(clauses, config.get("jurisdiction", "India")))
+    validate_findings(findings, clauses)
 
     # Build run metadata
     run_id = f"run_{uuid.uuid4().hex[:8]}"
