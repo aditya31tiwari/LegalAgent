@@ -214,27 +214,38 @@ venv/bin/python web/server.py
 ```
 
 #### `web/backend.py`
-FastAPI REST API (328 lines). All endpoints:
+FastAPI REST API. All endpoints:
 
 | Endpoint | Method | Description |
 |:---------|:-------|:------------|
 | `/` | GET | Serves `landing.html` |
-| `/app` | GET | Serves `index.html` |
-| `/docs` | GET | Auto-generated Swagger UI |
-| `/api/contracts` | GET | All contracts + stats (clause count, health score) |
-| `/api/contracts/{id}` | GET | Full graph JSON for one contract |
-| `/api/contracts/analyze` | POST | Analyse custom text via `core.pipeline` (with heuristic fallback) |
+| `/app` | GET | Serves `index.html` (main contract analysis dashboard) |
+| `/injections` | GET | Serves `injections.html` (adversarial benchmark explainer dossier) |
+| `/docs` | GET | Auto-generated Swagger REST UI |
+| `/api/contracts` | GET | All contracts + stats (clause count, health score, critical flags) |
+| `/api/contracts/{id}` | GET | Full graph JSON (clauses, edges, findings) for one contract |
+| `/api/contracts/analyze` | POST | Synchronous contract analysis via `core.pipeline` |
+| `/api/contracts/analyze/stream` | POST | Real-time Server-Sent Events (SSE) streaming analysis (9 stages) |
 | `/api/contracts/{id}/embeddings` | GET | 2D PCA projection of InLegal-SBERT clause embeddings |
 | `/api/export/{id}` | GET | Legal Risk Memorandum as Markdown |
 
 #### `web/index.html`
-Single-page 3-panel dashboard (~660 lines, vanilla HTML/CSS/JS + Vis.js):
-- **Left panel**: Clause Explorer — expandable clause cards, search, "View Full" button
+Single-page 3-panel dashboard (vanilla HTML/CSS/JS + Vis.js):
+- **Contract Portfolio Drawer**: Slide-out panel listing all 6+ contracts with health scores and critical risk badges
+- **Left panel**: Clause Explorer — expandable clause cards, sequential full contract modal viewer
 - **Centre panel**: Vis.js knowledge graph — nodes = clauses, typed edges = relationships. Physics: `gravitationalConstant: -8000`, `springLength: 250`, `avoidOverlap: 0.6`
-- **Right panel**: Findings Dossier — per-finding cards with source clause, statutory citation, remedy
+- **Right panel**: Findings Dossier — per-finding cards with source clause, statutory citation, redline remedy
+- **Live Streaming Upload**: 9-stage real-time progress feed with elapsed timers, checkmarks, drag-and-drop, and sample pre-fill
 - **Edge click → finding highlight**: clicking a graph edge auto-scrolls and highlights the matching finding card with copper ring
-- **Modals**: Upload/Analyze, Export Audit, Full Contract Viewer
 - **Design**: Navy `#1a2332`, Ivory `#f5f3ef`, Copper `#9a7b4f`. No neon, no glow.
+
+#### `web/injections.html`
+Dedicated Adversarial Benchmark Dossier served at `/injections`:
+- Explains the Pune Metro PPP Concession Agreement (PMRDA, 2019, 660 pages) provenance
+- Details all 15 synthetic bad clauses injected into the agreement (Clauses 91.1 to 91.15)
+- Highlights why single-clause LLM extraction misses cross-clause traps vs how GraphRAG catches them
+- Filterable cards for Detected, Statutory Violations, and Planned Roadmap rules
+- Master Adversarial Matrix table
 
 #### `web/landing.html`
 Professional landing page introducing the product:
@@ -352,3 +363,4 @@ venv/bin/python -c "from legalagent.db import init_db, seed_database; init_db();
 # Check Gemini API
 venv/bin/python scripts/check_gemini.py
 ```
+

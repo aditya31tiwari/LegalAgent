@@ -1,9 +1,11 @@
 from fastapi import FastAPI, HTTPException, UploadFile, File, Form
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from pydantic import BaseModel
-from typing import List, Optional
+from typing import List, Optional, Generator
+import asyncio
+import time
 import os
 import sys
 import uuid
@@ -348,6 +350,240 @@ def analyze_custom_contract(req: AnalyzeRequest):
             "engine": "core.pipeline" if pipeline_ok else "heuristic"}
 
 
+@app.post("/api/contracts/analyze/stream")
+async def analyze_contract_stream(req: AnalyzeRequest):
+    """
+    SSE streaming version of contract analysis.
+    Yields one 'data: {...}\\n\\n' event per pipeline stage so the browser
+    can update a live progress panel in real time.
+
+    Event schema:
+        stage   – machine-readable stage name
+        label   – human-readable stage label
+        detail  – short description of what happened
+        elapsed – seconds since start (float)
+        done    – true on the final event
+        contract_id – present only on the final event
+    """
+    import tempfile as _tempfile
+
+    def _sse(payload: dict) -> str:
+        return f"data: {json.dumps(payload)}\n\n"
+
+    def generate() -> Generator[str, None, None]:
+        t0 = time.time()
+        contract_id = f"custom_{uuid.uuid4().hex[:6]}"
+        title = req.title or "Untitled Custom Agreement"
+        jurisdiction = req.jurisdiction or "India"
+
+        def elapsed() -> float:
+            return round(time.time() - t0, 2)
+
+        # ── Stage 1: Received ────────────────────────────────────────────────
+        yield _sse({"stage": "received", "label": "Contract Received",
+                    "detail": f"Processing \"{title}\" · {len(req.text):,} characters · Jurisdiction: {jurisdiction}",
+                    "elapsed": elapsed(), "done": False})
+
+        # Write to temp file for pipeline
+        tmp_path = None
+        try:
+            import tempfile
+            with tempfile.NamedTemporaryFile(mode="w", suffix=".txt",
+                                            delete=False, encoding="utf-8") as tmp:
+                tmp.write(req.text)
+                tmp_path = tmp.name
+        except Exception as e:
+            yield _sse({"stage": "error", "label": "File Error",
+                        "detail": str(e), "elapsed": elapsed(), "done": True})
+            return
+
+        # ── Stage 2: Ingestion ───────────────────────────────────────────────
+        try:
+            from legalagent.core.ingestion import ingest, normalize
+            raw_text = ingest(tmp_path)
+            yield _sse({"stage": "ingestion", "label": "Text Ingested",
+                        "detail": f"Normalised {len(raw_text):,} characters from plain text input",
+                        "elapsed": elapsed(), "done": False})
+        except Exception as e:
+            yield _sse({"stage": "error", "label": "Ingestion Failed",
+                        "detail": str(e), "elapsed": elapsed(), "done": True})
+            return
+
+        # ── Stage 3: Extraction ──────────────────────────────────────────────
+        try:
+            from legalagent.core.extraction import extract
+            clauses = extract(raw_text, contract_id)
+            yield _sse({"stage": "extraction", "label": "Clauses Extracted",
+                        "detail": f"Found {len(clauses)} numbered clause{'s' if len(clauses) != 1 else ''} with unique IDs and cross-reference offsets",
+                        "elapsed": elapsed(), "done": False})
+        except Exception as e:
+            yield _sse({"stage": "error", "label": "Extraction Failed",
+                        "detail": str(e), "elapsed": elapsed(), "done": True})
+            return
+
+        # ── Stage 4: Classification ──────────────────────────────────────────
+        try:
+            from legalagent.core.classification import classify
+            clauses = classify(clauses)
+            label_counts: dict[str, int] = {}
+            for cl in clauses:
+                for lb in cl.labels:
+                    label_counts[lb["label"]] = label_counts.get(lb["label"], 0) + 1
+            top = sorted(label_counts.items(), key=lambda x: -x[1])[:4]
+            top_str = ", ".join(f"{k} ({v})" for k, v in top) or "none detected"
+            yield _sse({"stage": "classification", "label": "Clauses Classified",
+                        "detail": f"Keyword classification applied — top labels: {top_str}",
+                        "elapsed": elapsed(), "done": False})
+        except Exception as e:
+            yield _sse({"stage": "error", "label": "Classification Failed",
+                        "detail": str(e), "elapsed": elapsed(), "done": True})
+            return
+
+        # ── Stage 5: Candidate Selection ─────────────────────────────────────
+        try:
+            from legalagent.core.candidate_selection import select_candidates
+            config = {"retrieval_method": "bm25", "top_k": 10, "jurisdiction": jurisdiction}
+            pairs = select_candidates(clauses, config)
+            methods_used = set()
+            for _, _, surfaced in pairs:
+                methods_used.update(surfaced)
+            yield _sse({"stage": "candidates", "label": "Candidate Pairs Selected",
+                        "detail": f"{len(pairs)} clause pair{'s' if len(pairs) != 1 else ''} shortlisted via {', '.join(sorted(methods_used)) or 'BM25'}",
+                        "elapsed": elapsed(), "done": False})
+        except Exception as e:
+            yield _sse({"stage": "error", "label": "Candidate Selection Failed",
+                        "detail": str(e), "elapsed": elapsed(), "done": True})
+            return
+
+        # ── Stage 6: Cross-Clause Analysis ───────────────────────────────────
+        try:
+            from legalagent.core.analysis import analyse_pair, analyse_statutory, validate_findings
+            findings = []
+            for clause_a_id, clause_b_id, surfaced_by in pairs:
+                clause_a = next(c for c in clauses if c.id == clause_a_id)
+                clause_b = next(c for c in clauses if c.id == clause_b_id)
+                f = analyse_pair(clause_a, clause_b, surfaced_by)
+                if f:
+                    findings.append(f)
+            conflicts = len(findings)
+            yield _sse({"stage": "analysis", "label": "Cross-Clause Analysis",
+                        "detail": f"Analysed {len(pairs)} pairs — {conflicts} contractual conflict{'s' if conflicts != 1 else ''} detected",
+                        "elapsed": elapsed(), "done": False})
+        except Exception as e:
+            yield _sse({"stage": "error", "label": "Analysis Failed",
+                        "detail": str(e), "elapsed": elapsed(), "done": True})
+            return
+
+        # ── Stage 7: Statutory Check ─────────────────────────────────────────
+        try:
+            statutory = analyse_statutory(clauses, jurisdiction)
+            findings.extend(statutory)
+            validate_findings(findings, clauses)
+            stat_labels = list({f.relation_type for f in statutory})
+            stat_str = ", ".join(stat_labels) if stat_labels else "none"
+            yield _sse({"stage": "statutory", "label": "Indian Statutory Audit",
+                        "detail": f"{len(statutory)} statutory flag{'s' if len(statutory) != 1 else ''} raised ({stat_str}) — ICA 1872, DPDPA 2023, BNS 2023",
+                        "elapsed": elapsed(), "done": False})
+        except Exception as e:
+            yield _sse({"stage": "error", "label": "Statutory Check Failed",
+                        "detail": str(e), "elapsed": elapsed(), "done": True})
+            return
+
+        # ── Stage 8: Persist to SQLite ───────────────────────────────────────
+        try:
+            findings.sort(key=lambda f: ({"high": 0, "medium": 1, "low": 2}.get(f.severity, 3), -f.risk_score))
+
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO contracts (id, title, category, jurisdiction, description) VALUES (?,?,?,?,?);",
+                (contract_id, title, "Live Upload / Panel Demo", jurisdiction,
+                 f"Live-analysed agreement: {len(clauses)} clauses, {len(findings)} findings."),
+            )
+
+            LABEL_TO_TAG = {
+                "indemnification": "Indemnity", "liability_limitation": "Liability",
+                "termination": "Term", "survival": "Survival", "confidentiality": "IP",
+                "governing_law": "Governing Law", "assignment": "General",
+                "warranty": "Risk", "non_compete": "High Risk",
+                "data_protection": "Compliance", "dispute_resolution": "Dispute",
+                "payment": "Payment",
+            }
+            for cl in clauses:
+                tag = LABEL_TO_TAG.get((cl.labels[0]["label"] if cl.labels else ""), "General")
+                cursor.execute(
+                    "INSERT INTO clauses (id, contract_id, clause_num, title, tag, text, ordinal) VALUES (?,?,?,?,?,?,?);",
+                    (cl.id, contract_id, cl.number or str(cl.ordinal),
+                     (cl.heading or f"Clause {cl.number or cl.ordinal}")[:80],
+                     tag, cl.text[:2000], cl.ordinal),
+                )
+
+            SMAP = {"high": "#ef4444", "medium": "#f59e0b", "low": "#10b981"}
+            TMAP = {"conflict": "conflict", "dependency": "xref",
+                    "overlap": "semantic", "ambiguity": "semantic"}
+            for f in findings:
+                if not f.related_clause_ids:
+                    continue
+                tgt = f.related_clause_ids[0]
+                cursor.execute(
+                    "INSERT INTO graph_edges (contract_id, source_clause_id, target_clause_id, label, relation_type, severity, color, width, dashes) VALUES (?,?,?,?,?,?,?,?,?);",
+                    (contract_id, f.target_clause_id, tgt,
+                     f.relation_type.upper().replace("_", " "),
+                     TMAP.get(f.relation_type, "semantic"),
+                     f.severity, SMAP.get(f.severity, "#64748b"), 2.0, 0),
+                )
+                statute = "; ".join(r.get("text", "") for r in f.refs) if f.refs else "Indian Contract Act, 1872"
+                cursor.execute(
+                    "INSERT INTO findings (id, contract_id, title, severity, relation_type, source_clause_ref, target_clause_ref, description, statute_citation, remedy_suggestion) VALUES (?,?,?,?,?,?,?,?,?,?);",
+                    (f.id, contract_id,
+                     f.relation_type.replace("_", " ").title()[:120],
+                     f.severity, f.relation_type,
+                     f.target_clause_id, tgt,
+                     f.rationale[:600], statute[:400], f.rationale[:300]),
+                )
+
+            conn.commit()
+            conn.close()
+            Path(tmp_path).unlink(missing_ok=True)
+
+            yield _sse({"stage": "persisted", "label": "Graph Saved",
+                        "detail": f"Persisted {len(clauses)} clause nodes + {len(findings)} finding edges to SQLite",
+                        "elapsed": elapsed(), "done": False})
+
+        except Exception as e:
+            yield _sse({"stage": "error", "label": "Database Error",
+                        "detail": str(e), "elapsed": elapsed(), "done": True})
+            return
+
+        # ── Stage 9: Complete ────────────────────────────────────────────────
+        high = sum(1 for f in findings if f.severity in ("high", "statutory"))
+        yield _sse({
+            "stage": "complete", "label": "Analysis Complete",
+            "detail": (
+                f"{len(clauses)} clauses · {len(findings)} total findings "
+                f"({high} critical) · {len(pairs)} pairs examined"
+            ),
+            "elapsed": elapsed(), "done": True,
+            "contract_id": contract_id,
+            "stats": {
+                "clauses": len(clauses),
+                "findings": len(findings),
+                "critical": high,
+                "pairs": len(pairs),
+            }
+        })
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
+        },
+    )
+
+
 @app.get("/api/export/{contract_id}")
 def export_audit_memo(contract_id: str):
     """Generates an executive legal risk memo in Markdown."""
@@ -378,7 +614,7 @@ def export_audit_memo(contract_id: str):
     return JSONResponse(content={"markdown": memo, "filename": f"LegalAgent_Memo_{contract_id}.md"})
 
 
-# Serve the landing page at root and the dashboard at /app
+# Serve landing page, app, and adversarial injections explainer
 @app.get("/")
 def serve_landing():
     return FileResponse(STATIC_DIR / "landing.html")
@@ -387,6 +623,11 @@ def serve_landing():
 @app.get("/app")
 def serve_app():
     return FileResponse(STATIC_DIR / "index.html")
+
+
+@app.get("/injections")
+def serve_injections():
+    return FileResponse(STATIC_DIR / "injections.html")
 
 
 if __name__ == "__main__":

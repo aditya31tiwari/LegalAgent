@@ -45,17 +45,25 @@ Open two browser tabs:
 
 ---
 
-## Step 2 — Dashboard Overview (`/app`)
+## Step 2 — Dashboard & Contract Portfolio Overview (`/app`)
 
 **What to say:**
 
-> "The workspace has three resizable panels. On the left: the Clause Explorer. In the centre: the live knowledge graph. On the right: the Risk Findings and Statutory Audit panel."
+> "The workspace gives lawyers and auditors an intuitive 3-panel command centre. In the header, clicking **'Contracts (6)'** opens our **Contract Portfolio Drawer**."
 
-**Quick orientation:**
+**Actions:**
 
-- Drag the **dividers** between panels to resize — show this is interactive.
-- Point to the **metrics bar** at the top: Clauses, Contradictions, Statutory Flags, Graph Edges.
-- Note the **jurisdiction badge** next to the contract title.
+1. Click **"Contracts (6)"** in the top navigation bar.
+2. The slide-out portfolio drawer appears on the left, displaying all uploaded contracts:
+   - **Health Score Badge** (green 88 for well-drafted NHAI, red 15 for high-risk Pune Metro, red 26 for Tech MSA).
+   - Clause counts, jurisdiction tags, and critical risk counts.
+   - Click any contract in the list to switch immediately into it.
+3. Close the drawer (click ✕ or backdrop).
+4. Point out the **three resizable panels**:
+   - **Left Panel:** Clause Explorer (expandable clause cards, sequential full-text view).
+   - **Centre Panel:** Vis.js Interdependent Knowledge Graph `G=(V,E)` with interactive physics.
+   - **Right Panel:** Risk Findings & Statutory Audit Dossier.
+5. Drag the **panel dividers** to demonstrate responsiveness.
 
 ---
 
@@ -63,7 +71,7 @@ Open two browser tabs:
 
 > *Best for showing the core cross-clause conflict detection.*
 
-**Select**: "Indian Tech Services MSA (IT/SaaS)" in the dropdown (it loads by default).
+**Select**: "Indian Tech Services MSA (IT/SaaS)" in the dropdown (or from the Contracts Drawer).
 
 **What to say:**
 
@@ -101,26 +109,28 @@ Open two browser tabs:
 
 ---
 
-## Step 5 — Demo Contract 3: Pune Metro PPP Concession (Real Indian Contract)
+## Step 5 — Demo Contract 3: Pune Metro PPP Concession & Adversarial Injections
 
 > *Best for showing that the system works on real Government of India contracts, not just synthetic data.*
 
-**Select**: "Pune Metro Line III — PPP Concession (2019)" in the dropdown.
-
 **What to say:**
 
-> "This is a real signed concession agreement between the Pune Metropolitan Region Development Authority and Pune IT City Metro Rail Limited, sourced from the Government of India's PPP India portal. We have injected adversarial clauses — clauses that should not exist in a proper concession agreement — to test and demonstrate the detection engine."
+> "This is a real signed concession agreement between the Pune Metropolitan Region Development Authority and Pune IT City Metro Rail Limited, sourced from the Government of India's PPP India portal. We have injected 15 adversarial clauses to test our detection engine against classical single-clause LLMs."
 
 **Actions:**
 
-1. Point to the **graph**: three critical edges visible — a conflict (red), two statutory violations (purple).
-2. Note **health score of 15/100** — lowest of all contracts.
-3. Click the red edge between Clause 91.1 and 91.2: **"INR 1,000 Cap vs Unlimited Indemnity"**.
-4. Right panel shows the finding: *"The aggregate liability of the Authority shall not exceed INR 1,000 — even for fraud, death, personal injury..."* — read this aloud.
+1. Select **"Pune Metro Line III — PPP Concession (2019)"** in the dropdown.
+2. Point to the **graph**: three critical edges visible — a conflict (red), two statutory violations (purple).
+3. Note **health score of 15/100** — lowest of all contracts.
+4. Click the red edge between Clause 91.1 and 91.2: **"INR 1,000 Cap vs Unlimited Indemnity"**.
 5. Click the purple edge between 91.3 and 91.4: Section 27 ICA violation on the non-compete.
 6. Click the third statutory finding: **DPDPA 2023** — the INR 10,000 cap on Data Protection Board penalties (actual penalties up to ₹250 Crore).
-
-**Key talking point**: *"The system flagged three critical violations in a real signed government contract — two contractual conflicts and one DPDPA statutory violation — all from automatically reading the clause graph."*
+7. Now click **"⚡ Injections"** in the top navigation bar (or open `http://localhost:8080/injections`).
+8. Walk through the **Adversarial Injections Dossier**:
+   - Show the **official provenance card** (PMRDA signed 2019 concession agreement, Government of India PPP portal).
+   - Point out the **Methodology Comparison**: why isolated single-clause LLMs miss the trap vs how LegalAgent's GraphRAG captures it.
+   - Show the **15 Injected Clauses cards** and use the filter buttons (`All`, `Detected in Demo`, `Statutory Violations`, `Roadmap Expansion`).
+   - Highlight the **Master Adversarial Matrix table** at the bottom.
 
 ---
 
@@ -143,37 +153,47 @@ Open two browser tabs:
 
 ---
 
-## Step 7 — Live Custom Contract Analysis (Optional — impressive if it works)
+## Step 7 — LIVE MANUAL UPLOAD: Real-Time Pipeline Streaming (The Showstopper!)
 
-> *Only do this if you have 3+ minutes remaining and confidence.*
-
-Click **"New Contract"** in the header.
-
-Paste this into the text box:
-
-```
-1.1 Limitation of Liability
-The aggregate liability of the Company shall not exceed Rs. 10,000 (ten thousand rupees only) for any claim.
-
-1.2 Indemnification
-The Company shall indemnify and hold harmless the Client against all losses, fines, and penalties without any financial limitation whatsoever.
-
-1.3 Post-Termination Restriction
-For a period of 36 months after termination, the Contractor shall not engage in any competing business anywhere in India.
-
-1.4 Governing Law
-This Agreement is governed by the laws of India.
-```
-
-Set title: `"Live Demo Contract"`, jurisdiction: `"India"`.
-
-Click **"Run Graph Analysis"**.
+> *Show this to the panel to prove live, working end-to-end functionality.*
 
 **What to say:**
 
-> "The system is now running our full pipeline — clause extraction, BM25 retrieval, cross-clause pair analysis, and Indian statutory checks — in real time."
+> "Now let me demonstrate uploading a contract live in front of you. Watch our pipeline process the document in real time across all seven stages — from text normalization, clause extraction, BM25 candidate selection, cross-clause reasoning, to Indian statutory compliance auditing."
 
-The new contract appears in the selector. Switch to it. Two findings appear automatically: liability cap vs uncapped indemnity, and the Section 27 non-compete violation.
+**Actions:**
+
+1. Click **"Upload / Analyze"** in the top navigation bar.
+2. The **Live Contract Analysis Modal** opens.
+3. Show the options:
+   - **Option A (Instant Demo):** Click the button: **`⚡ Insert Sample Contract with Planted Traps`**. It instantly pre-populates a realistic Indian Cloud & IT MSA with:
+     - 7.1 Illegal DPDPA ₹25,000 Penalty Cap
+     - 8.1 Aggregate Liability Cap (₹5 Lakhs)
+     - 12.1 Uncapped IP Indemnity (direct clash with 8.1)
+     - 15.3 24-Month Non-Compete Restraint (void under Sec 27 ICA)
+     - 18.2 Dispute Resolution excluding Mediation Act 2023
+   - **Option B (File Upload):** Drag-and-drop any `.txt` or `.md` contract file into the dropzone.
+4. Click **"Run Live Analysis"**.
+5. **Watch the live streaming feed:**
+   - Real-time elapsed timer counts up in seconds (`0.24s`, `0.65s`, `1.12s`...).
+   - The progress bar smoothly fills from 0% to 100%.
+   - Each pipeline stage activates with a pulsing indicator, updates its detail message with exact counts, and turns into a green checkmark `✓`:
+     1. `📄 Contract Ingestion` (character count)
+     2. `⚙️ Text Normalization` (canonical formatting)
+     3. `📑 Clause & Offset Extraction` (found 7 numbered clauses)
+     4. `🏷️ Classification & Tagging` (Indemnity, Liability, High Risk, DPDPA)
+     5. `🔍 Candidate Pair Shortlisting` (BM25 + TYPE_MATRIX pairs)
+     6. `⚡ Cross-Clause Conflict Analysis` (detected cap vs indemnity conflict)
+     7. `⚖️ Indian Statutory Compliance Audit` (Sec 27 ICA void non-compete)
+     8. `🗄️ Knowledge Graph Storage` (saved to SQLite)
+6. The green **"Analysis Complete — Contract Graph Ready"** card appears with live metrics:
+   - Clauses: 7
+   - Critical Flags: 2
+   - Total Findings: 2
+   - Pairs Examined: 4
+7. Click **"View Contract Graph →"** (or let it auto-transition after 2 seconds).
+8. The modal closes, the newly analyzed contract is automatically loaded, and the interactive knowledge graph is rendered live in the center panel!
+9. Open the **"Contracts (6+)"** drawer to show the new contract has been persisted into the SQLite database.
 
 ---
 
@@ -236,3 +256,4 @@ Expected output:
 | DB is empty / contracts not loading | `venv/bin/python -c "from legalagent.db import init_db, seed_database; init_db(); seed_database()"` then restart server |
 | Graph not rendering | Refresh browser; check browser console for Vis.js errors |
 | Custom analysis fails | Pipeline falls back to heuristic automatically — you will still get results |
+

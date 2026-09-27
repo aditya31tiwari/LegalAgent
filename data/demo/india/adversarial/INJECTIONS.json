@@ -1,0 +1,97 @@
+{
+  "source_pdf": "data/demo/india/adversarial/source_pune_metro_signed_concession.pdf",
+  "modified_pdf": "data/demo/india/adversarial/pune_metro_adversarial_15_changes.pdf",
+  "warning": "Synthetic appended clauses are not part of the official agreement and are only for robustness testing.",
+  "injections": [
+    {
+      "number": "91.1",
+      "title": "Limitation of Liability",
+      "expected_current_detector": true,
+      "text": "The aggregate liability of the Authority shall not exceed INR 1,000 for any claim, including fraud, death, personal injury, gross negligence, and statutory penalties."
+    },
+    {
+      "number": "91.2",
+      "title": "Unlimited Indemnity",
+      "expected_current_detector": true,
+      "text": "The Concessionaire shall defend, indemnify, and hold harmless the Authority against every claim, loss, fine, and expense without any financial limitation and notwithstanding Clause 91.1."
+    },
+    {
+      "number": "91.3",
+      "title": "Post-Termination Non-Compete",
+      "expected_current_detector": true,
+      "text": "For 36 months following termination, the Concessionaire shall not compete with, advise, or participate in any competing infrastructure business in India."
+    },
+    {
+      "number": "91.4",
+      "title": "Survival of Restrictions",
+      "expected_current_detector": true,
+      "text": "Clauses 91.2 and 91.3 shall survive termination indefinitely and remain enforceable after termination of this Agreement."
+    },
+    {
+      "number": "91.5",
+      "title": "Punitive Delay Penalty",
+      "expected_current_detector": false,
+      "text": "A delay of one day shall incur automatic liquidated damages equal to 75 percent of the total concession value, regardless of actual loss."
+    },
+    {
+      "number": "91.6",
+      "title": "Capped Statutory Penalties",
+      "expected_current_detector": false,
+      "text": "Any penalty imposed under the Digital Personal Data Protection Act, 2023 shall be limited to INR 10,000 between the parties."
+    },
+    {
+      "number": "91.7",
+      "title": "Data Processing Without Consent",
+      "expected_current_detector": false,
+      "text": "The Concessionaire may collect, sell, and process all passenger personal data for any commercial purpose without notice or affirmative consent."
+    },
+    {
+      "number": "91.8",
+      "title": "Excluded Mediation",
+      "expected_current_detector": false,
+      "text": "No party shall attempt pre-litigation mediation and all disputes shall proceed directly to unilateral arbitration."
+    },
+    {
+      "number": "91.9",
+      "title": "Repealed Criminal Reference",
+      "expected_current_detector": false,
+      "text": "A breach shall be treated as cheating under Section 420 of the Indian Penal Code, even after the Bharatiya Nyaya Sanhita comes into force."
+    },
+    {
+      "number": "91.10",
+      "title": "Unilateral Amendment",
+      "expected_current_detector": false,
+      "text": "The Authority may amend any commercial term, fee, or risk allocation without notice or consent from the Concessionaire."
+    },
+    {
+      "number": "91.11",
+      "title": "Assignment Contradiction",
+      "expected_current_detector": false,
+      "text": "The Concessionaire shall not assign this Agreement, but the Authority may freely assign all obligations to any third party without consent."
+    },
+    {
+      "number": "91.12",
+      "title": "Absolute Warranty Disclaimer",
+      "expected_current_detector": false,
+      "text": "The Authority gives no warranty whatsoever, including for title, legality, safety, or fitness, and the Concessionaire waives every statutory remedy."
+    },
+    {
+      "number": "91.13",
+      "title": "Unstamped Execution",
+      "expected_current_detector": false,
+      "text": "The parties agree that this concession is intentionally unstamped and that no party may seek impounding or cure of stamp duty."
+    },
+    {
+      "number": "91.14",
+      "title": "Perpetual Confidentiality",
+      "expected_current_detector": false,
+      "text": "Every operational fact, public filing, safety report, and statutory disclosure shall remain confidential forever and may never be disclosed to any regulator."
+    },
+    {
+      "number": "91.15",
+      "title": "Foreign Forum Override",
+      "expected_current_detector": false,
+      "text": "This Agreement shall be governed by the laws of England and disputes shall be decided exclusively by courts in London notwithstanding the Indian project and Indian governing approvals."
+    }
+  ]
+}
