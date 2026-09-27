@@ -831,7 +831,28 @@
         if (c.tag.includes("Risk") || c.tag === "Liability") { bg = '#fdf8f8'; border = '#9b2c2c'; }
         else if (c.tag.includes("Indemnity") || c.tag.includes("Statutory") || c.tag.includes("DPDPA") || c.tag === "Compliance") { bg = '#fdf6fa'; border = '#7b3060'; }
         else if (c.tag === "Commercial" || c.tag === "Payment") { bg = '#f6fcf8'; border = '#276749'; }
-        return { id: c.id, label: `Section ${c.clause_num || c.num}\n${c.title}`, shape: "box", margin: { top: 10, right: 14, bottom: 10, left: 14 }, borderWidth: 1.5, borderWidthSelected: 2.5, color: { background: bg, border: border, highlight: { background: '#f5f3ef', border: '#1a2332' } }, font: { color: '#1a2332', size: 11, face: 'Inter, sans-serif', align: 'center', multi: true }, shadow: { enabled: true, color: 'rgba(0,0,0,0.04)', size: 6, x: 0, y: 2 } };
+        return {
+          id: c.id,
+          label: `Section ${c.clause_num || c.num}\n${c.title}`,
+          shape: "box",
+          margin: { top: 12, right: 16, bottom: 12, left: 16 },
+          borderWidth: 2,
+          borderWidthSelected: 3,
+          color: {
+            background: bg,
+            border: border,
+            highlight: { background: '#f5f3ef', border: '#1a2332' }
+          },
+          font: {
+            color: '#1a2332',
+            size: 13,
+            face: 'Inter, -apple-system, sans-serif',
+            align: 'center',
+            multi: true,
+            bold: { color: '#1a2332', size: 13 }
+          },
+          shadow: { enabled: true, color: 'rgba(26,35,50,0.06)', size: 8, x: 0, y: 3 }
+        };
       }));
 
       let edgeList = contractData.edges;
@@ -839,14 +860,34 @@
       const edges = new vis.DataSet(edgeList.map(e => {
         let color = '#64748b';
         const rtype = e.relation_type || e.type;
-        if (rtype === 'conflict') color = '#9b2c2c'; else if (rtype === 'statutory') color = '#7b3060'; else if (rtype === 'xref') color = '#2b6cb0'; else if (rtype === 'semantic') color = '#276749';
-        return { from: e.source_clause_id || e.from, to: e.target_clause_id || e.to, label: e.label, color: { color, highlight: '#1a2332', opacity: 0.75 }, width: 1.5, dashes: !!e.dashes, font: { color: '#4a5568', size: 10, align: 'horizontal', background: '#fafaf8', strokeWidth: 0 }, arrows: { to: { enabled: true, scaleFactor: 0.55 } }, smooth: { type: 'continuous', roundness: 0.12 } };
+        if (rtype === 'conflict') color = '#9b2c2c';
+        else if (rtype === 'statutory') color = '#7b3060';
+        else if (rtype === 'xref') color = '#2b6cb0';
+        else if (rtype === 'semantic') color = '#276749';
+        return {
+          from: e.source_clause_id || e.from,
+          to: e.target_clause_id || e.to,
+          label: e.label,
+          color: { color, highlight: '#1a2332', opacity: 0.85 },
+          width: 2,
+          dashes: !!e.dashes,
+          font: { color: '#334155', size: 11, align: 'horizontal', background: '#fafaf8', strokeWidth: 0 },
+          arrows: { to: { enabled: true, scaleFactor: 0.7 } },
+          smooth: { type: 'continuous', roundness: 0.15 }
+        };
       }));
 
       const options = {
         physics: {
-          stabilization: { iterations: 300, updateInterval: 25 },
-          barnesHut: { gravitationalConstant: -8000, centralGravity: 0.08, springLength: 250, springConstant: 0.02, damping: 0.12, avoidOverlap: 0.6 },
+          stabilization: { iterations: 200, updateInterval: 25 },
+          barnesHut: {
+            gravitationalConstant: -2200,
+            centralGravity: 0.35,
+            springLength: 115,
+            springConstant: 0.04,
+            damping: 0.15,
+            avoidOverlap: 0.8
+          },
           minVelocity: 0.75
         },
         interaction: { hover: true, zoomView: true, dragView: true, tooltipDelay: 200 }
@@ -854,6 +895,11 @@
 
       if (networkInstance) networkInstance.destroy();
       networkInstance = new vis.Network(container, { nodes, edges }, options);
+
+      // Fit comfortably to canvas once stabilization finishes
+      networkInstance.once("stabilizationIterationsDone", () => {
+        networkInstance.fit({ animation: { duration: 400 }, padding: 35 });
+      });
 
       networkInstance.on("click", params => {
         if (params.nodes.length > 0) focusClause(params.nodes[0]);
@@ -899,7 +945,7 @@
       if (btn) btn.classList.add('active');
       renderNetworkGraph();
     }
-    function fitGraphView() { if (networkInstance) networkInstance.fit({ animation: { duration: 350 } }); }
+    function fitGraphView() { if (networkInstance) networkInstance.fit({ animation: { duration: 350 }, padding: 35 }); }
     function handleClauseSearch() { searchQuery = document.getElementById('clause-search').value; renderClauseList(); }
 
     /* ── Clause Expand/Collapse ── */
