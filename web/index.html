@@ -1006,14 +1006,19 @@
 
       const options = {
         physics: {
-          stabilization: { iterations: 260, updateInterval: 25 },
+          enabled: true,
+          stabilization: {
+            enabled: true,
+            iterations: 180,
+            updateInterval: 20
+          },
           barnesHut: {
-            gravitationalConstant: -4200,
-            centralGravity: 0.12,
-            springLength: 195,
-            springConstant: 0.035,
-            damping: 0.12,
-            avoidOverlap: 1.0
+            gravitationalConstant: -2800,
+            centralGravity: 0.22,
+            springLength: 145,
+            springConstant: 0.05,
+            damping: 0.35,
+            avoidOverlap: 0.85
           },
           minVelocity: 0.75
         },
@@ -1023,10 +1028,18 @@
       if (networkInstance) networkInstance.destroy();
       networkInstance = new vis.Network(container, { nodes, edges }, options);
 
-      // Fit comfortably to canvas once stabilization finishes
+      // Lock nodes in place and stop rotation once stabilized
       networkInstance.once("stabilizationIterationsDone", () => {
-        networkInstance.fit({ animation: { duration: 400 }, padding: 35 });
+        networkInstance.setOptions({ physics: { enabled: false } });
+        networkInstance.fit({ animation: { duration: 300 }, padding: 35 });
       });
+
+      // Safety fallback: ensure physics freezes completely
+      setTimeout(() => {
+        if (networkInstance) {
+          networkInstance.setOptions({ physics: { enabled: false } });
+        }
+      }, 450);
 
       networkInstance.on("click", params => {
         if (params.nodes.length > 0) focusClause(params.nodes[0]);
