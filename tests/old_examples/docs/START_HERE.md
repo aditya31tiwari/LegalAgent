@@ -27,33 +27,33 @@ $$G = (V, E)$$
 
 ---
 
-## 2. Master Reading Order: 5 Steps to Full Mastery
+## 2. Master Reading Order: 6 Steps to Full Mastery
 
-Follow this sequential reading pathway across the documentation suite in `tests/old_examples/docs/`:
+Follow this sequential reading pathway across the documentation suite in this directory:
 
 ```
 [Step 1: Legal Foundations]
-tests/old_examples/docs/CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md
+./CONTRACT_STRUCTURE_AND_LEGAL_GUIDE.md
   |  (Understand what contracts are, articles vs clauses,
   |   and Indian statutory rules: Sec 27 ICA, Sec 74 LD, DPDPA 2023, Stamp Act)
   v
-[Step 2: Architecture & Codebase Deep-Dive]
-tests/old_examples/docs/ARCHITECTURE_FLOW.md -> tests/old_examples/docs/CODEBASE_EXPLANATION.md
-  |  (Understand the G=(V,E) graph, 8-stage pipeline, InLegal-SBERT,
-  |   and exact file-by-file technical explanations)
+[Step 2: Architecture & Algorithms Deep-Dive]
+./ARCHITECTURE_FLOW.md -> ./ALGORITHMS_AND_MATHEMATICAL_FOUNDATIONS.md -> ./CODEBASE_EXPLANATION.md
+  |  (Understand the G=(V,E) graph, BM25 Okapi, InLegal-SBERT cosine similarity,
+  |   SVD 2D projection, Barnes-Hut quadtrees, and file-by-file technical logic)
   v
 [Step 3: Live Panel Presentation & Walkthrough]
-tests/old_examples/docs/DEMO_GUIDE.md
+./DEMO_GUIDE.md
   |  (Step-by-step presentation script, server commands,
   |   and actual paths to all 6 verified sample contracts)
   v
 [Step 4: Panel Defense & Viva Q&A]
-tests/old_examples/docs/PANEL_DEFENSE_AND_FUTURE_ROADMAP.md
+./PANEL_DEFENSE_AND_FUTURE_ROADMAP.md
   |  (Hard questions: LLM hallucination, O(N^2) reduction, InLegal-SBERT vs BERT,
   |   and Phase 2–4 LoRA fine-tuning on 32.5M judgments)
   v
 [Step 5: Structural Directory]
-tests/old_examples/docs/PROJECT_MAP.md
+./PROJECT_MAP.md
   |  (Every file, folder, SQLite table, and CLI command indexed)
 ```
 
@@ -199,7 +199,7 @@ Open your browser to:
 1. Click **"Upload / Analyze"** in the top navigation bar.
 2. Choose one of two live demonstration methods:
    * **Method A (Instant Demo Button)**: Click **"Insert Sample Contract with Planted Traps"**.
-   * **Method B (File Upload)**: Drag and drop `/home/aryan/Projects/LegalAgent/LegalAgent/data/demo/samples/03_indian_tech_services_msa.md` into the upload zone.
+   * **Method B (File Upload)**: Drag and drop `data/demo/samples/03_indian_tech_services_msa.md` into the upload zone.
 3. Click **"Run Live Analysis"**:
    * Watch the real-time Server-Sent Events (SSE) progress counter.
    * The 8 pipeline stages turn green in sequence: Ingestion -> Normalization -> Extraction -> Tagging -> Candidate Selection -> Conflict Analysis -> Statutory Audit -> Graph Storage.
