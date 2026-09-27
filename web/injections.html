@@ -573,24 +573,24 @@
     /* --- SIDE-BY-SIDE COMPARATOR MODAL --- */
     .comparator-overlay {
       position: fixed; inset: 0;
-      background: rgba(26, 35, 50, 0.65);
+      background: rgba(26, 35, 50, 0.7);
       backdrop-filter: blur(4px);
       z-index: 1000;
       display: none;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 16px;
     }
     .comparator-overlay.open { display: flex; }
     .comparator-dialog {
       background: #fff;
-      width: 96vw;
-      max-width: 1340px;
-      height: 90vh;
+      width: 98vw;
+      max-width: 1440px;
+      height: 94vh;
       border-radius: 8px;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
       border: 1px solid var(--border);
       overflow: hidden;
     }
@@ -641,6 +641,53 @@
       background: rgba(255, 255, 255, 0.1);
       color: #fff;
     }
+
+    /* Article Quick-Jump Bar */
+    .comparator-article-bar {
+      background: #fdfcf9;
+      border-bottom: 1px solid var(--border);
+      padding: 8px 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      overflow-x: auto;
+      flex-shrink: 0;
+      white-space: nowrap;
+      scrollbar-width: thin;
+    }
+    .comparator-bar-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--copper);
+      margin-right: 6px;
+      flex-shrink: 0;
+    }
+    .art-nav-pill {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 4px 11px;
+      border-radius: 12px;
+      font-size: 11.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      flex-shrink: 0;
+    }
+    .art-nav-pill:hover {
+      background: var(--bg-ivory);
+      color: var(--navy);
+      border-color: var(--copper-light);
+    }
+    .art-nav-pill.active {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy);
+      font-weight: 600;
+    }
+
     .comparator-body {
       flex: 1;
       display: grid;
@@ -658,10 +705,10 @@
       background: #faf9f6;
     }
     .comparator-pane.right {
-      background: #fff;
+      background: #ffffff;
     }
     .pane-header {
-      padding: 12px 20px;
+      padding: 10px 20px;
       background: var(--bg-ivory);
       border-bottom: 1px solid var(--border);
       display: flex;
@@ -670,7 +717,7 @@
       flex-shrink: 0;
     }
     .pane-title {
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -701,61 +748,124 @@
       padding: 20px;
       scroll-behavior: smooth;
     }
-    .doc-clause-card {
+
+    /* Full Article Block Styles */
+    .doc-article-block {
       background: #fff;
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 16px 18px;
-      margin-bottom: 14px;
+      margin-bottom: 24px;
+      overflow: hidden;
       transition: all 0.2s ease;
-      cursor: pointer;
     }
-    .doc-clause-card:hover {
+    .doc-article-block.active-article {
       border-color: var(--copper);
+      box-shadow: 0 4px 18px rgba(154, 123, 79, 0.15);
     }
-    .doc-clause-card.active-target {
-      border-color: var(--copper);
-      background: #fdfaf6;
-      box-shadow: 0 0 0 2px rgba(154, 123, 79, 0.25);
+    .doc-article-banner {
+      background: var(--bg-ivory);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    .doc-clause-num {
+    .doc-article-num {
       font-family: var(--font-mono);
       font-size: 11px;
       font-weight: 700;
       color: var(--copper);
-      margin-bottom: 4px;
+      letter-spacing: 0.05em;
     }
-    .doc-clause-title {
+    .doc-article-name {
       font-family: var(--font-serif);
-      font-size: 14.5px;
+      font-size: 14px;
       font-weight: 600;
       color: var(--navy);
-      margin-bottom: 8px;
     }
-    .doc-clause-text {
+    .doc-article-content {
+      padding: 18px 22px;
+      font-family: var(--font-serif);
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: var(--text-secondary);
+    }
+    .doc-article-content h4 {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-top: 14px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .doc-article-content h4:first-child {
+      margin-top: 0;
+    }
+    .doc-article-content p {
+      margin-bottom: 10px;
+    }
+
+    /* Injected Clause Box in Full Article Context */
+    .injected-clause-box {
+      background: #fff8f8;
+      border: 1.5px dashed #f87171;
+      border-radius: 6px;
+      padding: 14px 16px;
+      margin: 14px 0;
+      transition: all 0.25s ease;
+    }
+    .injected-clause-box.focused-injection {
+      border-color: #dc2626;
+      background: #fef2f2;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.25);
+    }
+    .inj-box-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+    .inj-box-tag {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #b91c1c;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .inj-box-title {
+      font-family: var(--font-serif);
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+    .inj-box-quote {
       font-family: var(--font-serif);
       font-size: 13px;
       line-height: 1.65;
-      color: var(--text-secondary);
-    }
-    .doc-clause-text.injected-redline {
-      background: #fdf2f2;
-      padding: 10px 12px;
-      border-radius: 4px;
-      color: #991b1b;
       font-style: italic;
-      border: 1px dashed #fca5a5;
-    }
-    .doc-baseline-note {
-      font-size: 11.5px;
-      color: var(--text-muted);
-      margin-top: 8px;
-      padding: 6px 10px;
-      background: var(--bg-ivory);
+      color: #991b1b;
+      margin-bottom: 8px;
+      background: #fff;
+      padding: 8px 12px;
       border-radius: 4px;
     }
+    .inj-box-meta {
+      font-size: 11.5px;
+      line-height: 1.55;
+      color: #4b5563;
+      background: #ffffff;
+      border: 1px solid #fee2e2;
+      border-radius: 4px;
+      padding: 8px 10px;
+    }
+
+    /* Modal Bottom Navigator */
     .comparator-footer-nav {
-      height: 62px;
+      height: 60px;
       background: var(--bg-card);
       border-top: 1px solid var(--border);
       display: flex;
@@ -800,24 +910,7 @@
       font-size: 11px;
       color: var(--text-muted);
     }
-    .comparator-launch-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--navy);
-      color: #fff;
-      border: 1px solid var(--navy-light);
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s ease;
-    }
-    .comparator-launch-btn:hover {
-      background: var(--navy-light);
-    }
-    
+
   </style>
 </head>
 <body>
@@ -1574,10 +1667,16 @@
       <!-- Modal Header -->
       <div class="comparator-header">
         <div class="comparator-title">
-          <span>Side-by-Side Contract Comparison: Authentic vs Injected</span>
-          <span class="comparator-tag">Pune Metro PPP (2019)</span>
+          <span>Full Contract Comparison: Authentic PMRDA Baseline vs Adversarial Injections</span>
+          <span class="comparator-tag">Pune Metro PPP Line III (2019)</span>
         </div>
         <button class="comparator-close-btn" onclick="closeComparatorModal()" title="Close (Esc)">&times;</button>
+      </div>
+
+      <!-- Article Quick-Jump Bar -->
+      <div class="comparator-article-bar" id="comparator-article-bar">
+        <span class="comparator-bar-label">Articles:</span>
+        <button class="art-nav-pill active" onclick="jumpToArticle('all', this)">All Articles</button>
       </div>
 
       <!-- Modal Two-Column Body -->
@@ -1586,22 +1685,22 @@
         <!-- Left: Authentic Clean Contract -->
         <div class="comparator-pane left">
           <div class="pane-header">
-            <div class="pane-title">Authentic Signed Agreement</div>
-            <span class="pane-badge original">PMRDA 2019 Signed Concession</span>
+            <div class="pane-title">Authentic Signed Concession Agreement</div>
+            <span class="pane-badge original">Clean Government Baseline (2019)</span>
           </div>
           <div class="pane-scroll" id="pane-scroll-original">
-            <!-- Injected by JS -->
+            <!-- Full Articles Injected by JS -->
           </div>
         </div>
 
         <!-- Right: Injected Test Contract -->
         <div class="comparator-pane right">
           <div class="pane-header">
-            <div class="pane-title">Adversarially Injected Agreement</div>
-            <span class="pane-badge injected">Article 91 Test Additions</span>
+            <div class="pane-title">Adversarially Modified Concession Agreement</div>
+            <span class="pane-badge injected">Article 91 Synthetic Test Clauses</span>
           </div>
           <div class="pane-scroll" id="pane-scroll-injected">
-            <!-- Injected by JS -->
+            <!-- Full Articles Injected by JS -->
           </div>
         </div>
 
@@ -1614,7 +1713,7 @@
         </button>
         
         <div class="nav-center-info">
-          <div class="nav-curr-label" id="nav-injection-title">Injection 1 of 15: Clause 91.1</div>
+          <div class="nav-curr-label" id="nav-injection-title">Injection 1 of 15: Clause 91.1 (Article 41)</div>
           <div class="nav-curr-sub" id="nav-injection-statute">Section 23, Indian Contract Act, 1872 &bull; Use &larr; &rarr; arrow keys</div>
         </div>
 
@@ -1627,238 +1726,65 @@
   </div>
 
   <script>
-    const COMPARISONS = [
-      {
-        clauseNum: "91.1",
-        title: "Limitation of Liability",
-        category: "Contractual Conflict",
-        status: "Detected in Demo",
-        statusBadge: "badge-detected",
-        statute: "Section 23, Indian Contract Act, 1872",
-        injectedText: "The aggregate liability of the Authority shall not exceed INR 1,000 for any claim, including fraud, death, personal injury, gross negligence, and statutory penalties.",
-        authenticRef: "Article 41.1 (Liability of the Authority)",
-        authenticText: "The Authority shall be liable to the Concessionaire for direct damage suffered as a consequence of any breach of this Agreement by the Authority, subject to proven actual losses and common law mitigation. Neither party shall limit liability for death, personal injury, or gross misconduct.",
-        analysis: "The authentic agreement maintains standard reciprocal liability without excluding fraud or personal injury. The injected Clause 91.1 inserts an illusory INR 1,000 cap that unlawfully purports to cover fraud and personal injury."
-      },
-      {
-        clauseNum: "91.2",
-        title: "Unlimited Indemnity",
-        category: "Contractual Conflict",
-        status: "Detected in Demo",
-        statusBadge: "badge-detected",
-        statute: "Sections 124-125, Indian Contract Act, 1872",
-        injectedText: "The Concessionaire shall defend, indemnify, and hold harmless the Authority against every claim, loss, fine, and expense without any financial limitation and notwithstanding Clause 91.1.",
-        authenticRef: "Article 41.2 (Mutual Indemnities)",
-        authenticText: "Each party shall indemnify the other against third party claims arising out of negligent operation or breach of project agreements, coordinated with and subject to the indemnification procedures set forth in Schedule R.",
-        analysis: "The authentic agreement coordinates indemnities with procedure and insurance obligations. The injected Clause 91.2 inserts an uncoordinated 'notwithstanding Clause 91.1' override that directly conflicts with the liability cap."
-      },
-      {
-        clauseNum: "91.3",
-        title: "Post-Termination Non-Compete",
-        category: "Statutory Violation",
-        status: "Detected in Demo",
-        statusBadge: "badge-statutory",
-        statute: "Section 27, Indian Contract Act, 1872",
-        injectedText: "For 36 months following termination, the Concessionaire shall not compete with, advise, or participate in any competing infrastructure business in India.",
-        authenticRef: "Article 3 (Grant of Concession) & Article 37 (Termination)",
-        authenticText: "Upon termination, the Concessionaire shall hand over the Project Assets to the Authority. No post-termination covenant in restraint of trade, profession, or commercial bidding is imposed on the Concessionaire or Consortium members.",
-        analysis: "The authentic signed agreement contains NO post-termination non-compete. The Concessionaire is free to bid for future mass transit projects. The injected clause is void ab initio under Section 27 ICA (Percept D'Mark v. Zaheer Khan)."
-      },
-      {
-        clauseNum: "91.4",
-        title: "Survival of Restrictions",
-        category: "Dependency Risk",
-        status: "Detected in Demo",
-        statusBadge: "badge-detected",
-        statute: "Termination / Survival Nexus",
-        injectedText: "Clauses 91.2 and 91.3 shall survive termination indefinitely and remain enforceable after termination of this Agreement.",
-        authenticRef: "Article 47.7 (Survival)",
-        authenticText: "Articles 39 (Confidentiality), 41 (Indemnity for past acts), and 44 (Dispute Resolution) shall survive the expiry or termination of this Agreement to the extent necessary for enforcement.",
-        analysis: "The authentic survival article preserves legitimate dispute resolution and accrued indemnities. The injected clause binds the Concessionaire indefinitely to an unlawful non-compete restraint."
-      },
-      {
-        clauseNum: "91.5",
-        title: "Punitive Delay Penalty",
-        category: "Statutory Violation",
-        status: "Planned Rule",
-        statusBadge: "badge-planned",
-        statute: "Section 74, Indian Contract Act, 1872",
-        injectedText: "A delay of one day shall incur automatic liquidated damages equal to 75 percent of the total concession value, regardless of actual loss.",
-        authenticRef: "Article 15.2 (Damages for Delay)",
-        authenticText: "If the Concessionaire fails to achieve COD within the Scheduled Completion Date, it shall pay liquidated damages at 0.1% of Performance Security per day, not exceeding 20% of Performance Security in aggregate as a genuine pre-estimate of loss.",
-        analysis: "The authentic agreement benchmarks delay damages to 0.1% of Performance Security. The injected clause imposes a punitive 75% forfeiture of total concession value for a single day delay (void under Kailash Nath v. DDA)."
-      },
-      {
-        clauseNum: "91.6",
-        title: "Capped Statutory Penalties",
-        category: "Statutory Violation",
-        status: "Detected in Demo",
-        statusBadge: "badge-statutory",
-        statute: "Digital Personal Data Protection Act, 2023",
-        injectedText: "Any penalty imposed under the Digital Personal Data Protection Act, 2023 shall be limited to INR 10,000 between the parties.",
-        authenticRef: "Article 47.1 (Compliance with Laws)",
-        authenticText: "The parties shall comply with all Applicable Laws, statutory requirements, and regulatory orders in force from time to time throughout the Concession Period.",
-        analysis: "The authentic agreement requires full compliance with all Indian laws. The injected clause attempts to contractually cap statutory DPDPA regulatory penalties (which can reach INR 250 Crore)."
-      },
-      {
-        clauseNum: "91.7",
-        title: "Data Processing Without Consent",
-        category: "Statutory Violation",
-        status: "Planned Rule",
-        statusBadge: "badge-planned",
-        statute: "Section 6, DPDPA 2023",
-        injectedText: "The Concessionaire may collect, sell, and process all passenger personal data for any commercial purpose without notice or affirmative consent.",
-        authenticRef: "Article 17 (Passenger Safety & Ticketing Operations)",
-        authenticText: "Ticketing and smart card automated fare collection data shall be utilized strictly for revenue clearing, security, and commuter transit management in compliance with state privacy standards.",
-        analysis: "Authentic ticketing terms protect commuter travel telemetry. The injected clause authorizes commercial sale without consent, violating Section 6 of DPDPA 2023."
-      },
-      {
-        clauseNum: "91.8",
-        title: "Excluded Mediation",
-        category: "Statutory Violation",
-        status: "Planned Rule",
-        statusBadge: "badge-planned",
-        statute: "The Mediation Act, 2023",
-        injectedText: "No party shall attempt pre-litigation mediation and all disputes shall proceed directly to unilateral arbitration.",
-        authenticRef: "Article 44.1 & 44.2 (Dispute Resolution & Conciliation)",
-        authenticText: "Any dispute shall be first referred to amicable conciliation between the Chief Executive Officer of PMRDA and Chairman of the Concessionaire for 30 days before proceeding to arbitration.",
-        analysis: "The authentic agreement mandates a 30-day amicable conciliation procedure. The injected clause attempts to prohibit pre-litigation mediation in violation of the Mediation Act, 2023."
-      },
-      {
-        clauseNum: "91.9",
-        title: "Repealed Criminal Reference",
-        category: "Temporal Trap",
-        status: "Planned Rule",
-        statusBadge: "badge-planned",
-        statute: "Bharatiya Nyaya Sanhita, 2023 (Section 318)",
-        injectedText: "A breach shall be treated as cheating under Section 420 of the Indian Penal Code, even after the Bharatiya Nyaya Sanhita comes into force.",
-        authenticRef: "Article 47.3 (Governing Law & Substantive Legislation)",
-        authenticText: "This Agreement shall be construed and interpreted in accordance with and governed by the laws of India and amendments in force from time to time.",
-        analysis: "Authentic text refers dynamically to laws in force. The injected clause attempts to freeze a repealed penal code section (IPC 420 repealed July 1, 2024; now Section 318(4) BNS)."
-      },
-      {
-        clauseNum: "91.10",
-        title: "Unilateral Amendment",
-        category: "Contractual Conflict",
-        status: "Planned Rule",
-        statusBadge: "badge-planned",
-        statute: "Section 62, Indian Contract Act, 1872",
-        injectedText: "The Authority may amend any commercial term, fee, or risk allocation without notice or consent from the Concessionaire.",
-        authenticRef: "Article 47.1 (Amendments)",
-        authenticText: "This Agreement may not be amended, modified, or varied except by an instrument in writing signed by authorized representatives of both parties.",
-        analysis: "The authentic agreement strictly requires mutual written agreement for novation or amendment under Section 62 ICA. The injected clause grants unilateral arbitrary discretion."
-      },
-      {
-        clauseNum: "91.11",
-        title: "Assignment Contradiction",
-        category: "Asymmetry",
-        status: "Planned Rule",
-        statusBadge: "badge-planned",
-        statute: "Concession Assignment & Lender Rights",
-        injectedText: "The Concessionaire shall not assign this Agreement, but the Authority may freely assign all obligations to any third party without consent.",
-        authenticRef: "Article 38 (Assignment and Charges)",
-        authenticText: "The Concessionaire may assign rights to Senior Lenders pursuant to the Substitution Agreement to ensure non-recourse project financing and debt service continuity.",
-        analysis: "Authentic concession terms safeguard lender substitution rights. The injected clause extinguishes project finance assignment rights while granting asymmetric rights to the Authority."
-      },
-      {
-        clauseNum: "91.12",
-        title: "Absolute Warranty Disclaimer",
-        category: "Statutory Violation",
-        status: "Planned Rule",
-        statusBadge: "badge-planned",
-        statute: "Section 28, Indian Contract Act, 1872",
-        injectedText: "The Authority gives no warranty whatsoever, including for title, legality, safety, or fitness, and the Concessionaire waives every statutory remedy.",
-        authenticRef: "Article 7 (Representations and Warranties)",
-        authenticText: "The Authority represents and warrants that it has full power and authority to execute this Agreement and that the Right of Way is unencumbered.",
-        analysis: "Authentic text warrants unencumbered Right of Way and legal authority. The injected clause unlawfully waives statutory remedies under Section 28 ICA."
-      },
-      {
-        clauseNum: "91.13",
-        title: "Unstamped Execution",
-        category: "Statutory Violation",
-        status: "Planned Rule",
-        statusBadge: "badge-planned",
-        statute: "Maharashtra Stamp Act / SC 7-Judge Bench",
-        injectedText: "The parties agree that this concession is intentionally unstamped and that no party may seek impounding or cure of stamp duty.",
-        authenticRef: "Execution & Stamping Clauses",
-        authenticText: "This Agreement has been executed on appropriate stamp paper and registered with the Sub-Registrar of Assurances in accordance with the Maharashtra Stamp Act.",
-        analysis: "Authentic agreement was stamped and registered. The injected clause attempts to contractually prohibit statutory impounding, contrary to the Supreme Court 7-Judge Bench ruling (2023)."
-      },
-      {
-        clauseNum: "91.14",
-        title: "Perpetual Confidentiality",
-        category: "Public Policy",
-        status: "Planned Rule",
-        statusBadge: "badge-planned",
-        statute: "Metro Railways Act / CMRS Safety Disclosure",
-        injectedText: "Every operational fact, public filing, safety report, and statutory disclosure shall remain confidential forever and may never be disclosed to any regulator.",
-        authenticRef: "Article 39.2 (Exceptions to Confidentiality)",
-        authenticText: "Confidentiality restrictions shall not apply to disclosures required by Applicable Laws, Commissioner of Metro Railway Safety (CMRS), or statutory authorities.",
-        analysis: "Authentic terms mandate disclosure to the Commissioner of Metro Railway Safety. The injected clause gags safety reports, violating public policy and statutory oversight."
-      },
-      {
-        clauseNum: "91.15",
-        title: "Foreign Forum Override",
-        category: "Jurisdiction Trap",
-        status: "Planned Rule",
-        statusBadge: "badge-planned",
-        statute: "Arbitration and Conciliation Act, 1996",
-        injectedText: "This Agreement shall be governed by the laws of England and disputes shall be decided exclusively by courts in London notwithstanding the Indian project and Indian governing approvals.",
-        authenticRef: "Article 44.3 (Arbitration Seat & Jurisdiction)",
-        authenticText: "The venue and seat of arbitration shall be Pune, India. Courts in Pune and the High Court of Bombay shall have exclusive jurisdiction over all matters arising hereunder.",
-        analysis: "Authentic contract seats arbitration in Pune under Indian law. The injected clause attempts to seat purely domestic Indian infrastructure arbitration in London to evade Indian mandatory law."
-      }
-    ];
+    const FULL_ARTICLES = [{"id": "art-1", "num": "Article 1", "title": "Definitions & Interpretation", "category": "Preliminary", "injectionIds": [], "cleanText": "\n<h4>1.1 Definitions</h4>\n<p>In this Agreement, the following words and expressions shall, unless repugnant to the context or meaning thereof, have the meaning hereinafter respectively assigned to them:</p>\n<p><strong>\"Applicable Laws\"</strong> means all laws, brought into force and effect by the Government of India or the Government of Maharashtra including rules, regulations and notifications made thereunder, and judgments, decrees, injunctions, writs and orders of any court of record, applicable to this Agreement and the exercise, performance and discharge of the respective rights and obligations of the Parties hereunder, as may be in force and effect during the subsistence of this Agreement.</p>\n<p><strong>\"Applicable Permits\"</strong> means all clearances, licences, permits, authorisations, no objection certificates, consents, approvals and exemptions required to be obtained or maintained under Applicable Laws for the design, construction, operation and maintenance of the Rail System during the Concession Period.</p>\n<p><strong>\"Authority\"</strong> means the Pune Metropolitan Region Development Authority, constituted under Section 3 of the Maharashtra Metropolitan Region Development Authority Act, 2016.</p>\n<p><strong>\"Concessionaire\"</strong> means Pune IT City Metro Rail Limited, a special purpose company incorporated under the Companies Act, 2013, and its permitted successors and assigns.</p>\n<p><strong>\"Encumbrance\"</strong> means any mortgage, pledge, lien, charge, assignment, hypothecation, security interest, title retention or any other agreement or arrangement having the effect of conferring security of any kind upon or with respect to any asset.</p>\n<p><strong>\"Force Majeure\"</strong> or <strong>\"Force Majeure Event\"</strong> shall have the meaning ascribed to it in Article 34.</p>\n<p><strong>\"Performance Security\"</strong> means the irrevocable and unconditional bank guarantee provided by the Concessionaire to the Authority pursuant to Article 9.</p>\n<p><strong>\"Right of Way\"</strong> means the constructive possession of the Site, together with all way leave rights, easements, and liberties of way appurtenant thereto, free and clear of all Encumbrances.</p>\n\n<h4>1.2 Principles of Interpretation</h4>\n<p>(a) In this Agreement, unless the context otherwise requires, references to any legislation or any provision thereof shall include at all times amendment or re-enactment or consolidation of such legislation or any statutory modification thereof.</p>\n<p>(b) Words importing singular include plural and vice versa, and words importing persons include corporations, partnerships and legal entities.</p>\n<p>(c) The table of contents, headings, and marginal notes are for convenience of reference only and shall not affect the interpretation of this Agreement.</p>\n", "injectedText": "\n<h4>1.1 Definitions</h4>\n<p>In this Agreement, the following words and expressions shall, unless repugnant to the context or meaning thereof, have the meaning hereinafter respectively assigned to them:</p>\n<p><strong>\"Applicable Laws\"</strong> means all laws, brought into force and effect by the Government of India or the Government of Maharashtra including rules, regulations and notifications made thereunder, and judgments, decrees, injunctions, writs and orders of any court of record, applicable to this Agreement.</p>\n<p><strong>\"Authority\"</strong> means the Pune Metropolitan Region Development Authority, constituted under Section 3 of the Maharashtra Metropolitan Region Development Authority Act, 2016.</p>\n<p><strong>\"Concessionaire\"</strong> means Pune IT City Metro Rail Limited, and its permitted successors and assigns.</p>\n<p><strong>\"Special Adversarial Test Provisions\"</strong> means the provisions set out in Article 91 appended hereto for synthetic robustness verification of legal audit pipelines.</p>\n\n<h4>1.2 Principles of Interpretation</h4>\n<p>(a) In this Agreement, unless the context otherwise requires, references to any legislation include statutory modifications or re-enactments.</p>\n<p>(b) Words importing singular include plural and vice versa.</p>\n<p>(c) <em>Priority of Terms:</em> In the event of ambiguity or conflict between the primary provisions of Articles 1 through 48 and the synthetic provisions of Article 91, the synthetic provisions were appended to evaluate automated contradiction detection engines.</p>\n"}, {"id": "art-3", "num": "Article 3", "title": "Grant of Concession", "category": "Commercial Framework", "injectionIds": ["91.3"], "cleanText": "\n<h4>3.1 The Concession</h4>\n<p>(a) Subject to and in accordance with the provisions of this Agreement, Applicable Laws, and Applicable Permits, the Authority hereby grants to the Concessionaire, and the Concessionaire hereby accepts, the exclusive concession for a period of 35 (thirty-five) years commencing from the Appointed Date (the \"Concession Period\").</p>\n<p>(b) The Concession hereby granted shall entitle the Concessionaire to:</p>\n<p style=\"padding-left:16px;\">(i) right of access, usage, and development over the Site for developing the Hinjawadi\u2013Shivajinagar Line III rail transit corridor;</p>\n<p style=\"padding-left:16px;\">(ii) finance, design, engineer, procure, construct, install, equip, and commission the Rail System in accordance with Specifications and Standards;</p>\n<p style=\"padding-left:16px;\">(iii) manage, operate, and maintain the Rail System throughout the Concession Period;</p>\n<p style=\"padding-left:16px;\">(iv) demand, collect, retain, and appropriate User Fares from transit passengers in accordance with the Fare Notification; and</p>\n<p style=\"padding-left:16px;\">(v) exercise such other rights and observe such other obligations as are expressly provided in this Agreement.</p>\n\n<h4>3.2 Non-Exclusivity and Other Projects</h4>\n<p>The Concessionaire acknowledges that the Authority may sponsor, finance, construct, or operate other mass transit networks, feeder bus services, or multimodal hubs in the Pune Metropolitan Region. Nothing in this Agreement shall restrict the Concessionaire from bidding for, investing in, or developing other legitimate commercial or infrastructure ventures outside the specified alignment.</p>\n", "injectedText": "\n<h4>3.1 The Concession</h4>\n<p>(a) Subject to and in accordance with the provisions of this Agreement, the Authority hereby grants to the Concessionaire the concession for a period of 35 (thirty-five) years commencing from the Appointed Date.</p>\n<p>(b) The Concessionaire shall have the right to design, construct, operate, and collect user fares along Line III.</p>\n\n<h4>3.2 Non-Exclusivity and Other Projects</h4>\n<p>The Authority may develop other urban transit routes in Pune.</p>\n\n<div class=\"injected-clause-box\" id=\"inj-box-91-3\">\n  <div class=\"inj-box-header\">\n    <span class=\"inj-box-tag\">Synthetic Injected Clause 91.3 &bull; Appended Restraint</span>\n    <span class=\"status-badge badge-detected\">Detected in Demo</span>\n  </div>\n  <div class=\"inj-box-title\">Clause 91.3 Post-Termination Non-Compete</div>\n  <div class=\"inj-box-quote\">\n    \"For 36 months following termination, the Concessionaire shall not compete with, advise, or participate in any competing infrastructure business in India.\"\n  </div>\n  <div class=\"inj-box-meta\">\n    <strong>Statutory Violation:</strong> Section 27, Indian Contract Act, 1872 &bull; <em>Percept D'Mark (India) Pvt Ltd v. Zaheer Khan (2006) 8 SCC 675</em>.<br>\n    <strong>Audit Finding:</strong> Void ab initio. Post-termination restraints of trade are strictly prohibited under Indian law, which rejects common-law 'reasonableness' doctrine.\n  </div>\n</div>\n"}, {"id": "art-7", "num": "Article 7", "title": "Representations & Warranties", "category": "Representations", "injectionIds": ["91.12"], "cleanText": "\n<h4>7.1 Representations and Warranties of the Concessionaire</h4>\n<p>The Concessionaire represents and warrants to the Authority that:</p>\n<p>(a) it is duly organised and validly existing under the laws of India, and has full power and authority to execute, deliver and perform its obligations under this Agreement;</p>\n<p>(b) it has taken all necessary corporate actions to authorise the execution, delivery, and performance of this Agreement;</p>\n<p>(c) this Agreement constitutes its legal, valid and binding obligation, enforceable against it in accordance with the terms hereof; and</p>\n<p>(d) there are no actions, suits, or proceedings pending or threatened against it before any court, tribunal, or statutory authority which could materially and adversely affect its financial condition.</p>\n\n<h4>7.2 Representations and Warranties of the Authority</h4>\n<p>The Authority represents and warrants to the Concessionaire that:</p>\n<p>(a) it has full power and authority to enter into this Agreement and to grant the Concession pursuant to the Maharashtra Metropolitan Region Development Authority Act, 2016;</p>\n<p>(b) it has the right, title and authority to grant peaceful, undisturbed constructive possession of the Site free from Encumbrances;</p>\n<p>(c) it has taken all necessary administrative actions to approve the execution and delivery of this Agreement; and</p>\n<p>(d) it shall facilitate the procurement of Applicable Permits and provide reasonable assistance in land acquisition and Right of Way.</p>\n", "injectedText": "\n<h4>7.1 Representations and Warranties of the Concessionaire</h4>\n<p>The Concessionaire represents and warrants that it is duly organised, validly existing, and financially capable of executing the Hinjawadi\u2013Shivajinagar project.</p>\n\n<h4>7.2 Representations and Warranties of the Authority</h4>\n<p>The Authority represents that it has administrative authority to execute this agreement.</p>\n\n<div class=\"injected-clause-box\" id=\"inj-box-91-12\">\n  <div class=\"inj-box-header\">\n    <span class=\"inj-box-tag\">Synthetic Injected Clause 91.12 &bull; Unilateral Disclaimer</span>\n    <span class=\"status-badge badge-planned\">Planned Rule</span>\n  </div>\n  <div class=\"inj-box-title\">Clause 91.12 Absolute Warranty Disclaimer & Statutory Waiver</div>\n  <div class=\"inj-box-quote\">\n    \"The Authority gives no warranty whatsoever, including for title, legality, safety, or fitness, and the Concessionaire waives every statutory remedy.\"\n  </div>\n  <div class=\"inj-box-meta\">\n    <strong>Statutory Violation:</strong> Section 23 & 28, Indian Contract Act, 1872 &bull; Specific Relief Act, 1963.<br>\n    <strong>Audit Finding:</strong> A complete waiver of statutory remedies unlawfully extinguishes the Concessionaire's right to judicial enforcement (Section 28 ICA) and destroys sovereign title representations.\n  </div>\n</div>\n"}, {"id": "art-15", "num": "Article 15 & 17", "title": "Commercial Operation & Performance Damages", "category": "Performance & Delays", "injectionIds": ["91.5"], "cleanText": "\n<h4>15.5 Damages for Delay in Commercial Operation</h4>\n<p>(a) If the Concessionaire fails to achieve Commercial Operation Date (COD) on or before the Scheduled Completion Date, unless such failure has occurred solely on account of Force Majeure or Authority Default, the Concessionaire shall pay to the Authority liquidated damages.</p>\n<p>(b) The liquidated damages payable under Clause 15.5(a) shall be calculated at the rate of <strong>0.1% (zero point one percent) of the Performance Security</strong> for each day of delay until COD is achieved; provided that the aggregate damages payable under this Clause shall be subject to an absolute ceiling of <strong>20% (twenty percent) of the Performance Security</strong>.</p>\n<p>(c) The Parties expressly agree that the liquidated damages specified in this Clause 15.5 represent a genuine, fair, and reasonable pre-estimate of the losses, disruptions, and administrative expenses likely to be suffered by the Authority and the public on account of delay in commissioning.</p>\n\n<h4>17.8 Damages for Breach of Maintenance Requirements</h4>\n<p>(a) In the event that the Concessionaire fails to repair or rectify any defect or deficiency in the Rail System within the cure period specified in the Maintenance Requirements, it shall pay damages calculated at the rate of 0.5% of average daily Gross Revenue per day of persistent non-compliance.</p>\n<p>(b) All damages under this Article shall be recovered through the Escrow Account in accordance with Article 31.</p>\n", "injectedText": "\n<h4>15.5 Authentic Delay Baseline</h4>\n<p>Standard PPP agreements calculate delay liquidated damages as a fractional percentage (0.1%/day) of the Performance Security, capped at 20% to satisfy Indian law genuine pre-estimate standards.</p>\n\n<div class=\"injected-clause-box\" id=\"inj-box-91-5\">\n  <div class=\"inj-box-header\">\n    <span class=\"inj-box-tag\">Synthetic Injected Clause 91.5 &bull; Liquidated Damages Penalty</span>\n    <span class=\"status-badge badge-planned\">Planned Rule</span>\n  </div>\n  <div class=\"inj-box-title\">Clause 91.5 Punitive Liquidated Delay Penalty</div>\n  <div class=\"inj-box-quote\">\n    \"A delay of one day shall incur automatic liquidated damages equal to 75 percent of the total concession value, regardless of actual loss.\"\n  </div>\n  <div class=\"inj-box-meta\">\n    <strong>Statutory Violation:</strong> Section 74, Indian Contract Act, 1872 &bull; <em>Kailash Nath Associates v. DDA (2015) 4 SCC 136</em>.<br>\n    <strong>Audit Finding:</strong> Unenforceable in terrorem penalty. Demanding 75% of concession value (~INR 6,000 Crore) for a 24-hour delay violates Section 74, which permits only reasonable compensation upon evidence of injury.\n  </div>\n</div>\n\n<h4>17.8 Operational Deficiencies</h4>\n<p>Maintenance shortfalls are rectified through remedial notices and capped deductions against monthly fare escrows.</p>\n"}, {"id": "art-18", "num": "Article 18 & Schedule N", "title": "Passenger Charter & Data Governance", "category": "Data & Privacy", "injectionIds": ["91.6", "91.7"], "cleanText": "\n<h4>18.1 Passenger Charter and Ticketing Systems</h4>\n<p>(a) The Concessionaire shall install, commission, operate, and maintain an Automated Fare Collection (AFC) system fully compliant with the National Common Mobility Card (NCMC) standards and Schedule N (Passenger Charter).</p>\n<p>(b) All passenger journey data, smart card registration records, contact details, travel logs, and ticketing telemetry generated through the AFC system shall be collected strictly for the operational purposes of fare collection, passenger accounting, interchange settlement, and safety monitoring.</p>\n\n<h4>18.2 Personal Data Protection and Informational Privacy</h4>\n<p>(a) The Authority and the Concessionaire acknowledge their statutory obligations under the <strong>Digital Personal Data Protection Act, 2023 (DPDPA)</strong> and the Information Technology Act, 2000.</p>\n<p>(b) The Concessionaire shall act as a Data Processor and shall implement state-of-the-art cryptographic and organisational safeguards to prevent unauthorized access, alteration, disclosure, or destruction of passenger personal data.</p>\n<p>(c) <strong>Prohibition on Commercial Monetisation:</strong> Neither Party shall sell, rent, license, barter, or transfer any personal data or travel patterns of transit passengers to any third party for commercial marketing, advertising, or profiling without explicit, affirmative, and informed statutory consent.</p>\n", "injectedText": "\n<h4>18.1 Passenger Charter & AFC Systems</h4>\n<p>The Concessionaire operates the AFC system and collects fare telemetry for Pune Metro Line III transit operations.</p>\n\n<div class=\"injected-clause-box\" id=\"inj-box-91-6\">\n  <div class=\"inj-box-header\">\n    <span class=\"inj-box-tag\">Synthetic Injected Clause 91.6 &bull; Statutory Penalty Cap</span>\n    <span class=\"status-badge badge-detected\">Detected in Demo</span>\n  </div>\n  <div class=\"inj-box-title\">Clause 91.6 Contractual Cap on DPDPA Statutory Penalties</div>\n  <div class=\"inj-box-quote\">\n    \"Any penalty imposed under the Digital Personal Data Protection Act, 2023 shall be limited to INR 10,000 between the parties.\"\n  </div>\n  <div class=\"inj-box-meta\">\n    <strong>Statutory Violation:</strong> Digital Personal Data Protection Act, 2023, Section 33 & Schedule 1.<br>\n    <strong>Audit Finding:</strong> Void. The Data Protection Board of India has statutory authority to levy penalties up to INR 250 Crore for significant data breaches. Private contracting cannot cap or immunise statutory penalties.\n  </div>\n</div>\n\n<div class=\"injected-clause-box\" id=\"inj-box-91-7\">\n  <div class=\"inj-box-header\">\n    <span class=\"inj-box-tag\">Synthetic Injected Clause 91.7 &bull; Non-Consensual Data Processing</span>\n    <span class=\"status-badge badge-planned\">Planned Rule</span>\n  </div>\n  <div class=\"inj-box-title\">Clause 91.7 Non-Consensual Commercial Passenger Data Processing</div>\n  <div class=\"inj-box-quote\">\n    \"The Concessionaire may collect, sell, and process all passenger personal data for any commercial purpose without notice or affirmative consent.\"\n  </div>\n  <div class=\"inj-box-meta\">\n    <strong>Statutory Violation:</strong> Section 4, 5 & 6, Digital Personal Data Protection Act, 2023 &bull; Article 21, Constitution of India (<em>Puttaswamy</em>).<br>\n    <strong>Audit Finding:</strong> Void ab initio. Processing personal data without explicit notice and itemised consent is a direct violation of Section 6 DPDPA 2023.\n  </div>\n</div>\n"}, {"id": "art-27", "num": "Article 27", "title": "Concessionaire Covenants & Restraints", "category": "Covenants", "injectionIds": ["91.3"], "cleanText": "\n<h4>27.1 Obligations of Good Faith and Devotion to Rail System</h4>\n<p>(a) The Concessionaire shall at all times during the Concession Period perform its obligations with due diligence, prudence, and in accordance with Good Industry Practice.</p>\n<p>(b) The Concessionaire shall maintain its primary operational and engineering focus on the delivery, testing, safety certification, and commercial operation of Pune Metro Line III.</p>\n\n<h4>27.2 Permitted Commercial Activities</h4>\n<p>(a) Nothing contained in this Agreement shall prevent, restrict, or inhibit the Concessionaire, its sponsors (TRIL Urban Transport, Siemens Project Ventures), or affiliates from tendering for, entering into, or executing any other mass rapid transit, railway, or infrastructure projects in the State of Maharashtra or anywhere in the Union of India.</p>\n<p>(b) Upon the expiry or lawful termination of this Agreement, the Concessionaire shall have the unfettered liberty to deploy its technical expertise, personnel, and commercial resources in any lawful trade, occupation, or business in India, free of restraint.</p>\n", "injectedText": "\n<h4>27.1 Operational Devotion</h4>\n<p>The Concessionaire shall operate the rail corridor with Good Industry Practice during the concession term.</p>\n\n<h4>27.2 Restrictive Additions</h4>\n<p>Standard government concession agreements protect the freedom of trade of concessionaires to participate in other infrastructure bids across India.</p>\n\n<div class=\"injected-clause-box\" id=\"inj-box-91-3-alt\">\n  <div class=\"inj-box-header\">\n    <span class=\"inj-box-tag\">Synthetic Injected Clause 91.3 &bull; Trade Restraint</span>\n    <span class=\"status-badge badge-detected\">Detected in Demo</span>\n  </div>\n  <div class=\"inj-box-title\">Clause 91.3 Nationwide Post-Termination Non-Compete</div>\n  <div class=\"inj-box-quote\">\n    \"For 36 months following termination, the Concessionaire shall not compete with, advise, or participate in any competing infrastructure business in India.\"\n  </div>\n  <div class=\"inj-box-meta\">\n    <strong>Statutory Violation:</strong> Section 27, Indian Contract Act, 1872.<br>\n    <strong>Audit Finding:</strong> Classified as high risk. Every agreement restraining someone from exercising a lawful profession or business is to that extent void.\n  </div>\n</div>\n"}, {"id": "art-38", "num": "Article 38", "title": "Termination & Survival", "category": "Termination Framework", "injectionIds": ["91.4"], "cleanText": "\n<h4>38.1 Termination for Concessionaire Default</h4>\n<p>(a) Upon the occurrence of any Concessionaire Default as specified in Article 37, the Authority shall be entitled to terminate this Agreement by issuing a Termination Notice; provided that the Authority shall first have issued a 60 (sixty) day Notice of Intention to Terminate allowing the Concessionaire and Senior Lenders an opportunity to cure.</p>\n<p>(b) Upon termination under Clause 38.1(a), the Authority shall pay to the Concessionaire Termination Payment in accordance with Article 38.3.</p>\n\n<h4>38.3 Survival of Rights and Obligations</h4>\n<p>(a) The termination of this Agreement shall not release either Party from any liability or obligation which at the time of termination has already accrued to the other Party, or which thereafter may accrue in respect of any act or omission prior to such termination.</p>\n<p>(b) Only those provisions that by their nature are intended to survive termination\u2014specifically Article 39 (Confidentiality), Article 41 (Indemnity), Article 44 (Dispute Resolution), and this Clause 38.3\u2014shall survive termination for a maximum period of 3 (three) years.</p>\n<p>(c) <strong>Extinguishment of Restraints:</strong> All covenants, operational duties, and commercial exclusivity obligations shall automatically determine and extinguish on the date of termination.</p>\n", "injectedText": "\n<h4>38.1 Termination Procedure</h4>\n<p>Termination requires a 60-day Notice of Intention to Terminate and cure consultation with Senior Lenders.</p>\n\n<h4>38.3 Survival Protocol</h4>\n<p>Accrued liabilities and dispute resolution survive termination.</p>\n\n<div class=\"injected-clause-box\" id=\"inj-box-91-4\">\n  <div class=\"inj-box-header\">\n    <span class=\"inj-box-tag\">Synthetic Injected Clause 91.4 &bull; Indefinite Survival Trap</span>\n    <span class=\"status-badge badge-detected\">Detected in Demo</span>\n  </div>\n  <div class=\"inj-box-title\">Clause 91.4 Indefinite Survival of Restrictive & Indemnity Traps</div>\n  <div class=\"inj-box-quote\">\n    \"Clauses 91.2 and 91.3 shall survive termination indefinitely and remain enforceable after termination of this Agreement.\"\n  </div>\n  <div class=\"inj-box-meta\">\n    <strong>Statutory Violation:</strong> Section 27, ICA 1872 & Termination/Survival Dependency.<br>\n    <strong>Audit Finding:</strong> Flagged as cross-clause dependency risk. Perpetuates Clause 91.3 (void non-compete) and Clause 91.2 (unilateral uncapped indemnity) into perpetuity. Indian courts sever such survival links.\n  </div>\n</div>\n"}, {"id": "art-39", "num": "Article 39", "title": "Confidentiality & Safety Disclosure", "category": "Public Policy & Safety", "injectionIds": ["91.14"], "cleanText": "\n<h4>39.1 Duty of Confidentiality</h4>\n<p>(a) Each Party shall hold in strict confidence, and not disclose to any third person without the prior written consent of the other Party, any commercial, financial, or technical information marked as proprietary or confidential.</p>\n<p>(b) The Concessionaire shall ensure that its contractors, suppliers, and consultants execute equivalent non-disclosure agreements.</p>\n\n<h4>39.2 Mandatory Exceptions and Statutory Disclosures</h4>\n<p>Notwithstanding Clause 39.1, neither Party shall be restricted from disclosing confidential information to the extent that such disclosure is:</p>\n<p style=\"padding-left:16px;\">(i) required by Applicable Laws, statutory regulators, or judicial subpoenas;</p>\n<p style=\"padding-left:16px;\">(ii) mandated by the <strong>Commissioner of Metro Railway Safety (CMRS)</strong> in connection with track, rolling stock, signaling, or public safety certifications;</p>\n<p style=\"padding-left:16px;\">(iii) required under the Right to Information Act, 2005 or public accountability disclosures; or</p>\n<p style=\"padding-left:16px;\">(iv) disclosed to Senior Lenders, rating agencies, or legal advisers under professional duties of confidentiality.</p>\n", "injectedText": "\n<h4>39.1 Confidential Information</h4>\n<p>Parties maintain mutual confidentiality regarding proprietary engineering blueprints and commercial data.</p>\n\n<div class=\"injected-clause-box\" id=\"inj-box-91-14\">\n  <div class=\"inj-box-header\">\n    <span class=\"inj-box-tag\">Synthetic Injected Clause 91.14 &bull; Public Safety Gag</span>\n    <span class=\"status-badge badge-planned\">Planned Rule</span>\n  </div>\n  <div class=\"inj-box-title\">Clause 91.14 Perpetual Confidentiality & Regulatory Gag Order</div>\n  <div class=\"inj-box-quote\">\n    \"Every operational fact, public filing, safety report, and statutory disclosure shall remain confidential forever and may never be disclosed to any regulator.\"\n  </div>\n  <div class=\"inj-box-meta\">\n    <strong>Statutory Violation:</strong> Metro Railways (Operation and Maintenance) Act, 2002 &bull; Right to Information Act, 2005.<br>\n    <strong>Audit Finding:</strong> Violates public policy. Gags mandatory reporting of derailments, structural defects, and signaling safety audits to the Commissioner of Metro Railway Safety.\n  </div>\n</div>\n"}, {"id": "art-41", "num": "Article 41", "title": "Liability & Indemnity", "category": "Liability Framework", "injectionIds": ["91.1", "91.2"], "cleanText": "\n<h4>41.1 General Indemnity</h4>\n<p>(a) The Concessionaire shall indemnify, defend, save and hold harmless the Authority and its officers, servants, agents, and Government Instrumentalities (the \"Authority Indemnified Persons\") against any and all suits, proceedings, actions, claims, demands, liabilities and damages which the Authority Indemnified Persons may suffer, sustain or incur as a consequence of any breach or default in the performance of the Concessionaire's obligations under this Agreement, or any negligent act or omission in the design, construction, operation and maintenance of the Rail System.</p>\n<p>(b) The Authority shall indemnify, defend, save and hold harmless the Concessionaire against any and all suits, proceedings, actions, claims, demands, liabilities and damages which the Concessionaire may suffer or incur as a consequence of any breach or default by the Authority in the performance of its sovereign covenants, save and except where such breach or default is caused by the Concessionaire's own negligence.</p>\n\n<h4>41.2 Indemnity by the Concessionaire</h4>\n<p>Without limiting the generality of Clause 41.1, the Concessionaire shall fully indemnify the Authority Indemnified Persons from and against all claims for:</p>\n<p style=\"padding-left:16px;\">(i) bodily injury, sickness, disease or death of any person arising out of construction or transit operations;</p>\n<p style=\"padding-left:16px;\">(ii) physical damage to or destruction of third-party property;</p>\n<p style=\"padding-left:16px;\">(iii) penalties or sanctions levied by any Statutory Authority for breach of environmental clearances or Applicable Permits; and</p>\n<p style=\"padding-left:16px;\">(iv) intellectual property infringement relating to signaling and rolling stock software.</p>\n\n<h4>41.5 No Consequential or Indirect Losses</h4>\n<p>Except as expressly provided in this Agreement, neither Party shall be liable to the other Party for any consequential, indirect, special, punitive or exemplary damages, loss of profit, or loss of business opportunity arising out of or in connection with this Agreement, whether founded in contract, tort, strict liability or otherwise.</p>\n\n<h4>41.6 Survival on Termination</h4>\n<p>The provisions of this Article 41 shall survive the expiration or earlier termination of this Agreement for a period of 3 (three) years.</p>\n", "injectedText": "\n<h4>41.1 Reciprocal Indemnity Framework</h4>\n<p>Standard PMRDA concession provisions establish reciprocal indemnification for breach of contract, negligence, and bodily injury.</p>\n\n<div class=\"injected-clause-box\" id=\"inj-box-91-1\">\n  <div class=\"inj-box-header\">\n    <span class=\"inj-box-tag\">Synthetic Injected Clause 91.1 &bull; Liability Cap Trap</span>\n    <span class=\"status-badge badge-detected\">Detected in Demo</span>\n  </div>\n  <div class=\"inj-box-title\">Clause 91.1 Unconscionable Limitation of Liability</div>\n  <div class=\"inj-box-quote\">\n    \"The aggregate liability of the Authority shall not exceed INR 1,000 for any claim, including fraud, death, personal injury, gross negligence, and statutory penalties.\"\n  </div>\n  <div class=\"inj-box-meta\">\n    <strong>Statutory Violation:</strong> Section 23, Indian Contract Act, 1872 &bull; Public Policy Doctrine.<br>\n    <strong>Audit Finding:</strong> Void ab initio. A contractual cap of INR 1,000 on a multi-thousand-crore project that purports to immunise fraud, death, and gross negligence is contrary to public policy and void under Section 23 ICA.\n  </div>\n</div>\n\n<div class=\"injected-clause-box\" id=\"inj-box-91-2\">\n  <div class=\"inj-box-header\">\n    <span class=\"inj-box-tag\">Synthetic Injected Clause 91.2 &bull; Uncapped Indemnity Clash</span>\n    <span class=\"status-badge badge-detected\">Detected in Demo</span>\n  </div>\n  <div class=\"inj-box-title\">Clause 91.2 Asymmetric Unlimited Indemnity</div>\n  <div class=\"inj-box-quote\">\n    \"The Concessionaire shall defend, indemnify, and hold harmless the Authority against every claim, loss, fine, and expense without any financial limitation and notwithstanding Clause 91.1.\"\n  </div>\n  <div class=\"inj-box-meta\">\n    <strong>Statutory Violation:</strong> Sections 124\u2013125, ICA 1872 & Cross-Clause Conflict.<br>\n    <strong>Audit Finding:</strong> Clashes directly with Clause 91.1 and wipes out Clause 41.5 mutual waiver of indirect damages, imposing unbounded one-sided exposure on the private concessionaire.\n  </div>\n</div>\n\n<h4>41.5 Mutual Damage Disclaimers</h4>\n<p>Parties agree to exclude indirect and speculative claims under standard Model Concession Agreement practice.</p>\n"}, {"id": "art-42", "num": "Article 42", "title": "Assignment & Transfer", "category": "Corporate Governance", "injectionIds": ["91.11"], "cleanText": "\n<h4>42.1 Restrictions on Assignment</h4>\n<p>(a) Subject to Clause 42.2, neither Party shall assign, transfer, charge, mortgage, or create any Encumbrance over this Agreement, or any of its rights, benefits, or obligations hereunder, without the prior written consent of the other Party.</p>\n<p>(b) Any purported assignment or transfer in contravention of Clause 42.1(a) shall be null and void ab initio.</p>\n\n<h4>42.2 Permitted Assignment to Senior Lenders</h4>\n<p>Notwithstanding Clause 42.1, the Concessionaire may, for the sole purpose of financing the development and operation of the Rail System, create security interests over its right, title, and interest under this Agreement, the Escrow Account, and Project Assets in favour of the Senior Lenders in accordance with the Substitution Agreement (Schedule V).</p>\n", "injectedText": "\n<h4>42.1 Mutual Restrictions Baseline</h4>\n<p>Standard PPP agreements impose bilateral restrictions on assignment to prevent speculative novation without counterparty vetting.</p>\n\n<div class=\"injected-clause-box\" id=\"inj-box-91-11\">\n  <div class=\"inj-box-header\">\n    <span class=\"inj-box-tag\">Synthetic Injected Clause 91.11 &bull; Asymmetric Novation Trap</span>\n    <span class=\"status-badge badge-planned\">Planned Rule</span>\n  </div>\n  <div class=\"inj-box-title\">Clause 91.11 Unilateral Assignment Contradiction</div>\n  <div class=\"inj-box-quote\">\n    \"The Concessionaire shall not assign this Agreement, but the Authority may freely assign all obligations to any third party without consent.\"\n  </div>\n  <div class=\"inj-box-meta\">\n    <strong>Statutory Violation:</strong> Section 62, Indian Contract Act, 1872 & Unconscionability Doctrine.<br>\n    <strong>Audit Finding:</strong> Creates unconscionable novation asymmetry. Under Section 62 ICA, novation requires mutual consent of all contracting parties.\n  </div>\n</div>\n\n<h4>42.2 Substitution Agreement</h4>\n<p>Project financing is secured through tripartite Substitution Agreements with public sector lenders.</p>\n"}, {"id": "art-44", "num": "Article 44", "title": "Dispute Resolution & Mediation", "category": "Dispute Resolution", "injectionIds": ["91.8"], "cleanText": "\n<h4>44.1 Amicable Resolution and Negotiation</h4>\n<p>(a) Any dispute, difference or controversy of whatever nature howsoever arising under or out of or in relation to this Agreement (a \"Dispute\") shall, in the first instance, be attempted to be resolved amicably through good-faith discussions between the Chief Executive Officer of the Authority and the Managing Director of the Concessionaire.</p>\n<p>(b) If the Dispute is not resolved within 30 (thirty) days of reference, either Party may refer the matter to mediation pursuant to Clause 44.2.</p>\n\n<h4>44.2 Mandatory Pre-Litigation Mediation</h4>\n<p>(a) The Parties agree that before commencing arbitration or legal proceedings, they shall submit the Dispute to pre-litigation mediation conducted in accordance with <strong>The Mediation Act, 2023</strong>.</p>\n<p>(b) The mediation proceedings shall be conducted at Pune, Maharashtra, in the English language, and shall conclude within a period of 60 (sixty) days unless extended by mutual written agreement.</p>\n\n<h4>44.3 Arbitration Procedure</h4>\n<p>(a) Any Dispute which is not resolved through amicable conciliation or mediation shall be finally settled by binding arbitration under the <strong>Arbitration and Conciliation Act, 1996</strong>.</p>\n<p>(b) The arbitral tribunal shall consist of 3 (three) arbitrators: one appointed by each Party, and the third presiding arbitrator appointed by the two party-appointed arbitrators.</p>\n<p>(c) The seat and venue of arbitration shall be <strong>Pune, India</strong>. The language of arbitration shall be English.</p>\n", "injectedText": "\n<h4>44.1 Amicable Settlement</h4>\n<p>Parties attempt senior administrative negotiation for 30 days.</p>\n\n<div class=\"injected-clause-box\" id=\"inj-box-91-8\">\n  <div class=\"inj-box-header\">\n    <span class=\"inj-box-tag\">Synthetic Injected Clause 91.8 &bull; Mediation Bypass</span>\n    <span class=\"status-badge badge-planned\">Planned Rule</span>\n  </div>\n  <div class=\"inj-box-title\">Clause 91.8 Mandatory Mediation Exclusion & Unilateral Tribunal</div>\n  <div class=\"inj-box-quote\">\n    \"No party shall attempt pre-litigation mediation and all disputes shall proceed directly to unilateral arbitration.\"\n  </div>\n  <div class=\"inj-box-meta\">\n    <strong>Statutory Violation:</strong> The Mediation Act, 2023 &bull; Section 12(5), Arbitration and Conciliation Act, 1996.<br>\n    <strong>Audit Finding:</strong> Section 5 of the Mediation Act 2023 mandates pre-litigation mediation for commercial disputes. Unilateral appointment of an arbitrator is void under <em>Perkins Eastman Architects (2020)</em>.\n  </div>\n</div>\n\n<h4>44.3 Arbitration Mechanism</h4>\n<p>Arbitration proceedings are governed by the Arbitration and Conciliation Act, 1996 with seat at Pune.</p>\n"}, {"id": "art-47", "num": "Article 47", "title": "Miscellaneous (Law, Novation, Stamp Duty)", "category": "Governing Law & Formalities", "injectionIds": ["91.9", "91.10", "91.13", "91.15"], "cleanText": "\n<h4>47.1 Governing Law and Jurisdiction</h4>\n<p>(a) This Agreement shall be construed and interpreted in accordance with and governed by the <strong>laws of India</strong>.</p>\n<p>(b) The courts at <strong>Pune and the High Court of Judicature at Bombay</strong> shall have exclusive jurisdiction over all matters arising out of or relating to this Agreement.</p>\n\n<h4>47.2 Exclusion of Implied Warranties</h4>\n<p>This Agreement expressly excludes any warranty, condition or other undertaking implied at law or by custom or otherwise, save and except the express representations and warranties set forth in Article 7.</p>\n\n<h4>47.3 Amendment and Variation</h4>\n<p>This Agreement may not be varied, amended, supplemented or modified in any manner whatsoever except by an instrument in writing signed by duly authorized representatives of both the Authority and the Concessionaire.</p>\n\n<h4>47.11 Stamp Duty and Registration</h4>\n<p>(a) The Concessionaire shall pay all stamp duty, registration charges, and statutory transfer taxes payable on or in connection with the execution and registration of this Agreement.</p>\n<p>(b) This Agreement has been executed on appropriate stamp paper and registered with the Sub-Registrar of Assurances in accordance with the <strong>Maharashtra Stamp Act, 1958</strong>.</p>\n", "injectedText": "\n<h4>47.1 Injected Criminal Law Override</h4>\n<div class=\"injected-clause-box\" id=\"inj-box-91-9\">\n  <div class=\"inj-box-header\">\n    <span class=\"inj-box-tag\">Synthetic Injected Clause 91.9 &bull; Repealed Statute Reference</span>\n    <span class=\"status-badge badge-planned\">Planned Rule</span>\n  </div>\n  <div class=\"inj-box-title\">Clause 91.9 Repealed Criminal Law Trap (IPC vs BNS 2023)</div>\n  <div class=\"inj-box-quote\">\n    \"A breach shall be treated as cheating under Section 420 of the Indian Penal Code, even after the Bharatiya Nyaya Sanhita comes into force.\"\n  </div>\n  <div class=\"inj-box-meta\">\n    <strong>Statutory Violation:</strong> Bharatiya Nyaya Sanhita, 2023 (BNS) &bull; Repeal of IPC (Act No. 45 of 1860).<br>\n    <strong>Audit Finding:</strong> Temporal statutory obsolescence. Section 420 IPC was repealed on July 1, 2024 and replaced by Section 318(4) BNS.\n  </div>\n</div>\n\n<h4>47.3 Injected Novation Override</h4>\n<div class=\"injected-clause-box\" id=\"inj-box-91-10\">\n  <div class=\"inj-box-header\">\n    <span class=\"inj-box-tag\">Synthetic Injected Clause 91.10 &bull; Unilateral Novation</span>\n    <span class=\"status-badge badge-planned\">Planned Rule</span>\n  </div>\n  <div class=\"inj-box-title\">Clause 91.10 Unilateral Commercial Amendment</div>\n  <div class=\"inj-box-quote\">\n    \"The Authority may amend any commercial term, fee, or risk allocation without notice or consent from the Concessionaire.\"\n  </div>\n  <div class=\"inj-box-meta\">\n    <strong>Statutory Violation:</strong> Section 62, Indian Contract Act, 1872.<br>\n    <strong>Audit Finding:</strong> Void. Novation or alteration of a contract requires mutual consensus ad idem.\n  </div>\n</div>\n\n<h4>47.11 Injected Stamping Bar</h4>\n<div class=\"injected-clause-box\" id=\"inj-box-91-13\">\n  <div class=\"inj-box-header\">\n    <span class=\"inj-box-tag\">Synthetic Injected Clause 91.13 &bull; Stamping Evasion</span>\n    <span class=\"status-badge badge-planned\">Planned Rule</span>\n  </div>\n  <div class=\"inj-box-title\">Clause 91.13 Unstamped Execution & Impounding Bar</div>\n  <div class=\"inj-box-quote\">\n    \"The parties agree that this concession is intentionally unstamped and that no party may seek impounding or cure of stamp duty.\"\n  </div>\n  <div class=\"inj-box-meta\">\n    <strong>Statutory Violation:</strong> Maharashtra Stamp Act, 1958 &bull; Supreme Court 7-Judge Bench (2023).<br>\n    <strong>Audit Finding:</strong> Inadmissible in law. Private parties cannot contract to prohibit statutory impounding.\n  </div>\n</div>\n\n<h4>47.15 Injected Forum Override</h4>\n<div class=\"injected-clause-box\" id=\"inj-box-91-15\">\n  <div class=\"inj-box-header\">\n    <span class=\"inj-box-tag\">Synthetic Injected Clause 91.15 &bull; Foreign Forum Override</span>\n    <span class=\"status-badge badge-planned\">Planned Rule</span>\n  </div>\n  <div class=\"inj-box-title\">Clause 91.15 Foreign Forum & English Law Override</div>\n  <div class=\"inj-box-quote\">\n    \"This Agreement shall be governed by the laws of England and disputes shall be decided exclusively by courts in London notwithstanding the Indian project and Indian governing approvals.\"\n  </div>\n  <div class=\"inj-box-meta\">\n    <strong>Statutory Violation:</strong> Arbitration and Conciliation Act, 1996 &bull; Section 28, ICA 1872.<br>\n    <strong>Audit Finding:</strong> Unenforceable in domestic infrastructure PPP. Indian public entities cannot subject domestic state infrastructure concessions to foreign laws.\n  </div>\n</div>\n"}, {"id": "art-91", "num": "Article 91", "title": "Synthetic Adversarial Test Schedule", "category": "Complete 15-Clause Schedule", "injectionIds": ["91.1", "91.2", "91.3", "91.4", "91.5", "91.6", "91.7", "91.8", "91.9", "91.10", "91.11", "91.12", "91.13", "91.14", "91.15"], "cleanText": "\n<div style=\"background:var(--bg-ivory); padding:24px; border-radius:6px; border:1px solid var(--border); text-align:center;\">\n  <h4 style=\"color:var(--safe); font-size:16px; margin-bottom:8px;\">Authentic Baseline: Article 91 Does Not Exist in Original Contract</h4>\n  <p style=\"font-size:13.5px; color:var(--text-secondary); line-height:1.7; max-width:540px; margin:0 auto;\">\n    The signed PMRDA 2019 Concession Agreement concludes at <strong>Article 48 (Definitions)</strong>, followed by Schedules A through W. \n    There is no Article 91 in the original 660-page signed document. \n  </p>\n  <div style=\"margin-top:16px; display:inline-block; font-size:12px; font-weight:600; padding:6px 14px; background:#fff; border:1px solid var(--safe-border); color:var(--safe); border-radius:4px;\">\n    Official Baseline: Clean 660-Page Public PPP Instrument\n  </div>\n</div>\n", "injectedText": "\n<h4>ARTICLE 91: SYNTHETIC ADVERSARIAL TEST COVENANTS</h4>\n<p style=\"font-style:italic; color:var(--text-muted); margin-bottom:14px;\">\n  [Notice: These 15 clauses were appended to the digital PDF to evaluate LegalAgent cross-clause contradiction graph detection and statutory rule triggers.]\n</p>\n\n<div style=\"display:flex; flex-direction:column; gap:12px;\">\n  <div class=\"injected-clause-box\"><span class=\"inj-box-tag\">Clause 91.1</span> \"The aggregate liability of the Authority shall not exceed INR 1,000 for any claim, including fraud, death, personal injury, gross negligence, and statutory penalties.\"</div>\n  <div class=\"injected-clause-box\"><span class=\"inj-box-tag\">Clause 91.2</span> \"The Concessionaire shall defend, indemnify, and hold harmless the Authority against every claim, loss, fine, and expense without any financial limitation and notwithstanding Clause 91.1.\"</div>\n  <div class=\"injected-clause-box\"><span class=\"inj-box-tag\">Clause 91.3</span> \"For 36 months following termination, the Concessionaire shall not compete with, advise, or participate in any competing infrastructure business in India.\"</div>\n  <div class=\"injected-clause-box\"><span class=\"inj-box-tag\">Clause 91.4</span> \"Clauses 91.2 and 91.3 shall survive termination indefinitely and remain enforceable after termination of this Agreement.\"</div>\n  <div class=\"injected-clause-box\"><span class=\"inj-box-tag\">Clause 91.5</span> \"A delay of one day shall incur automatic liquidated damages equal to 75 percent of the total concession value, regardless of actual loss.\"</div>\n  <div class=\"injected-clause-box\"><span class=\"inj-box-tag\">Clause 91.6</span> \"Any penalty imposed under the Digital Personal Data Protection Act, 2023 shall be limited to INR 10,000 between the parties.\"</div>\n  <div class=\"injected-clause-box\"><span class=\"inj-box-tag\">Clause 91.7</span> \"The Concessionaire may collect, sell, and process all passenger personal data for any commercial purpose without notice or affirmative consent.\"</div>\n  <div class=\"injected-clause-box\"><span class=\"inj-box-tag\">Clause 91.8</span> \"No party shall attempt pre-litigation mediation and all disputes shall proceed directly to unilateral arbitration.\"</div>\n  <div class=\"injected-clause-box\"><span class=\"inj-box-tag\">Clause 91.9</span> \"A breach shall be treated as cheating under Section 420 of the Indian Penal Code, even after the Bharatiya Nyaya Sanhita comes into force.\"</div>\n  <div class=\"injected-clause-box\"><span class=\"inj-box-tag\">Clause 91.10</span> \"The Authority may amend any commercial term, fee, or risk allocation without notice or consent from the Concessionaire.\"</div>\n  <div class=\"injected-clause-box\"><span class=\"inj-box-tag\">Clause 91.11</span> \"The Concessionaire shall not assign this Agreement, but the Authority may freely assign all obligations to any third party without consent.\"</div>\n  <div class=\"injected-clause-box\"><span class=\"inj-box-tag\">Clause 91.12</span> \"The Authority gives no warranty whatsoever, including for title, legality, safety, or fitness, and the Concessionaire waives every statutory remedy.\"</div>\n  <div class=\"injected-clause-box\"><span class=\"inj-box-tag\">Clause 91.13</span> \"The parties agree that this concession is intentionally unstamped and that no party may seek impounding or cure of stamp duty.\"</div>\n  <div class=\"injected-clause-box\"><span class=\"inj-box-tag\">Clause 91.14</span> \"Every operational fact, public filing, safety report, and statutory disclosure shall remain confidential forever and may never be disclosed to any regulator.\"</div>\n  <div class=\"injected-clause-box\"><span class=\"inj-box-tag\">Clause 91.15</span> \"This Agreement shall be governed by the laws of England and disputes shall be decided exclusively by courts in London notwithstanding the Indian project and Indian governing approvals.\"</div>\n</div>\n"}];
+    const FULL_INJECTIONS = [{"num": "91.1", "title": "Limitation of Liability", "articleId": "art-41", "clauseTarget": "inj-box-91-1", "statute": "Section 23, Indian Contract Act, 1872", "status": "Detected in Demo", "badge": "badge-detected", "summary": "Caps liability at INR 1,000 including fraud, gross negligence and death. Contrary to public policy."}, {"num": "91.2", "title": "Unlimited Indemnity", "articleId": "art-41", "clauseTarget": "inj-box-91-2", "statute": "Sections 124\u2013125, Indian Contract Act, 1872", "status": "Detected in Demo", "badge": "badge-detected", "summary": "Imposes uncapped unilateral indemnity, clashing directly with Clause 91.1 cap."}, {"num": "91.3", "title": "Post-Termination Non-Compete", "articleId": "art-3", "clauseTarget": "inj-box-91-3", "statute": "Section 27, Indian Contract Act, 1872", "status": "Detected in Demo", "badge": "badge-detected", "summary": "36-month nationwide post-termination restraint of trade; void ab initio under Indian law."}, {"num": "91.4", "title": "Survival of Restrictions", "articleId": "art-38", "clauseTarget": "inj-box-91-4", "statute": "Termination/Survival Dependency Risk", "status": "Detected in Demo", "badge": "badge-detected", "summary": "Perpetuates void non-compete and uncapped indemnity indefinitely post-termination."}, {"num": "91.5", "title": "Punitive Delay Penalty", "articleId": "art-15", "clauseTarget": "inj-box-91-5", "statute": "Section 74, ICA 1872 (Kailash Nath)", "status": "Planned Rule", "badge": "badge-planned", "summary": "75% of concession value penalty for 1-day delay; unenforceable in terrorem forfeiture."}, {"num": "91.6", "title": "Capped Statutory Penalties", "articleId": "art-18", "clauseTarget": "inj-box-91-6", "statute": "Digital Personal Data Protection Act, 2023", "status": "Detected in Demo", "badge": "badge-detected", "summary": "Attempts to contractually cap statutory DPDPA regulatory penalties at INR 10,000."}, {"num": "91.7", "title": "Data Processing Without Consent", "articleId": "art-18", "clauseTarget": "inj-box-91-7", "statute": "Sections 4\u20136, DPDPA 2023 & Article 21", "status": "Planned Rule", "badge": "badge-planned", "summary": "Monetisation and processing of transit passenger personal data without affirmative consent."}, {"num": "91.8", "title": "Excluded Mediation", "articleId": "art-44", "clauseTarget": "inj-box-91-8", "statute": "The Mediation Act, 2023 / Section 12(5) Arb Act", "status": "Planned Rule", "badge": "badge-planned", "summary": "Expressly excludes mandatory pre-litigation commercial mediation and mandates unilateral arbitration."}, {"num": "91.9", "title": "Repealed Criminal Reference", "articleId": "art-47", "clauseTarget": "inj-box-91-9", "statute": "Bharatiya Nyaya Sanhita, 2023 (BNS)", "status": "Planned Rule", "badge": "badge-planned", "summary": "Locks breach remedies into repealed Section 420 IPC instead of Section 318(4) BNS 2023."}, {"num": "91.10", "title": "Unilateral Amendment", "articleId": "art-47", "clauseTarget": "inj-box-91-10", "statute": "Section 62, Indian Contract Act, 1872", "status": "Planned Rule", "badge": "badge-planned", "summary": "Permits Authority to unilaterally alter commercial and financial terms without consent."}, {"num": "91.11", "title": "Assignment Contradiction", "articleId": "art-42", "clauseTarget": "inj-box-91-11", "statute": "Section 62 ICA & Asymmetric Novation", "status": "Planned Rule", "badge": "badge-planned", "summary": "Prohibits Concessionaire assignment while granting Authority unfettered unilateral transfer rights."}, {"num": "91.12", "title": "Absolute Warranty Disclaimer", "articleId": "art-7", "clauseTarget": "inj-box-91-12", "statute": "Section 28, ICA 1872 & Specific Relief Act", "status": "Planned Rule", "badge": "badge-planned", "summary": "Disclaims all sovereign title warranties and purports to waive all statutory judicial remedies."}, {"num": "91.13", "title": "Unstamped Execution", "articleId": "art-47", "clauseTarget": "inj-box-91-13", "statute": "Maharashtra Stamp Act / SC 7-Judge Bench", "status": "Planned Rule", "badge": "badge-planned", "summary": "Intentionally unstamped instrument; covenants to evade mandatory statutory impounding."}, {"num": "91.14", "title": "Perpetual Confidentiality", "articleId": "art-39", "clauseTarget": "inj-box-91-14", "statute": "Metro Railways Act 2002 / CMRS Safety Oversight", "status": "Planned Rule", "badge": "badge-planned", "summary": "Perpetual gag preventing mandatory reporting of rail safety audits to Commissioner of Metro Railway Safety."}, {"num": "91.15", "title": "Foreign Forum Override", "articleId": "art-47", "clauseTarget": "inj-box-91-15", "statute": "Arbitration & Conciliation Act 1996", "status": "Planned Rule", "badge": "badge-planned", "summary": "Overrides Indian law and courts in favour of English law and London jurisdiction for domestic PPP."}];
 
     let currentCompIdx = 0;
+    let activeArticleFilter = 'all';
 
-    function renderComparatorPanes() {
+    function initComparatorArticles() {
+      const bar = document.getElementById('comparator-article-bar');
+      bar.innerHTML = '<span class="comparator-bar-label">Articles:</span>' +
+        '<button class="art-nav-pill ' + (activeArticleFilter === 'all' ? 'active' : '') + '" onclick="jumpToArticle(\'all\', this)">All Articles</button>';
+      
+      FULL_ARTICLES.forEach(art => {
+        const btn = document.createElement('button');
+        btn.className = 'art-nav-pill' + (activeArticleFilter === art.id ? ' active' : '');
+        btn.id = 'pill-' + art.id;
+        btn.innerText = art.num + ': ' + art.title;
+        btn.onclick = () => jumpToArticle(art.id, btn);
+        bar.appendChild(btn);
+      });
+
       const leftPane = document.getElementById('pane-scroll-original');
       const rightPane = document.getElementById('pane-scroll-injected');
-      
       leftPane.innerHTML = '';
       rightPane.innerHTML = '';
 
-      COMPARISONS.forEach((item, idx) => {
-        // Left pane: Authentic Original
-        const leftCard = document.createElement('div');
-        leftCard.className = 'doc-clause-card' + (idx === currentCompIdx ? ' active-target' : '');
-        leftCard.id = 'original-card-' + idx;
-        leftCard.onclick = () => goToInjection(idx);
-        leftCard.innerHTML = 
-          '<div class="doc-clause-num">' + item.authenticRef + '</div>' +
-          '<div class="doc-clause-title">Authentic Baseline for Clause ' + item.clauseNum + '</div>' +
-          '<div class="doc-clause-text">' + item.authenticText + '</div>' +
-          '<div class="doc-baseline-note"><strong>Audit Note:</strong> ' + item.analysis + '</div>';
-        leftPane.appendChild(leftCard);
-
-        // Right pane: Injected
-        const rightCard = document.createElement('div');
-        rightCard.className = 'doc-clause-card' + (idx === currentCompIdx ? ' active-target' : '');
-        rightCard.id = 'injected-card-' + idx;
-        rightCard.onclick = () => goToInjection(idx);
-        rightCard.innerHTML = 
-          '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">' +
-            '<span class="doc-clause-num">Clause ' + item.clauseNum + ' (Injected)</span>' +
-            '<span class="status-badge ' + item.statusBadge + '">' + item.status + '</span>' +
+      FULL_ARTICLES.forEach(art => {
+        // Left (Clean) Article
+        const leftArt = document.createElement('div');
+        leftArt.className = 'doc-article-block';
+        leftArt.id = 'left-' + art.id;
+        leftArt.innerHTML = 
+          '<div class="doc-article-banner">' +
+            '<span class="doc-article-num">' + art.num + '</span>' +
+            '<span class="doc-article-name">' + art.title + '</span>' +
           '</div>' +
-          '<div class="doc-clause-title">' + item.title + '</div>' +
-          '<div class="doc-clause-text injected-redline">"' + item.injectedText + '"</div>' +
-          '<div style="font-size:11.5px; color:var(--statutory); font-weight:600; margin-top:6px;">' +
-            'Authority: ' + item.statute +
-          '</div>';
-        rightPane.appendChild(rightCard);
+          '<div class="doc-article-content">' + art.cleanText + '</div>';
+        leftPane.appendChild(leftArt);
+
+        // Right (Injected) Article
+        const rightArt = document.createElement('div');
+        rightArt.className = 'doc-article-block';
+        rightArt.id = 'right-' + art.id;
+        rightArt.innerHTML = 
+          '<div class="doc-article-banner">' +
+            '<span class="doc-article-num">' + art.num + '</span>' +
+            '<span class="doc-article-name">' + art.title + (art.id === 'art-91' ? ' [SYNTHETIC TEST SCHEDULE]' : ' [WITH ADVERSARIAL REDLINES]') + '</span>' +
+          '</div>' +
+          '<div class="doc-article-content">' + art.injectedText + '</div>';
+        rightPane.appendChild(rightArt);
       });
     }
 
     function openComparatorModal(idx) {
       if (typeof idx !== 'number') idx = 0;
-      currentCompIdx = Math.max(0, Math.min(idx, COMPARISONS.length - 1));
-      renderComparatorPanes();
-      updateNavigatorUI();
+      currentCompIdx = Math.max(0, Math.min(idx, FULL_INJECTIONS.length - 1));
+      initComparatorArticles();
       document.getElementById('comparator-modal').classList.add('open');
       document.body.style.overflow = 'hidden';
-      setTimeout(() => scrollToActiveInjection(), 100);
+      setTimeout(() => goToInjection(currentCompIdx), 120);
     }
 
     function closeComparatorModal() {
@@ -1872,40 +1798,93 @@
       }
     }
 
+    function jumpToArticle(artId, btn) {
+      activeArticleFilter = artId;
+      document.querySelectorAll('.art-nav-pill').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+
+      if (artId === 'all') {
+        document.querySelectorAll('.doc-article-block').forEach(b => {
+          b.style.display = 'block';
+          b.classList.remove('active-article');
+        });
+        return;
+      }
+
+      document.querySelectorAll('.doc-article-block').forEach(b => {
+        b.style.display = 'block';
+        b.classList.remove('active-article');
+      });
+
+      const targetLeft = document.getElementById('left-' + artId);
+      const targetRight = document.getElementById('right-' + artId);
+      if (targetLeft) {
+        targetLeft.classList.add('active-article');
+        targetLeft.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+      if (targetRight) {
+        targetRight.classList.add('active-article');
+        targetRight.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+
     function navigateInjection(delta) {
       const nextIdx = currentCompIdx + delta;
-      if (nextIdx >= 0 && nextIdx < COMPARISONS.length) {
+      if (nextIdx >= 0 && nextIdx < FULL_INJECTIONS.length) {
         goToInjection(nextIdx);
       }
     }
 
     function goToInjection(idx) {
       currentCompIdx = idx;
-      
-      document.querySelectorAll('.doc-clause-card').forEach(c => c.classList.remove('active-target'));
-      const leftActive = document.getElementById('original-card-' + currentCompIdx);
-      const rightActive = document.getElementById('injected-card-' + currentCompIdx);
-      if (leftActive) leftActive.classList.add('active-target');
-      if (rightActive) rightActive.classList.add('active-target');
+      const inj = FULL_INJECTIONS[currentCompIdx];
+      if (!inj) return;
+
+      // Update pills
+      document.querySelectorAll('.art-nav-pill').forEach(b => b.classList.remove('active'));
+      const pill = document.getElementById('pill-' + inj.articleId);
+      if (pill) {
+        pill.classList.add('active');
+        pill.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      }
+
+      // Clear previous focuses
+      document.querySelectorAll('.doc-article-block').forEach(b => b.classList.remove('active-article'));
+      document.querySelectorAll('.injected-clause-box').forEach(b => b.classList.remove('focused-injection'));
+
+      // Highlight target articles
+      const targetLeft = document.getElementById('left-' + inj.articleId);
+      const targetRight = document.getElementById('right-' + inj.articleId);
+      if (targetLeft) targetLeft.classList.add('active-article');
+      if (targetRight) targetRight.classList.add('active-article');
+
+      // Highlight specific injected clause
+      const targetInjBox = document.getElementById(inj.clauseTarget);
+      if (targetInjBox) {
+        targetInjBox.classList.add('focused-injection');
+        targetInjBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (targetLeft) {
+          targetLeft.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+      } else if (targetRight) {
+        targetRight.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (targetLeft) targetLeft.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
 
       updateNavigatorUI();
-      scrollToActiveInjection();
-    }
-
-    function scrollToActiveInjection() {
-      const leftActive = document.getElementById('original-card-' + currentCompIdx);
-      const rightActive = document.getElementById('injected-card-' + currentCompIdx);
-      if (leftActive) leftActive.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      if (rightActive) rightActive.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     function updateNavigatorUI() {
-      const item = COMPARISONS[currentCompIdx];
-      document.getElementById('nav-injection-title').innerText = 'Injection ' + (currentCompIdx + 1) + ' of ' + COMPARISONS.length + ': Clause ' + item.clauseNum + ' - ' + item.title;
-      document.getElementById('nav-injection-statute').innerHTML = item.statute + ' &bull; ' + item.status + ' &bull; Use &larr; &rarr; arrow keys';
+      const item = FULL_INJECTIONS[currentCompIdx];
+      if (!item) return;
+
+      document.getElementById('nav-injection-title').innerText = 
+        'Injection ' + (currentCompIdx + 1) + ' of ' + FULL_INJECTIONS.length + ': Clause ' + item.num + ' - ' + item.title;
+      document.getElementById('nav-injection-statute').innerHTML = 
+        item.statute + ' &bull; ' + item.status + ' &bull; Use &larr; &rarr; arrow keys';
       
       document.getElementById('btn-prev-injection').disabled = (currentCompIdx === 0);
-      document.getElementById('btn-next-injection').disabled = (currentCompIdx === COMPARISONS.length - 1);
+      document.getElementById('btn-next-injection').disabled = (currentCompIdx === FULL_INJECTIONS.length - 1);
     }
 
     document.addEventListener('keydown', function(e) {
@@ -1923,6 +1902,5 @@
       }
     });
   </script>
-    
 </body>
 </html>

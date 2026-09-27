@@ -22,6 +22,7 @@ Depending on what you want to achieve, start with the recommended entry document
 
 | Your Goal | Recommended Starting Document | Follow-Up Documents |
 |:---|:---|:---|
+| **Preparing for Panel Q&A & Future Roadmap** | [`PANEL_DEFENSE_AND_FUTURE_ROADMAP.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/PANEL_DEFENSE_AND_FUTURE_ROADMAP.md) | [`DEMO_GUIDE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/DEMO_GUIDE.md), [`research/06_FINE_TUNING_AND_TEMPORAL_MODEL_PLAN.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/research/06_FINE_TUNING_AND_TEMPORAL_MODEL_PLAN.md) |
 | **Deep Dive into Every File & Feature** | [`CODEBASE_EXPLANATION.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/CODEBASE_EXPLANATION.md) | [`PROJECT_MAP.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/PROJECT_MAP.md), [`ARCHITECTURE_FLOW.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/ARCHITECTURE_FLOW.md) |
 | **Presenting to an Evaluation Panel** | [`DEMO_GUIDE.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/DEMO_GUIDE.md) | [`research/04_ASSESSMENT_PROTOTYPE_SPEC.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/research/04_ASSESSMENT_PROTOTYPE_SPEC.md) |
 | **Understanding the Core Architecture** | [`ARCHITECTURE_FLOW.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/ARCHITECTURE_FLOW.md) | [`CONTEXT.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/CONTEXT.md), [`README.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/README.md) |
@@ -37,6 +38,8 @@ Depending on what you want to achieve, start with the recommended entry document
 
 ### 1. Operations & Explanation Hubs (`explanation/`)
 
+* [`PANEL_DEFENSE_AND_FUTURE_ROADMAP.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/PANEL_DEFENSE_AND_FUTURE_ROADMAP.md)  
+  Exhaustive viva defense guide: answers to hard panel questions (LLM hallucination, Indian law nuances, SBERT vs BGE, OCR, $O(N^2)$ candidate reduction), and complete Phase 2–4 roadmap (LoRA on 32.5M corpus, temporal models, GNNs).
 * [`CODEBASE_EXPLANATION.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/explanation/CODEBASE_EXPLANATION.md)  
   Exhaustive in-depth and general technical explanations for every single file, module, algorithm, class, regex, endpoint, and feature in the project.
 * [`README.md`](file:///home/aryan/Projects/LegalAgent/LegalAgent/README.md) *(Repository Root)*  
