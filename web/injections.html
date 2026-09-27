@@ -569,6 +569,255 @@
       .nav-bar { padding: 0 18px; }
       .main-section, .hero-header, .stats-strip { padding-left: 18px; padding-right: 18px; }
     }
+
+    /* --- SIDE-BY-SIDE COMPARATOR MODAL --- */
+    .comparator-overlay {
+      position: fixed; inset: 0;
+      background: rgba(26, 35, 50, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .comparator-overlay.open { display: flex; }
+    .comparator-dialog {
+      background: #fff;
+      width: 96vw;
+      max-width: 1340px;
+      height: 90vh;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.25);
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .comparator-header {
+      height: 56px;
+      background: var(--navy);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      flex-shrink: 0;
+      border-bottom: 1px solid rgba(154, 123, 79, 0.3);
+    }
+    .comparator-title {
+      font-family: var(--font-serif);
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .comparator-tag {
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 3px 8px;
+      background: rgba(154, 123, 79, 0.25);
+      color: var(--copper-light);
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .comparator-close-btn {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.8);
+      width: 28px;
+      height: 28px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .comparator-close-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+    .comparator-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+      background: var(--bg-primary);
+    }
+    .comparator-pane {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .comparator-pane.left {
+      border-right: 1px solid var(--border);
+      background: #faf9f6;
+    }
+    .comparator-pane.right {
+      background: #fff;
+    }
+    .pane-header {
+      padding: 12px 20px;
+      background: var(--bg-ivory);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .pane-title {
+      font-size: 12.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .pane-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 3px;
+    }
+    .pane-badge.original {
+      background: var(--safe-bg);
+      color: var(--safe);
+      border: 1px solid var(--safe-border);
+    }
+    .pane-badge.injected {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid var(--danger-border);
+    }
+    .pane-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      scroll-behavior: smooth;
+    }
+    .doc-clause-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 16px 18px;
+      margin-bottom: 14px;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    .doc-clause-card:hover {
+      border-color: var(--copper);
+    }
+    .doc-clause-card.active-target {
+      border-color: var(--copper);
+      background: #fdfaf6;
+      box-shadow: 0 0 0 2px rgba(154, 123, 79, 0.25);
+    }
+    .doc-clause-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--copper);
+      margin-bottom: 4px;
+    }
+    .doc-clause-title {
+      font-family: var(--font-serif);
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 8px;
+    }
+    .doc-clause-text {
+      font-family: var(--font-serif);
+      font-size: 13px;
+      line-height: 1.65;
+      color: var(--text-secondary);
+    }
+    .doc-clause-text.injected-redline {
+      background: #fdf2f2;
+      padding: 10px 12px;
+      border-radius: 4px;
+      color: #991b1b;
+      font-style: italic;
+      border: 1px dashed #fca5a5;
+    }
+    .doc-baseline-note {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      padding: 6px 10px;
+      background: var(--bg-ivory);
+      border-radius: 4px;
+    }
+    .comparator-footer-nav {
+      height: 62px;
+      background: var(--bg-card);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      flex-shrink: 0;
+    }
+    .nav-ctrl-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .nav-ctrl-btn:hover { background: var(--navy-light); }
+    .nav-ctrl-btn:disabled {
+      background: var(--border);
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+    .nav-center-info {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .nav-curr-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--navy);
+    }
+    .nav-curr-sub {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .comparator-launch-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--navy);
+      color: #fff;
+      border: 1px solid var(--navy-light);
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .comparator-launch-btn:hover {
+      background: var(--navy-light);
+    }
+    
   </style>
 </head>
 <body>
@@ -585,6 +834,7 @@
     <div class="nav-links">
       <a href="/" class="nav-link">Landing Page</a>
       <a href="/injections" class="nav-link" style="color:#fff; font-weight:600;">Injections Dossier</a>
+      <button onclick="openComparatorModal(0)" class="nav-link" style="background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);cursor:pointer;">Side-by-Side View</button>
       <a href="/app" class="nav-link btn-cta">Open Dashboard &rarr;</a>
     </div>
   </nav>
@@ -598,6 +848,17 @@
         Comprehensive documentation of all synthetic adversarial clauses, statutory conflicts, and unconscionable covenants planted across the LegalAgent contract portfolio to evaluate GraphRAG reasoning against classical isolated single-clause NLP.
       </p>
 
+
+      <div style="display:flex; gap:12px; align-items:center; margin-top:20px; flex-wrap:wrap;">
+        <button onclick="openComparatorModal(0)" class="comparator-launch-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M12 3v18"/></svg>
+          Compare Clean vs Injected Contract (Side-by-Side)
+        </button>
+        <span style="font-size:12px; color:var(--text-muted);">
+          Inspect authentic 2019 PMRDA signed terms alongside our 15 injected test clauses with live keyboard navigation
+        </span>
+      </div>
+    
       <div class="provenance-card">
         <div class="prov-title">Document Provenance & Test Protocol</div>
         <div class="prov-body">
@@ -1305,5 +1566,363 @@
       });
     }
   </script>
+
+  <!-- === SIDE-BY-SIDE COMPARATOR MODAL === -->
+  <div class="comparator-overlay" id="comparator-modal" onclick="handleOverlayClick(event)">
+    <div class="comparator-dialog">
+      
+      <!-- Modal Header -->
+      <div class="comparator-header">
+        <div class="comparator-title">
+          <span>Side-by-Side Contract Comparison: Authentic vs Injected</span>
+          <span class="comparator-tag">Pune Metro PPP (2019)</span>
+        </div>
+        <button class="comparator-close-btn" onclick="closeComparatorModal()" title="Close (Esc)">&times;</button>
+      </div>
+
+      <!-- Modal Two-Column Body -->
+      <div class="comparator-body">
+        
+        <!-- Left: Authentic Clean Contract -->
+        <div class="comparator-pane left">
+          <div class="pane-header">
+            <div class="pane-title">Authentic Signed Agreement</div>
+            <span class="pane-badge original">PMRDA 2019 Signed Concession</span>
+          </div>
+          <div class="pane-scroll" id="pane-scroll-original">
+            <!-- Injected by JS -->
+          </div>
+        </div>
+
+        <!-- Right: Injected Test Contract -->
+        <div class="comparator-pane right">
+          <div class="pane-header">
+            <div class="pane-title">Adversarially Injected Agreement</div>
+            <span class="pane-badge injected">Article 91 Test Additions</span>
+          </div>
+          <div class="pane-scroll" id="pane-scroll-injected">
+            <!-- Injected by JS -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Bottom Navigator -->
+      <div class="comparator-footer-nav">
+        <button class="nav-ctrl-btn" id="btn-prev-injection" onclick="navigateInjection(-1)">
+          &larr; Previous Injection
+        </button>
+        
+        <div class="nav-center-info">
+          <div class="nav-curr-label" id="nav-injection-title">Injection 1 of 15: Clause 91.1</div>
+          <div class="nav-curr-sub" id="nav-injection-statute">Section 23, Indian Contract Act, 1872 &bull; Use &larr; &rarr; arrow keys</div>
+        </div>
+
+        <button class="nav-ctrl-btn" id="btn-next-injection" onclick="navigateInjection(1)">
+          Next Injection &rarr;
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const COMPARISONS = [
+      {
+        clauseNum: "91.1",
+        title: "Limitation of Liability",
+        category: "Contractual Conflict",
+        status: "Detected in Demo",
+        statusBadge: "badge-detected",
+        statute: "Section 23, Indian Contract Act, 1872",
+        injectedText: "The aggregate liability of the Authority shall not exceed INR 1,000 for any claim, including fraud, death, personal injury, gross negligence, and statutory penalties.",
+        authenticRef: "Article 41.1 (Liability of the Authority)",
+        authenticText: "The Authority shall be liable to the Concessionaire for direct damage suffered as a consequence of any breach of this Agreement by the Authority, subject to proven actual losses and common law mitigation. Neither party shall limit liability for death, personal injury, or gross misconduct.",
+        analysis: "The authentic agreement maintains standard reciprocal liability without excluding fraud or personal injury. The injected Clause 91.1 inserts an illusory INR 1,000 cap that unlawfully purports to cover fraud and personal injury."
+      },
+      {
+        clauseNum: "91.2",
+        title: "Unlimited Indemnity",
+        category: "Contractual Conflict",
+        status: "Detected in Demo",
+        statusBadge: "badge-detected",
+        statute: "Sections 124-125, Indian Contract Act, 1872",
+        injectedText: "The Concessionaire shall defend, indemnify, and hold harmless the Authority against every claim, loss, fine, and expense without any financial limitation and notwithstanding Clause 91.1.",
+        authenticRef: "Article 41.2 (Mutual Indemnities)",
+        authenticText: "Each party shall indemnify the other against third party claims arising out of negligent operation or breach of project agreements, coordinated with and subject to the indemnification procedures set forth in Schedule R.",
+        analysis: "The authentic agreement coordinates indemnities with procedure and insurance obligations. The injected Clause 91.2 inserts an uncoordinated 'notwithstanding Clause 91.1' override that directly conflicts with the liability cap."
+      },
+      {
+        clauseNum: "91.3",
+        title: "Post-Termination Non-Compete",
+        category: "Statutory Violation",
+        status: "Detected in Demo",
+        statusBadge: "badge-statutory",
+        statute: "Section 27, Indian Contract Act, 1872",
+        injectedText: "For 36 months following termination, the Concessionaire shall not compete with, advise, or participate in any competing infrastructure business in India.",
+        authenticRef: "Article 3 (Grant of Concession) & Article 37 (Termination)",
+        authenticText: "Upon termination, the Concessionaire shall hand over the Project Assets to the Authority. No post-termination covenant in restraint of trade, profession, or commercial bidding is imposed on the Concessionaire or Consortium members.",
+        analysis: "The authentic signed agreement contains NO post-termination non-compete. The Concessionaire is free to bid for future mass transit projects. The injected clause is void ab initio under Section 27 ICA (Percept D'Mark v. Zaheer Khan)."
+      },
+      {
+        clauseNum: "91.4",
+        title: "Survival of Restrictions",
+        category: "Dependency Risk",
+        status: "Detected in Demo",
+        statusBadge: "badge-detected",
+        statute: "Termination / Survival Nexus",
+        injectedText: "Clauses 91.2 and 91.3 shall survive termination indefinitely and remain enforceable after termination of this Agreement.",
+        authenticRef: "Article 47.7 (Survival)",
+        authenticText: "Articles 39 (Confidentiality), 41 (Indemnity for past acts), and 44 (Dispute Resolution) shall survive the expiry or termination of this Agreement to the extent necessary for enforcement.",
+        analysis: "The authentic survival article preserves legitimate dispute resolution and accrued indemnities. The injected clause binds the Concessionaire indefinitely to an unlawful non-compete restraint."
+      },
+      {
+        clauseNum: "91.5",
+        title: "Punitive Delay Penalty",
+        category: "Statutory Violation",
+        status: "Planned Rule",
+        statusBadge: "badge-planned",
+        statute: "Section 74, Indian Contract Act, 1872",
+        injectedText: "A delay of one day shall incur automatic liquidated damages equal to 75 percent of the total concession value, regardless of actual loss.",
+        authenticRef: "Article 15.2 (Damages for Delay)",
+        authenticText: "If the Concessionaire fails to achieve COD within the Scheduled Completion Date, it shall pay liquidated damages at 0.1% of Performance Security per day, not exceeding 20% of Performance Security in aggregate as a genuine pre-estimate of loss.",
+        analysis: "The authentic agreement benchmarks delay damages to 0.1% of Performance Security. The injected clause imposes a punitive 75% forfeiture of total concession value for a single day delay (void under Kailash Nath v. DDA)."
+      },
+      {
+        clauseNum: "91.6",
+        title: "Capped Statutory Penalties",
+        category: "Statutory Violation",
+        status: "Detected in Demo",
+        statusBadge: "badge-statutory",
+        statute: "Digital Personal Data Protection Act, 2023",
+        injectedText: "Any penalty imposed under the Digital Personal Data Protection Act, 2023 shall be limited to INR 10,000 between the parties.",
+        authenticRef: "Article 47.1 (Compliance with Laws)",
+        authenticText: "The parties shall comply with all Applicable Laws, statutory requirements, and regulatory orders in force from time to time throughout the Concession Period.",
+        analysis: "The authentic agreement requires full compliance with all Indian laws. The injected clause attempts to contractually cap statutory DPDPA regulatory penalties (which can reach INR 250 Crore)."
+      },
+      {
+        clauseNum: "91.7",
+        title: "Data Processing Without Consent",
+        category: "Statutory Violation",
+        status: "Planned Rule",
+        statusBadge: "badge-planned",
+        statute: "Section 6, DPDPA 2023",
+        injectedText: "The Concessionaire may collect, sell, and process all passenger personal data for any commercial purpose without notice or affirmative consent.",
+        authenticRef: "Article 17 (Passenger Safety & Ticketing Operations)",
+        authenticText: "Ticketing and smart card automated fare collection data shall be utilized strictly for revenue clearing, security, and commuter transit management in compliance with state privacy standards.",
+        analysis: "Authentic ticketing terms protect commuter travel telemetry. The injected clause authorizes commercial sale without consent, violating Section 6 of DPDPA 2023."
+      },
+      {
+        clauseNum: "91.8",
+        title: "Excluded Mediation",
+        category: "Statutory Violation",
+        status: "Planned Rule",
+        statusBadge: "badge-planned",
+        statute: "The Mediation Act, 2023",
+        injectedText: "No party shall attempt pre-litigation mediation and all disputes shall proceed directly to unilateral arbitration.",
+        authenticRef: "Article 44.1 & 44.2 (Dispute Resolution & Conciliation)",
+        authenticText: "Any dispute shall be first referred to amicable conciliation between the Chief Executive Officer of PMRDA and Chairman of the Concessionaire for 30 days before proceeding to arbitration.",
+        analysis: "The authentic agreement mandates a 30-day amicable conciliation procedure. The injected clause attempts to prohibit pre-litigation mediation in violation of the Mediation Act, 2023."
+      },
+      {
+        clauseNum: "91.9",
+        title: "Repealed Criminal Reference",
+        category: "Temporal Trap",
+        status: "Planned Rule",
+        statusBadge: "badge-planned",
+        statute: "Bharatiya Nyaya Sanhita, 2023 (Section 318)",
+        injectedText: "A breach shall be treated as cheating under Section 420 of the Indian Penal Code, even after the Bharatiya Nyaya Sanhita comes into force.",
+        authenticRef: "Article 47.3 (Governing Law & Substantive Legislation)",
+        authenticText: "This Agreement shall be construed and interpreted in accordance with and governed by the laws of India and amendments in force from time to time.",
+        analysis: "Authentic text refers dynamically to laws in force. The injected clause attempts to freeze a repealed penal code section (IPC 420 repealed July 1, 2024; now Section 318(4) BNS)."
+      },
+      {
+        clauseNum: "91.10",
+        title: "Unilateral Amendment",
+        category: "Contractual Conflict",
+        status: "Planned Rule",
+        statusBadge: "badge-planned",
+        statute: "Section 62, Indian Contract Act, 1872",
+        injectedText: "The Authority may amend any commercial term, fee, or risk allocation without notice or consent from the Concessionaire.",
+        authenticRef: "Article 47.1 (Amendments)",
+        authenticText: "This Agreement may not be amended, modified, or varied except by an instrument in writing signed by authorized representatives of both parties.",
+        analysis: "The authentic agreement strictly requires mutual written agreement for novation or amendment under Section 62 ICA. The injected clause grants unilateral arbitrary discretion."
+      },
+      {
+        clauseNum: "91.11",
+        title: "Assignment Contradiction",
+        category: "Asymmetry",
+        status: "Planned Rule",
+        statusBadge: "badge-planned",
+        statute: "Concession Assignment & Lender Rights",
+        injectedText: "The Concessionaire shall not assign this Agreement, but the Authority may freely assign all obligations to any third party without consent.",
+        authenticRef: "Article 38 (Assignment and Charges)",
+        authenticText: "The Concessionaire may assign rights to Senior Lenders pursuant to the Substitution Agreement to ensure non-recourse project financing and debt service continuity.",
+        analysis: "Authentic concession terms safeguard lender substitution rights. The injected clause extinguishes project finance assignment rights while granting asymmetric rights to the Authority."
+      },
+      {
+        clauseNum: "91.12",
+        title: "Absolute Warranty Disclaimer",
+        category: "Statutory Violation",
+        status: "Planned Rule",
+        statusBadge: "badge-planned",
+        statute: "Section 28, Indian Contract Act, 1872",
+        injectedText: "The Authority gives no warranty whatsoever, including for title, legality, safety, or fitness, and the Concessionaire waives every statutory remedy.",
+        authenticRef: "Article 7 (Representations and Warranties)",
+        authenticText: "The Authority represents and warrants that it has full power and authority to execute this Agreement and that the Right of Way is unencumbered.",
+        analysis: "Authentic text warrants unencumbered Right of Way and legal authority. The injected clause unlawfully waives statutory remedies under Section 28 ICA."
+      },
+      {
+        clauseNum: "91.13",
+        title: "Unstamped Execution",
+        category: "Statutory Violation",
+        status: "Planned Rule",
+        statusBadge: "badge-planned",
+        statute: "Maharashtra Stamp Act / SC 7-Judge Bench",
+        injectedText: "The parties agree that this concession is intentionally unstamped and that no party may seek impounding or cure of stamp duty.",
+        authenticRef: "Execution & Stamping Clauses",
+        authenticText: "This Agreement has been executed on appropriate stamp paper and registered with the Sub-Registrar of Assurances in accordance with the Maharashtra Stamp Act.",
+        analysis: "Authentic agreement was stamped and registered. The injected clause attempts to contractually prohibit statutory impounding, contrary to the Supreme Court 7-Judge Bench ruling (2023)."
+      },
+      {
+        clauseNum: "91.14",
+        title: "Perpetual Confidentiality",
+        category: "Public Policy",
+        status: "Planned Rule",
+        statusBadge: "badge-planned",
+        statute: "Metro Railways Act / CMRS Safety Disclosure",
+        injectedText: "Every operational fact, public filing, safety report, and statutory disclosure shall remain confidential forever and may never be disclosed to any regulator.",
+        authenticRef: "Article 39.2 (Exceptions to Confidentiality)",
+        authenticText: "Confidentiality restrictions shall not apply to disclosures required by Applicable Laws, Commissioner of Metro Railway Safety (CMRS), or statutory authorities.",
+        analysis: "Authentic terms mandate disclosure to the Commissioner of Metro Railway Safety. The injected clause gags safety reports, violating public policy and statutory oversight."
+      },
+      {
+        clauseNum: "91.15",
+        title: "Foreign Forum Override",
+        category: "Jurisdiction Trap",
+        status: "Planned Rule",
+        statusBadge: "badge-planned",
+        statute: "Arbitration and Conciliation Act, 1996",
+        injectedText: "This Agreement shall be governed by the laws of England and disputes shall be decided exclusively by courts in London notwithstanding the Indian project and Indian governing approvals.",
+        authenticRef: "Article 44.3 (Arbitration Seat & Jurisdiction)",
+        authenticText: "The venue and seat of arbitration shall be Pune, India. Courts in Pune and the High Court of Bombay shall have exclusive jurisdiction over all matters arising hereunder.",
+        analysis: "Authentic contract seats arbitration in Pune under Indian law. The injected clause attempts to seat purely domestic Indian infrastructure arbitration in London to evade Indian mandatory law."
+      }
+    ];
+
+    let currentCompIdx = 0;
+
+    function renderComparatorPanes() {
+      const leftPane = document.getElementById('pane-scroll-original');
+      const rightPane = document.getElementById('pane-scroll-injected');
+      
+      leftPane.innerHTML = '';
+      rightPane.innerHTML = '';
+
+      COMPARISONS.forEach((item, idx) => {
+        // Left pane: Authentic Original
+        const leftCard = document.createElement('div');
+        leftCard.className = 'doc-clause-card' + (idx === currentCompIdx ? ' active-target' : '');
+        leftCard.id = 'original-card-' + idx;
+        leftCard.onclick = () => goToInjection(idx);
+        leftCard.innerHTML = 
+          '<div class="doc-clause-num">' + item.authenticRef + '</div>' +
+          '<div class="doc-clause-title">Authentic Baseline for Clause ' + item.clauseNum + '</div>' +
+          '<div class="doc-clause-text">' + item.authenticText + '</div>' +
+          '<div class="doc-baseline-note"><strong>Audit Note:</strong> ' + item.analysis + '</div>';
+        leftPane.appendChild(leftCard);
+
+        // Right pane: Injected
+        const rightCard = document.createElement('div');
+        rightCard.className = 'doc-clause-card' + (idx === currentCompIdx ? ' active-target' : '');
+        rightCard.id = 'injected-card-' + idx;
+        rightCard.onclick = () => goToInjection(idx);
+        rightCard.innerHTML = 
+          '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">' +
+            '<span class="doc-clause-num">Clause ' + item.clauseNum + ' (Injected)</span>' +
+            '<span class="status-badge ' + item.statusBadge + '">' + item.status + '</span>' +
+          '</div>' +
+          '<div class="doc-clause-title">' + item.title + '</div>' +
+          '<div class="doc-clause-text injected-redline">"' + item.injectedText + '"</div>' +
+          '<div style="font-size:11.5px; color:var(--statutory); font-weight:600; margin-top:6px;">' +
+            'Authority: ' + item.statute +
+          '</div>';
+        rightPane.appendChild(rightCard);
+      });
+    }
+
+    function openComparatorModal(idx) {
+      if (typeof idx !== 'number') idx = 0;
+      currentCompIdx = Math.max(0, Math.min(idx, COMPARISONS.length - 1));
+      renderComparatorPanes();
+      updateNavigatorUI();
+      document.getElementById('comparator-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+      setTimeout(() => scrollToActiveInjection(), 100);
+    }
+
+    function closeComparatorModal() {
+      document.getElementById('comparator-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function handleOverlayClick(e) {
+      if (e.target.id === 'comparator-modal') {
+        closeComparatorModal();
+      }
+    }
+
+    function navigateInjection(delta) {
+      const nextIdx = currentCompIdx + delta;
+      if (nextIdx >= 0 && nextIdx < COMPARISONS.length) {
+        goToInjection(nextIdx);
+      }
+    }
+
+    function goToInjection(idx) {
+      currentCompIdx = idx;
+      
+      document.querySelectorAll('.doc-clause-card').forEach(c => c.classList.remove('active-target'));
+      const leftActive = document.getElementById('original-card-' + currentCompIdx);
+      const rightActive = document.getElementById('injected-card-' + currentCompIdx);
+      if (leftActive) leftActive.classList.add('active-target');
+      if (rightActive) rightActive.classList.add('active-target');
+
+      updateNavigatorUI();
+      scrollToActiveInjection();
+    }
+
+    function scrollToActiveInjection() {
+      const leftActive = document.getElementById('original-card-' + currentCompIdx);
+      const rightActive = document.getElementById('injected-card-' + currentCompIdx);
+      if (leftActive) leftActive.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      if (rightActive) rightActive.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function updateNavigatorUI() {
+      const item = COMPARISONS[currentCompIdx];
+      document.getElementById('nav-injection-title').innerText = 'Injection ' + (currentCompIdx + 1) + ' of ' + COMPARISONS.length + ': Clause ' + item.clauseNum + ' - ' + item.title;
+      document.getElementById('nav-injection-statute').innerHTML = item.statute + ' &bull; ' + item.status + ' &bull; Use &larr; &rarr; arrow keys';
+      
+      document.getElementById('btn-prev-injection').disabled = (currentCompIdx === 0);
+      document.getElementById('btn-next-injection').disabled = (currentCompIdx === COMPARISONS.length - 1);
+    }
+
+    document.addEventListener('keydown', function(e) {
+      const modal = document.getElementById('comparator-modal');
+      if (!modal || !modal.classList.contains('open')) return;
+
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+        e.preventDefault();
+        navigateInjection(1);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        e.preventDefault();
+        navigateInjection(-1);
+      } else if (e.key === 'Escape') {
+        closeComparatorModal();
+      }
+    });
+  </script>
+    
 </body>
 </html>
