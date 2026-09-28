@@ -478,9 +478,34 @@ async def analyze_contract_stream(req: AnalyzeRequest):
             methods_used = set()
             for _, _, surfaced in pairs:
                 methods_used.update(surfaced)
-            yield _sse({"stage": "candidates", "label": "Candidate Pairs Selected",
-                        "detail": f"{len(pairs)} clause pair{'s' if len(pairs) != 1 else ''} shortlisted via {', '.join(sorted(methods_used)) or 'BM25'}",
-                        "elapsed": elapsed(), "done": False})
+
+            n_clauses = len(clauses)
+            total_possible = n_clauses * (n_clauses - 1) // 2 if n_clauses > 1 else 0
+            xref_count = sum(1 for _, _, surfaced in pairs if "xref" in surfaced)
+            type_matrix_count = sum(1 for _, _, surfaced in pairs if "type_matrix" in surfaced)
+            bm25_count = sum(1 for _, _, surfaced in pairs if "bm25" in surfaced)
+            dense_count = sum(1 for _, _, surfaced in pairs if "dense" in surfaced)
+            reduction_pct = round((1 - (len(pairs) / total_possible)) * 100, 1) if total_possible > 0 else 0.0
+
+            yield _sse({
+                "stage": "candidates",
+                "label": "Candidate Pair Shortlisting",
+                "detail": f"{len(pairs)} candidate pairs shortlisted from {total_possible} possible combinations ({reduction_pct}% reduction)",
+                "meta": {
+                    "total_clauses": n_clauses,
+                    "total_possible": total_possible,
+                    "shortlisted": len(pairs),
+                    "reduction_pct": reduction_pct,
+                    "xref_count": xref_count,
+                    "type_matrix_count": type_matrix_count,
+                    "bm25_count": bm25_count,
+                    "dense_count": dense_count,
+                    "methods": sorted(list(methods_used)),
+                    "limit_mode": "Unset (Exhaustive)" if req.max_candidates is None else f"Budget Capped ({req.max_candidates})"
+                },
+                "elapsed": elapsed(),
+                "done": False
+            })
         except Exception as e:
             yield _sse({"stage": "error", "label": "Candidate Selection Failed",
                         "detail": str(e), "elapsed": elapsed(), "done": True})
