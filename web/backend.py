@@ -55,6 +55,7 @@ class AnalyzeRequest(BaseModel):
     title: str
     text: str
     jurisdiction: Optional[str] = "India"
+    max_candidates: Optional[int] = None
 
 
 @app.on_event("startup")
@@ -153,6 +154,25 @@ def get_contracts():
     return enriched
 
 
+@app.get("/api/samples/{name}")
+def get_sample_contract(name: str):
+    """Returns sample contract markdown text."""
+    samples_dir = PROJECT_ROOT / "data" / "demo" / "samples"
+    mapping = {
+        "pune_adversarial": "02_pune_metro_adversarial_15_injections.md",
+        "pune_baseline": "01_pune_metro_concession_baseline.md",
+        "tech_msa": "03_indian_tech_services_msa.md",
+        "employment": "04_executive_employment_agreement.md",
+        "vendor": "05_commercial_vendor_supply_agreement.md",
+        "highway": "06_nhai_highway_concession_agreement.md",
+    }
+    filename = mapping.get(name, f"{name}.md")
+    path = samples_dir / filename
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Sample not found")
+    return {"name": name, "filename": filename, "text": path.read_text(encoding="utf-8")}
+
+
 @app.get("/api/contracts/{contract_id}")
 def get_contract_details(contract_id: str):
     """Fetches full graph topology, clauses, and findings for a contract."""
@@ -201,7 +221,13 @@ def analyze_custom_contract(req: AnalyzeRequest):
             tmp.write(req.text)
             tmp_path = tmp.name
 
-        config = {"retrieval_method": "bm25", "top_k": 10, "jurisdiction": jurisdiction, "use_gemini": True}
+        config = {
+            "retrieval_method": "bm25",
+            "top_k": 10,
+            "jurisdiction": jurisdiction,
+            "use_gemini": True,
+            "max_candidates": req.max_candidates,
+        }
         run, pipeline_clauses, pipeline_findings = pipeline_analyse(
             tmp_path, config, contract_id=contract_id
         )
@@ -442,7 +468,12 @@ async def analyze_contract_stream(req: AnalyzeRequest):
         # ── Stage 5: Candidate Selection ─────────────────────────────────────
         try:
             from legalagent.core.candidate_selection import select_candidates
-            config = {"retrieval_method": "bm25", "top_k": 10, "jurisdiction": jurisdiction}
+            config = {
+                "retrieval_method": "bm25",
+                "top_k": 10,
+                "jurisdiction": jurisdiction,
+                "max_candidates": req.max_candidates,
+            }
             pairs = select_candidates(clauses, config)
             methods_used = set()
             for _, _, surfaced in pairs:

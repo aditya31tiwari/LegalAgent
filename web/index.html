@@ -715,24 +715,36 @@
           <!-- File drag-and-drop -->
           <div class="upload-dropzone" id="upload-dropzone"
                ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)">
-            <input type="file" id="file-upload-input" accept=".txt,.pdf,.docx"
+            <input type="file" id="file-upload-input" accept=".txt,.pdf,.docx,.md"
                    onchange="handleFileSelect(event)" style="z-index:2;">
             <div class="dropzone-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--copper);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
             </div>
-            <div class="dropzone-text">Drag & drop a .txt, .pdf, or .docx file — or click to browse</div>
+            <div class="dropzone-text">Drag & drop a .txt, .md, .pdf, or .docx file — or click to browse</div>
             <div class="dropzone-filename" id="dropzone-filename"></div>
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center; margin:-2px 0 6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin:-2px 0 6px; flex-wrap:wrap; gap:6px;">
             <span style="color:var(--text-muted); font-size:11px;">Contract clause text:</span>
-            <button type="button" onclick="loadSampleContractText()" class="btn btn-secondary" style="padding:3px 10px; font-size:11px; color:var(--copper); border-color:var(--copper-light);">
-              Insert Sample Contract with Planted Traps
-            </button>
+            <div style="display:flex; gap:6px;">
+              <button type="button" onclick="loadPuneMetroAdversarialText()" class="btn btn-secondary" style="padding:3px 10px; font-size:11px; color:#9b2c2c; border-color:#feb2b2; background:#fff5f5;">
+                Load Pune Metro (15 Traps)
+              </button>
+              <button type="button" onclick="loadSampleContractText()" class="btn btn-secondary" style="padding:3px 10px; font-size:11px; color:var(--copper); border-color:var(--copper-light);">
+                Load Cloud MSA (5 Traps)
+              </button>
+            </div>
           </div>
           <div class="form-group" style="margin:0;">
             <textarea id="custom-contract-text" class="form-input" rows="7"
               placeholder="Paste numbered clauses here. Sections like '8.1 Limitation of Liability...' work best."></textarea>
+          </div>
+          <div style="margin-top:8px; display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px;">
+            <label style="display:flex; align-items:center; gap:8px; font-size:11.5px; font-weight:500; color:var(--text-primary); cursor:pointer;">
+              <input type="checkbox" id="unset-candidate-limit" checked style="cursor:pointer; accent-color:var(--navy);">
+              Exhaustive Analysis (Unset 30-Candidate Limit)
+            </label>
+            <span style="font-size:10px; color:var(--text-muted);">Audits all candidate pairs across agreement</span>
           </div>
         </div>
 
@@ -1664,6 +1676,22 @@ For a period of 24 months following termination of this Agreement for any reason
 This Agreement is governed by the laws of India. Any dispute arising out of or in connection with this Agreement shall be referred to and finally resolved by arbitration seated in Bengaluru under the Arbitration and Conciliation Act, 1996. Pre-litigation mediation is hereby excluded.`;
     }
 
+    async function loadPuneMetroAdversarialText() {
+      try {
+        const res = await fetch('/api/samples/pune_adversarial');
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('custom-contract-title').value = "Concession Agreement for Pune Metro Line III (Adversarial Robustness Test)";
+          document.getElementById('custom-contract-jurisdiction').value = "India (Maharashtra)";
+          document.getElementById('dropzone-filename').innerText = "Loaded: 02_pune_metro_adversarial_15_injections.md (26 Clauses · 15 Injections)";
+          document.getElementById('custom-contract-text').value = data.text;
+          return;
+        }
+      } catch (e) {
+        console.warn("Failed to fetch sample:", e);
+      }
+    }
+
     /* ── File Drag-and-Drop / Selection ── */
     function handleDragOver(e) {
       e.preventDefault();
@@ -1803,11 +1831,14 @@ You may also paste specific clauses directly below if desired.`;
 
       let newlyCreatedContractId = null;
 
+      const unsetLimit = document.getElementById('unset-candidate-limit') ? document.getElementById('unset-candidate-limit').checked : true;
+      const max_candidates = unsetLimit ? null : 30;
+
       try {
         const response = await fetch('/api/contracts/analyze/stream', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, text, jurisdiction })
+          body: JSON.stringify({ title, text, jurisdiction, max_candidates })
         });
 
         if (!response.ok) {

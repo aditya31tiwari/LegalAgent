@@ -72,10 +72,15 @@ def select_candidates(clauses: list[Clause], config: dict) -> list[tuple[str, st
             add_pair(clause_a_id, clause_b_id, "dense")
 
     # Cap by priority: xref/type_matrix pairs are always kept; BM25-only pairs
-    # fill whatever room is left.
+    # fill whatever room is left. If max_candidates is None or <= 0, the limit is unset.
+    max_candidates = config.get("max_candidates", MAX_CANDIDATES)
+    if max_candidates is None or (isinstance(max_candidates, (int, float)) and max_candidates <= 0) or str(max_candidates).lower() in {"none", "unset", "all"}:
+        return [(a, b, sorted(hows)) for (a, b), hows in pairs.items()]
+
     bm25_only = {key: hows for key, hows in pairs.items() if key not in priority_pairs}
-    remaining_slots = max(0, MAX_CANDIDATES - len(priority_pairs))
+    remaining_slots = max(0, int(max_candidates) - len(priority_pairs))
     kept = dict(priority_pairs)
     kept.update(dict(list(bm25_only.items())[:remaining_slots]))
 
     return [(a, b, sorted(hows)) for (a, b), hows in kept.items()]
+
