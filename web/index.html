@@ -560,11 +560,6 @@
         Findings Review
       </a>
 
-      <button onclick="openConsoleModal()" class="header-btn header-btn-outline" title="Live LLM Prompts & Responses Console">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:14px;height:14px;"><path d="M8 9l3 3-3 3m5 0h3M4 5h16a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2z" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Console
-      </button>
-
       <a href="/injections" target="_blank" class="header-btn header-btn-outline" style="text-decoration:none;" title="Adversarial Injection Benchmark Dossier">
         Injections
       </a>
@@ -741,27 +736,8 @@
             <span style="font-size:10px;color:var(--text-secondary);" id="analysis-current-stage-label">Initialising…</span>
           </div>
 
-          <!-- Progress Tabs -->
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; border-bottom:1px solid rgba(0,0,0,0.06); padding-bottom:6px;">
-            <div style="display:flex; gap:6px;">
-              <button type="button" class="btn btn-secondary active" id="tab-btn-stages" onclick="switchProgressTab('stages')" style="padding:2px 10px; font-size:11px;">Pipeline Stages</button>
-              <button type="button" class="btn btn-secondary" id="tab-btn-console" onclick="switchProgressTab('console')" style="padding:2px 10px; font-size:11px;">
-                Live LLM Console <span class="badge" id="modal-log-badge" style="font-size:9px; background:var(--copper); color:#fff; border-radius:10px; padding:1px 5px; margin-left:3px;">0</span>
-              </button>
-            </div>
-            <span style="font-size:10px; color:var(--text-muted); font-family:var(--font-mono);" id="modal-console-status">Streaming</span>
-          </div>
-
-          <div id="tab-content-stages">
-            <div class="analysis-stage-list" id="analysis-stage-list">
-              <!-- stages injected by JS -->
-            </div>
-          </div>
-
-          <div id="tab-content-console" style="display:none;">
-            <div id="analysis-live-terminal" style="background:#090d16; border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:10px; height:240px; overflow-y:auto; font-family:var(--font-mono); font-size:11px; line-height:1.5; color:#cbd5e1; user-select:text;">
-              <div style="color:#64748b;">// Live execution & Gemini API stream initialized...</div>
-            </div>
+          <div class="analysis-stage-list" id="analysis-stage-list">
+            <!-- stages injected by JS -->
           </div>
 
           <!-- Result card shown on complete -->
@@ -777,32 +753,6 @@
         <button class="btn btn-primary" id="btn-submit-analyze" onclick="submitAnalyzeContract()">
           Run Live Analysis
         </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ═══════ CONSOLE VIEWER MODAL ═══════ -->
-  <div class="modal-overlay" id="console-viewer-modal">
-    <div class="modal-container wide" style="max-width:850px; height:85vh; display:flex; flex-direction:column;">
-      <div class="modal-header">
-        <div style="display:flex; align-items:center; gap:10px;">
-          <span class="modal-title">LegalAgent Execution & LLM Telemetry Console</span>
-          <span style="background:rgba(66,133,244,0.15); color:var(--gemini); border:1px solid rgba(66,133,244,0.3); font-size:10px; font-weight:600; padding:2px 8px; border-radius:4px;">Gemini 3.1 Flash Lite</span>
-        </div>
-        <button class="modal-close" onclick="closeConsoleModal()">&times;</button>
-      </div>
-      <div class="modal-body" style="flex:1; display:flex; flex-direction:column; padding:12px; background:#090d16;">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:6px;">
-          <span style="color:#94a3b8; font-size:11px; font-family:var(--font-mono);">Real-time server events, Gemini prompts, and structured JSON responses</span>
-          <button class="btn btn-secondary" onclick="clearConsoleLogs()" style="padding:2px 8px; font-size:10px; color:#cbd5e1; border-color:rgba(255,255,255,0.2);">Clear</button>
-        </div>
-        <div id="global-console-terminal" style="flex:1; overflow-y:auto; font-family:var(--font-mono); font-size:11px; line-height:1.5; color:#cbd5e1; user-select:text;">
-          <div style="color:#64748b;">// Awaiting next analysis stream or inspection event...</div>
-        </div>
-      </div>
-      <div class="modal-footer" style="padding:10px 16px;">
-        <span style="font-size:11px; color:var(--text-muted);">Tip: All events are also logged directly to browser DevTools console (Press F12 &rarr; Console).</span>
-        <button class="btn btn-secondary" onclick="closeConsoleModal()">Close</button>
       </div>
     </div>
   </div>
@@ -1523,76 +1473,6 @@ You may also paste specific clauses directly below if desired.`;
       }
     }
 
-    /* ── Live Console Helpers ── */
-    let consoleLogCount = 0;
-
-    function switchProgressTab(tab) {
-      const btnStages = document.getElementById('tab-btn-stages');
-      const btnConsole = document.getElementById('tab-btn-console');
-      const contentStages = document.getElementById('tab-content-stages');
-      const contentConsole = document.getElementById('tab-content-console');
-      if (tab === 'console') {
-        btnStages.classList.remove('active');
-        btnConsole.classList.add('active');
-        contentStages.style.display = 'none';
-        contentConsole.style.display = 'block';
-      } else {
-        btnConsole.classList.remove('active');
-        btnStages.classList.add('active');
-        contentConsole.style.display = 'none';
-        contentStages.style.display = 'block';
-      }
-    }
-
-    function openConsoleModal() {
-      document.getElementById('console-viewer-modal').classList.add('open');
-    }
-
-    function closeConsoleModal() {
-      document.getElementById('console-viewer-modal').classList.remove('open');
-    }
-
-    function clearConsoleLogs() {
-      const g = document.getElementById('global-console-terminal');
-      if (g) g.innerHTML = '<div style="color:#64748b;">// Console cleared. Awaiting next stream...</div>';
-      const m = document.getElementById('analysis-live-terminal');
-      if (m) m.innerHTML = '<div style="color:#64748b;">// Console cleared.</div>';
-      consoleLogCount = 0;
-      const b = document.getElementById('modal-log-badge');
-      if (b) b.innerText = '0';
-    }
-
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
-    }
-
-    function appendConsoleLog(entry) {
-      consoleLogCount++;
-      const badge = document.getElementById('modal-log-badge');
-      if (badge) badge.innerText = consoleLogCount;
-
-      const terminals = [
-        document.getElementById('analysis-live-terminal'),
-        document.getElementById('global-console-terminal')
-      ];
-
-      terminals.forEach(term => {
-        if (!term) return;
-        const div = document.createElement('div');
-        div.style.marginBottom = '6px';
-        div.style.borderLeft = '2px solid rgba(255,255,255,0.15)';
-        div.style.paddingLeft = '6px';
-        div.innerHTML = entry;
-        term.appendChild(div);
-        term.scrollTop = term.scrollHeight;
-      });
-    }
-
     /* ── Modal Operations ── */
     function openUploadModal() {
       // Reset modal view
@@ -1605,7 +1485,6 @@ You may also paste specific clauses directly below if desired.`;
       document.getElementById('btn-submit-analyze').innerText = "Run Live Analysis";
       document.getElementById('btn-submit-analyze').disabled = false;
       document.getElementById('upload-modal-close').style.display = 'flex';
-      switchProgressTab('stages');
       document.getElementById('upload-modal').classList.add('open');
     }
 
@@ -1678,7 +1557,6 @@ You may also paste specific clauses directly below if desired.`;
         complete: 100
       };
 
-      appendConsoleLog(`<span style="color:#64748b;">[0.00s]</span> <span style="color:#38bdf8;font-weight:600;">[INITIALIZE]</span> Started streaming analysis for: <strong style="color:#fff;">${escapeHtml(title)}</strong> (${text.length} chars)`);
       console.log(`%c[0.00s] [INITIALIZE] Analysis started for "${title}"`, 'color:#38bdf8;font-weight:bold;');
 
       let newlyCreatedContractId = null;
@@ -1717,15 +1595,6 @@ You may also paste specific clauses directly below if desired.`;
 
               // ── Handle Gemini Prompt Event ──
               if (st === 'gemini_call') {
-                const promptEscaped = escapeHtml(eventData.prompt || '');
-                appendConsoleLog(`
-                  <span style="color:#64748b;">${timeStr}</span> <span style="color:#f59e0b;font-weight:700;">✦ GEMINI PROMPT DISPATCHED (${eventData.model})</span>
-                  <div style="color:#cbd5e1;font-size:10px;margin-top:2px;">${eventData.detail || ''}</div>
-                  <details style="margin-top:4px;background:#020617;border:1px solid rgba(245,158,11,0.3);border-radius:4px;padding:4px 8px;">
-                    <summary style="color:#f59e0b;cursor:pointer;font-size:10px;font-weight:600;">Inspect Prompt (Batch ${eventData.batch}/${eventData.total_batches} · ${eventData.pairs_count} pairs) ▼</summary>
-                    <pre style="white-space:pre-wrap;color:#93c5fd;font-size:10px;max-height:180px;overflow-y:auto;margin-top:4px;">${promptEscaped}</pre>
-                  </details>
-                `);
                 console.groupCollapsed(`%c✦ ${timeStr} GEMINI PROMPT (Batch ${eventData.batch}/${eventData.total_batches} · ${eventData.model})`, 'color:#f59e0b;font-weight:bold;');
                 console.log(eventData.prompt);
                 console.groupEnd();
@@ -1734,16 +1603,6 @@ You may also paste specific clauses directly below if desired.`;
 
               // ── Handle Gemini Response Event ──
               if (st === 'gemini_response') {
-                const respStr = JSON.stringify(eventData.response, null, 2);
-                const respEscaped = escapeHtml(respStr);
-                appendConsoleLog(`
-                  <span style="color:#64748b;">${timeStr}</span> <span style="color:#10b981;font-weight:700;">✦ GEMINI RESPONSE RECEIVED</span>
-                  <div style="color:#cbd5e1;font-size:10px;margin-top:2px;">${eventData.detail || ''}</div>
-                  <details style="margin-top:4px;background:#020617;border:1px solid rgba(16,185,129,0.3);border-radius:4px;padding:4px 8px;">
-                    <summary style="color:#10b981;cursor:pointer;font-size:10px;font-weight:600;">Inspect JSON Response (Batch ${eventData.batch}) ▼</summary>
-                    <pre style="white-space:pre-wrap;color:#86efac;font-size:10px;max-height:180px;overflow-y:auto;margin-top:4px;">${respEscaped}</pre>
-                  </details>
-                `);
                 console.groupCollapsed(`%c✦ ${timeStr} GEMINI RESPONSE (Batch ${eventData.batch})`, 'color:#10b981;font-weight:bold;');
                 console.log(eventData.response);
                 console.groupEnd();
@@ -1751,7 +1610,6 @@ You may also paste specific clauses directly below if desired.`;
               }
 
               // ── Generic Log / Stage Event ──
-              appendConsoleLog(`<span style="color:#64748b;">${timeStr}</span> <span style="color:#38bdf8;font-weight:600;">[${eventData.label || st}]</span> <span style="color:#e2e8f0;">${eventData.detail || ''}</span>`);
               console.log(`%c${timeStr} [${eventData.label || st}] %c${eventData.detail || ''}`, 'color:#38bdf8;font-weight:bold;', 'color:#e2e8f0;');
 
               // Update progress bar & labels
