@@ -93,6 +93,71 @@
     .header-btn-primary { background: var(--copper); color: #fff; }
     .header-btn-primary:hover { background: #8a6d43; }
 
+    /* ─── CONTRACTS SIDEBAR ─── */
+    .contracts-sidebar {
+      position: fixed; top: 0; left: 0; bottom: 0; width: 320px;
+      background: var(--bg-card); border-right: 1px solid var(--border);
+      z-index: 200; transform: translateX(-100%);
+      transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+      display: flex; flex-direction: column; box-shadow: 4px 0 24px rgba(26,35,50,0.12);
+    }
+    .contracts-sidebar.open { transform: translateX(0); }
+    .sidebar-overlay {
+      position: fixed; inset: 0; background: rgba(26,35,50,0.3);
+      z-index: 199; opacity: 0; pointer-events: none;
+      transition: opacity 0.28s ease;
+    }
+    .sidebar-overlay.open { opacity: 1; pointer-events: all; }
+    .sidebar-header {
+      height: 56px; background: var(--navy); display: flex; align-items: center;
+      justify-content: space-between; padding: 0 18px; flex-shrink: 0;
+    }
+    .sidebar-title { color: #fff; font-family: var(--font-serif); font-size: 15px; font-weight: 600; }
+    .sidebar-close { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center;
+      border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; background: transparent;
+      color: rgba(255,255,255,0.6); cursor: pointer; font-size: 16px; }
+    .sidebar-close:hover { background: rgba(255,255,255,0.08); color: #fff; }
+    .sidebar-body { flex: 1; overflow-y: auto; padding: 12px; }
+    .sidebar-upload-btn {
+      width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 10px; border: 1.5px dashed var(--copper); border-radius: 6px;
+      background: #fdf8f3; color: var(--copper); font-size: 12px; font-weight: 600;
+      cursor: pointer; margin-bottom: 14px; transition: all 0.15s;
+    }
+    .sidebar-upload-btn:hover { background: #f5efe5; border-color: #8a6d43; }
+    .sidebar-section-label {
+      font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em;
+      color: var(--text-muted); padding: 4px 4px 8px; margin-top: 4px;
+    }
+    .contract-list-card {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      border: 1px solid var(--border-light); border-radius: 6px; margin-bottom: 7px;
+      cursor: pointer; transition: all 0.15s; background: var(--bg-card);
+      position: relative;
+    }
+    .contract-list-card:hover { border-color: var(--copper); background: var(--bg-ivory); }
+    .contract-list-card.active { border-color: var(--navy); background: #f0f4f8; }
+    .clc-score {
+      flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; font-family: var(--font-mono);
+      border: 2px solid;
+    }
+    .clc-score.safe   { color: #276749; border-color: #86efac; background: #f0fdf4; }
+    .clc-score.medium { color: #92610a; border-color: #fcd34d; background: #fefcf3; }
+    .clc-score.risky  { color: #9b2c2c; border-color: #fca5a5; background: #fdf2f2; }
+    .clc-info { flex: 1; min-width: 0; }
+    .clc-title { font-size: 12px; font-weight: 600; color: var(--text-primary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .clc-meta { font-size: 10px; color: var(--text-muted); margin-top: 2px; }
+    .clc-badges { display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap; }
+    .clc-badge { font-size: 9px; padding: 1px 5px; border-radius: 3px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; }
+    .clc-badge.conflict { background: #fdf2f2; color: #9b2c2c; border: 1px solid #e8c4c4; }
+    .clc-badge.statutory { background: #fdf2f8; color: #7b3060; border: 1px solid #dbb8cc; }
+    .clc-badge.ppp { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .clc-badge.category { background: var(--bg-ivory); color: var(--text-muted); border: 1px solid var(--border-light); }
+
+
+
     /* ─── METRICS BAR ─── */
     .metrics-bar { height: 42px; background: var(--bg-ivory); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 24px; flex-shrink: 0; }
     .metrics-group { display: flex; align-items: center; gap: 28px; }
@@ -170,9 +235,7 @@
     .findings-feed { flex: 1; overflow-y: auto; padding: 12px 14px; }
 
     /* Finding Cards */
-    .finding-card { padding: 14px 16px; margin-bottom: 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 5px; border-left: 3px solid var(--risk-high); animation: fadeIn 0.3s var(--ease) both; transition: box-shadow 0.25s var(--ease), background 0.25s var(--ease); }
-    .finding-card.statutory { border-left-color: var(--risk-statutory); }
-    .finding-card.medium { border-left-color: var(--risk-medium); }
+    .finding-card { padding: 14px 16px; margin-bottom: 10px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 6px; animation: fadeIn 0.3s var(--ease) both; transition: box-shadow 0.25s var(--ease), background 0.25s var(--ease); }
     .finding-card.highlighted { box-shadow: 0 0 0 2px var(--copper); background: var(--bg-ivory); }
     .finding-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
     .severity-badge { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; padding: 2px 8px; border-radius: 3px; }
@@ -185,8 +248,8 @@
     .provision-box { padding: 10px 12px; background: var(--bg-ivory); border: 1px solid var(--border-light); border-radius: 4px; margin-bottom: 8px; }
     .provision-label { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); margin-bottom: 4px; }
     .provision-label.conflict { color: var(--risk-high); }
-    .provision-text { font-family: var(--font-serif); font-size: 12px; color: var(--text-primary); line-height: 1.5; padding-left: 10px; border-left: 2px solid var(--border); }
-    .provision-text.conflict-ref { border-left-color: var(--risk-high); }
+    .provision-text { font-family: var(--font-serif); font-size: 12px; color: var(--text-primary); line-height: 1.5; padding: 4px 0; }
+    .provision-text.conflict-ref { color: var(--risk-high); font-weight: 500; }
     .citation-box { padding: 10px 12px; background: var(--risk-statutory-bg); border: 1px solid var(--risk-statutory-border); border-radius: 4px; margin-bottom: 8px; }
     .citation-label { font-size: 10px; font-weight: 700; color: var(--risk-statutory); margin-bottom: 4px; }
     .citation-text { font-size: 11.5px; color: var(--text-primary); line-height: 1.55; }
@@ -239,14 +302,200 @@
     .btn-primary { background: var(--navy); color: #fff; }
     .btn-primary:hover { background: var(--navy-light); }
 
+    /* ─── LIVE ANALYSIS PANEL ─── */
+    .analysis-stage-list { display: flex; flex-direction: column; gap: 0; }
+    .analysis-stage {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 11px 0; border-bottom: 1px solid var(--border-light);
+      opacity: 0.35; transition: opacity 0.3s ease;
+    }
+    .analysis-stage:last-child { border-bottom: none; }
+    .analysis-stage.active { opacity: 1; }
+    .analysis-stage.done { opacity: 1; }
+    .analysis-stage.error { opacity: 1; }
+    .stage-icon {
+      flex-shrink: 0; width: 28px; height: 28px;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      font-size: 13px; background: var(--bg-ivory); border: 1px solid var(--border);
+      transition: all 0.25s ease;
+    }
+    .analysis-stage.active .stage-icon {
+      background: var(--navy); border-color: var(--navy); color: #fff;
+      animation: spin-ring 1s linear infinite;
+    }
+    .analysis-stage.done .stage-icon {
+      background: #10b981; border-color: #10b981; color: #fff;
+    }
+    .analysis-stage.error .stage-icon {
+      background: #ef4444; border-color: #ef4444; color: #fff;
+    }
+    @keyframes spin-ring {
+      0%   { box-shadow: 0 0 0 2px rgba(26,35,50,0.15); }
+      50%  { box-shadow: 0 0 0 3px rgba(154,123,79,0.45); }
+      100% { box-shadow: 0 0 0 2px rgba(26,35,50,0.15); }
+    }
+    .stage-content { flex: 1; min-width: 0; }
+    .stage-label { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+    .analysis-stage:not(.active):not(.done):not(.error) .stage-label { color: var(--text-muted); }
+    .stage-detail { font-size: 11px; color: var(--text-secondary); margin-top: 2px; line-height: 1.45; }
+    .stage-elapsed {
+      flex-shrink: 0; font-size: 10px; font-family: var(--font-mono);
+      color: var(--text-muted); background: var(--bg-ivory);
+      padding: 2px 6px; border-radius: 10px; border: 1px solid var(--border-light);
+    }
+    .analysis-progress-bar {
+      height: 3px; background: var(--border-light); border-radius: 2px;
+      margin: 14px 0 2px; overflow: hidden;
+    }
+    .analysis-progress-fill {
+      height: 100%; background: var(--navy); border-radius: 2px;
+      transition: width 0.5s ease; width: 0%;
+    }
+    .analysis-result-card {
+      background: #f0fdf4; border: 1px solid #86efac;
+      border-radius: 6px; padding: 14px 16px; margin-top: 14px;
+      display: none;
+    }
+    .analysis-result-card.error-card { background: #fef2f2; border-color: #fca5a5; }
+    .analysis-result-card.visible { display: block; }
+    .result-title { font-family: var(--font-serif); font-size: 14px; font-weight: 600; color: #166534; margin-bottom: 8px; }
+    .analysis-result-card.error-card .result-title { color: #991b1b; }
+    .result-stats { display: flex; gap: 16px; flex-wrap: wrap; }
+    .result-stat { text-align: center; }
+    .result-stat .rs-num { font-size: 22px; font-weight: 700; color: var(--navy); line-height: 1; }
+    .result-stat .rs-lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
+    .result-stat .rs-num.critical { color: #ef4444; }
+    .upload-dropzone {
+      border: 1.5px dashed var(--border); border-radius: 6px;
+      padding: 18px; text-align: center; cursor: pointer; margin-bottom: 14px;
+      background: var(--bg-ivory); transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .upload-dropzone:hover, .upload-dropzone.drag-over {
+      border-color: var(--copper); background: #fdf8f3;
+    }
+    .upload-dropzone input[type="file"] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+    }
+    .dropzone-icon { font-size: 22px; margin-bottom: 6px; }
+    .dropzone-text { font-size: 12px; color: var(--text-secondary); }
+    .dropzone-filename { font-size: 12px; font-weight: 600; color: var(--copper); margin-top: 4px; }
+
+
     /* Contract viewer modal */
-    .contract-viewer { max-height: 70vh; overflow-y: auto; padding: 0; }
-    .contract-viewer-clause { padding: 16px 20px; border-bottom: 1px solid var(--border-light); }
-    .contract-viewer-clause:last-child { border-bottom: none; }
-    .contract-viewer-clause:hover { background: var(--bg-ivory); }
-    .contract-viewer-num { font-family: var(--font-mono); font-size: 11px; font-weight: 600; color: var(--copper); margin-bottom: 4px; }
-    .contract-viewer-title { font-size: 14px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; }
-    .contract-viewer-text { font-family: var(--font-serif); font-size: 14px; color: var(--text-secondary); line-height: 1.7; }
+    .contract-viewer { max-height: unset; padding: 0; }
+    .cv-preamble-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+    .cv-doc-title {
+      font-family: var(--font-serif);
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      text-align: center;
+      margin-bottom: 6px;
+    }
+    .cv-doc-meta {
+      text-align: center;
+      font-size: 11.5px;
+      color: var(--copper);
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      margin-bottom: 16px;
+    }
+    .cv-parties-block {
+      font-family: var(--font-serif);
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-secondary);
+      border-top: 1px solid var(--border-light);
+      padding-top: 14px;
+      margin-bottom: 14px;
+    }
+    .cv-recitals-block {
+      font-family: var(--font-serif);
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: var(--slate);
+      background: var(--bg-ivory);
+      border-radius: 4px;
+      padding: 12px 16px;
+      margin-bottom: 14px;
+    }
+    .contract-viewer-clause {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 18px 22px;
+      margin-bottom: 16px;
+      transition: all 0.2s ease;
+    }
+    .contract-viewer-clause:hover {
+      border-color: var(--copper);
+    }
+    .contract-viewer-clause.highlight-match {
+      border-color: var(--copper);
+      box-shadow: 0 0 0 2px rgba(154, 123, 79, 0.25);
+    }
+    .contract-viewer-clause.dimmed {
+      opacity: 0.35;
+    }
+    .cv-clause-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 8px;
+    }
+    .contract-viewer-num {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--copper);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .contract-viewer-title {
+      font-family: var(--font-serif);
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--navy);
+      margin-bottom: 10px;
+    }
+    .contract-viewer-text {
+      font-family: var(--font-serif);
+      font-size: 13.5px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      white-space: pre-line;
+    }
+    .cv-signature-block {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 20px 24px;
+      margin-top: 24px;
+      margin-bottom: 10px;
+    }
+    .cv-sig-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-top: 16px;
+    }
+    .cv-sig-col {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
 
     .empty-state { padding: 40px 20px; text-align: center; color: var(--text-faint); font-size: 12px; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
@@ -254,10 +503,30 @@
 </head>
 <body>
 
+  <!-- ═══════ CONTRACTS DRAWER / SIDEBAR ═══════ -->
+  <div class="sidebar-overlay" id="contracts-sidebar-overlay" onclick="closeContractsDrawer()"></div>
+  <aside class="contracts-sidebar" id="contracts-sidebar">
+    <div class="sidebar-header">
+      <span class="sidebar-title">Contract Portfolio</span>
+      <button class="sidebar-close" onclick="closeContractsDrawer()" title="Close drawer">&times;</button>
+    </div>
+    <div class="sidebar-body">
+      <button class="sidebar-upload-btn" onclick="closeContractsDrawer(); openUploadModal();">
+        <span style="font-size:15px; font-weight:700;">+</span> Upload & Analyse New Contract
+      </button>
+      <div class="sidebar-section-label">Available Contracts (<span id="sidebar-contract-count">0</span>)</div>
+      <div id="sidebar-contracts-list">
+        <!-- Injected dynamically by renderContractsSidebar() -->
+      </div>
+    </div>
+  </aside>
+
   <!-- ═══════ HEADER ═══════ -->
   <header class="app-header">
     <div class="logo-group">
-      <div class="logo-mark">⚖</div>
+      <div class="logo-mark">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M6 8l6-5 6 5M6 8l-3 7h6l-3-7zm12 0l-3 7h6l-3-7z"/></svg>
+      </div>
       <span class="logo-text">LegalAgent</span>
       <div class="logo-divider"></div>
       <div class="header-breadcrumb">
@@ -270,25 +539,38 @@
     <div class="header-actions">
       <div class="header-status">
         <span class="status-dot"></span>
-        <span class="mono" id="status-db-text">SQLite: contracts.db</span>
+        <span class="mono" id="status-db-text">SQLite Live</span>
       </div>
+
+      <button onclick="toggleContractsDrawer()" class="header-btn header-btn-outline" title="Browse portfolio of contracts">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke-width="2" stroke-linecap="round"/></svg>
+        Contracts (<span id="header-contracts-count">6</span>)
+      </button>
+
       <select id="contract-select" class="header-select" onchange="handleContractSwitch()">
         <option value="tech_msa">Indian Tech Services MSA (IT/SaaS)</option>
         <option value="employment_nda">Executive Employment (Non-Compete)</option>
-        <option value="vendor_supply">Vendor Supply (Penalty Clause)</option>
+        <option value="vendor_supply">Vendor Supply Agreement (LD / Penalty)</option>
+        <option value="pune_metro_ppp">Pune Metro Line III — PPP Concession (2019)</option>
+        <option value="highway_concession">NHAI 4-Laning Highway Concession (BOT-Toll)</option>
         <option value="lorem_ipsum_demo">Lorem Ipsum Synthetic Instrument</option>
       </select>
-      <button onclick="openUploadModal()" class="header-btn header-btn-outline">
+
+      <a href="/injections" target="_blank" class="header-btn header-btn-outline" style="text-decoration:none;" title="Adversarial Injection Benchmark Dossier">
+        Injections
+      </a>
+
+      <button onclick="openUploadModal()" class="header-btn header-btn-primary">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-width="2" stroke-linecap="round"/></svg>
-        New Contract
+        Upload / Analyze
       </button>
       <button onclick="openPipelineModal()" class="header-btn header-btn-outline">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h16M17 9l3 3-3 3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Pipeline
       </button>
-      <button onclick="openExportModal()" class="header-btn header-btn-primary">
+      <button onclick="openExportModal()" class="header-btn header-btn-outline">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-width="2" stroke-linecap="round"/></svg>
-        Export Audit
+        Export
       </button>
     </div>
   </header>
@@ -371,7 +653,7 @@
     <div class="modal-container pipeline-modal">
       <div class="modal-header">
         <span class="modal-title">How LegalAgent Reviews a Contract</span>
-        <button class="modal-close" onclick="closePipelineModal()">✕</button>
+        <button class="modal-close" onclick="closePipelineModal()">&times;</button>
       </div>
       <div class="pipeline-body">
         <div class="pipeline-intro">
@@ -396,21 +678,77 @@
     </div>
   </div>
 
-  <!-- ═══════ UPLOAD MODAL ═══════ -->
+  <!-- ═══════ UPLOAD / LIVE ANALYSIS MODAL ═══════ -->
   <div class="modal-overlay" id="upload-modal">
-    <div class="modal-container">
+    <div class="modal-container wide" style="max-width:640px;">
       <div class="modal-header">
-        <span class="modal-title">Analyse Commercial Contract</span>
-        <button class="modal-close" onclick="closeUploadModal()">✕</button>
+        <span class="modal-title">Live Contract Analysis</span>
+        <button class="modal-close" id="upload-modal-close" onclick="closeUploadModal()">&times;</button>
       </div>
-      <div class="modal-body">
-        <div class="form-group"><label class="form-label">Contract Title</label><input type="text" id="custom-contract-title" placeholder="e.g. Master Services Agreement v1.0" class="form-input"></div>
-        <div class="form-group"><label class="form-label">Jurisdiction</label><input type="text" id="custom-contract-jurisdiction" value="India" class="form-input"></div>
-        <div class="form-group"><label class="form-label">Contract Text</label><textarea id="custom-contract-text" class="form-input" placeholder="Paste clause text here. Separate clauses with double newlines."></textarea></div>
+      <div class="modal-body" style="padding:18px 20px;">
+
+        <!-- ─ Input form (visible before analysis starts) ─ -->
+        <div id="analysis-input-section">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Contract Title</label>
+              <input type="text" id="custom-contract-title" placeholder="e.g. Master Services Agreement" class="form-input">
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Jurisdiction</label>
+              <input type="text" id="custom-contract-jurisdiction" value="India" class="form-input">
+            </div>
+          </div>
+
+          <!-- File drag-and-drop -->
+          <div class="upload-dropzone" id="upload-dropzone"
+               ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)">
+            <input type="file" id="file-upload-input" accept=".txt,.pdf,.docx"
+                   onchange="handleFileSelect(event)" style="z-index:2;">
+            <div class="dropzone-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--copper);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+            </div>
+            <div class="dropzone-text">Drag & drop a .txt, .pdf, or .docx file — or click to browse</div>
+            <div class="dropzone-filename" id="dropzone-filename"></div>
+          </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; margin:-2px 0 6px;">
+            <span style="color:var(--text-muted); font-size:11px;">Contract clause text:</span>
+            <button type="button" onclick="loadSampleContractText()" class="btn btn-secondary" style="padding:3px 10px; font-size:11px; color:var(--copper); border-color:var(--copper-light);">
+              Insert Sample Contract with Planted Traps
+            </button>
+          </div>
+          <div class="form-group" style="margin:0;">
+            <textarea id="custom-contract-text" class="form-input" rows="7"
+              placeholder="Paste numbered clauses here. Sections like '8.1 Limitation of Liability...' work best."></textarea>
+          </div>
+        </div>
+
+        <!-- ─ Live analysis progress (shown during and after streaming) ─ -->
+        <div id="analysis-progress-section" style="display:none;">
+          <div class="analysis-progress-bar"><div class="analysis-progress-fill" id="analysis-progress-fill"></div></div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+            <span style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono);" id="analysis-overall-elapsed">0.00s</span>
+            <span style="font-size:10px;color:var(--text-secondary);" id="analysis-current-stage-label">Initialising…</span>
+          </div>
+
+          <div class="analysis-stage-list" id="analysis-stage-list">
+            <!-- stages injected by JS -->
+          </div>
+
+          <!-- Result card shown on complete -->
+          <div class="analysis-result-card" id="analysis-result-card">
+            <div class="result-title">Analysis Complete — Contract Graph Ready</div>
+            <div class="result-stats" id="result-stats-row"></div>
+          </div>
+        </div>
+
       </div>
-      <div class="modal-footer">
+      <div class="modal-footer" id="analysis-modal-footer">
         <button class="btn btn-secondary" onclick="closeUploadModal()">Cancel</button>
-        <button class="btn btn-primary" id="btn-submit-analyze" onclick="submitAnalyzeContract()">Run Graph Analysis</button>
+        <button class="btn btn-primary" id="btn-submit-analyze" onclick="submitAnalyzeContract()">
+          Run Live Analysis
+        </button>
       </div>
     </div>
   </div>
@@ -420,7 +758,7 @@
     <div class="modal-container wide">
       <div class="modal-header">
         <span class="modal-title">Legal Risk Memorandum</span>
-        <button class="modal-close" onclick="closeExportModal()">✕</button>
+        <button class="modal-close" onclick="closeExportModal()">&times;</button>
       </div>
       <div class="modal-body"><textarea id="export-textarea" readonly class="form-input mono-textarea"></textarea></div>
       <div class="modal-footer">
@@ -431,14 +769,35 @@
   </div>
 
   <!-- ═══════ CONTRACT VIEWER MODAL ═══════ -->
-  <div class="modal-overlay" id="contract-viewer-modal">
-    <div class="modal-container wide">
-      <div class="modal-header">
-        <span class="modal-title" id="contract-viewer-title">Full Contract</span>
-        <button class="modal-close" onclick="closeContractViewer()">✕</button>
+  <div class="modal-overlay" id="contract-viewer-modal" onclick="handleCvOverlayClick(event)">
+    <div class="modal-container wide" style="max-width: 980px; height: 90vh; display: flex; flex-direction: column;">
+      <div class="modal-header" style="flex-shrink: 0;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span class="modal-title" id="contract-viewer-title">Full Contract Instrument</span>
+          <span id="contract-viewer-badge" style="background:#f5f3ef; border:1px solid #e2ded5; color:#1a2332; font-size:11px; padding:2px 8px; border-radius:4px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em;"></span>
+        </div>
+        <button class="modal-close" onclick="closeContractViewer()">&times;</button>
       </div>
-      <div class="contract-viewer" id="contract-viewer-body"></div>
-      <div class="modal-footer"><button class="btn btn-secondary" onclick="closeContractViewer()">Close</button></div>
+
+      <!-- Live Search & Actions Toolbar -->
+      <div style="background:#fcfbf9; border-bottom:1px solid var(--border); padding:8px 18px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-shrink:0;">
+        <div style="position:relative; flex:1; max-width:420px;">
+          <input type="text" id="cv-search-input" placeholder="Search across all clauses and text..." oninput="filterContractViewerText()" style="width:100%; padding:6px 12px 6px 30px; font-size:12px; border:1px solid var(--border); border-radius:4px; background:#fff; outline:none;">
+          <svg style="position:absolute; left:9px; top:8px; width:13px; height:13px; color:#64748b;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-width="2" stroke-linecap="round"/></svg>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span id="cv-clause-count" style="font-size:11.5px; color:var(--text-muted); font-weight:500;"></span>
+          <button class="btn btn-secondary" id="btn-copy-contract" style="font-size:11.5px; padding:5px 12px;" onclick="copyFullContractText()">Copy Full Text</button>
+        </div>
+      </div>
+
+      <!-- Scrollable Contract Instrument Body -->
+      <div class="contract-viewer" id="contract-viewer-body" style="flex:1; overflow-y:auto; padding:24px 28px; background:#fafaf8; scroll-behavior:smooth;"></div>
+      
+      <div class="modal-footer" style="padding:10px 20px; display:flex; justify-content:space-between; align-items:center; flex-shrink:0;">
+        <span style="font-size:11px; color:var(--text-muted);">LegalAgent Contract Architecture &bull; Official Executed Legal Text</span>
+        <button class="btn btn-secondary" onclick="closeContractViewer()">Close</button>
+      </div>
     </div>
   </div>
 
@@ -479,9 +838,17 @@
     async function loadContractData(id) {
       try {
         const res = await fetch(`/api/contracts/${id}`);
-        if (res.ok) { const data = await res.json(); if (data && data.clauses && data.clauses.length > 0) { document.getElementById('status-db-text').innerText = "SQLite Live"; return data; } }
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.clauses && data.clauses.length > 0) {
+            const statusEl = document.getElementById('status-db-text');
+            if (statusEl) statusEl.innerText = "SQLite Live";
+            return data;
+          }
+        }
       } catch (err) { console.warn("Backend not reachable:", err); }
-      document.getElementById('status-db-text').innerText = "Offline";
+      const statusEl = document.getElementById('status-db-text');
+      if (statusEl) statusEl.innerText = "Offline";
       return null;
     }
 
@@ -591,7 +958,28 @@
         if (c.tag.includes("Risk") || c.tag === "Liability") { bg = '#fdf8f8'; border = '#9b2c2c'; }
         else if (c.tag.includes("Indemnity") || c.tag.includes("Statutory") || c.tag.includes("DPDPA") || c.tag === "Compliance") { bg = '#fdf6fa'; border = '#7b3060'; }
         else if (c.tag === "Commercial" || c.tag === "Payment") { bg = '#f6fcf8'; border = '#276749'; }
-        return { id: c.id, label: `Section ${c.clause_num || c.num}\n${c.title}`, shape: "box", margin: { top: 10, right: 14, bottom: 10, left: 14 }, borderWidth: 1.5, borderWidthSelected: 2.5, color: { background: bg, border: border, highlight: { background: '#f5f3ef', border: '#1a2332' } }, font: { color: '#1a2332', size: 11, face: 'Inter, sans-serif', align: 'center', multi: true }, shadow: { enabled: true, color: 'rgba(0,0,0,0.04)', size: 6, x: 0, y: 2 } };
+        return {
+          id: c.id,
+          label: `Section ${c.clause_num || c.num}\n${c.title}`,
+          shape: "box",
+          margin: { top: 10, right: 14, bottom: 10, left: 14 },
+          borderWidth: 2,
+          borderWidthSelected: 3,
+          color: {
+            background: bg,
+            border: border,
+            highlight: { background: '#f5f3ef', border: '#1a2332' }
+          },
+          font: {
+            color: '#1a2332',
+            size: 13,
+            face: 'Inter, -apple-system, sans-serif',
+            align: 'center',
+            multi: true,
+            bold: { color: '#1a2332', size: 13 }
+          },
+          shadow: { enabled: true, color: 'rgba(26,35,50,0.06)', size: 8, x: 0, y: 3 }
+        };
       }));
 
       let edgeList = contractData.edges;
@@ -599,14 +987,39 @@
       const edges = new vis.DataSet(edgeList.map(e => {
         let color = '#64748b';
         const rtype = e.relation_type || e.type;
-        if (rtype === 'conflict') color = '#9b2c2c'; else if (rtype === 'statutory') color = '#7b3060'; else if (rtype === 'xref') color = '#2b6cb0'; else if (rtype === 'semantic') color = '#276749';
-        return { from: e.source_clause_id || e.from, to: e.target_clause_id || e.to, label: e.label, color: { color, highlight: '#1a2332', opacity: 0.75 }, width: 1.5, dashes: !!e.dashes, font: { color: '#4a5568', size: 10, align: 'horizontal', background: '#fafaf8', strokeWidth: 0 }, arrows: { to: { enabled: true, scaleFactor: 0.55 } }, smooth: { type: 'continuous', roundness: 0.12 } };
+        if (rtype === 'conflict') color = '#9b2c2c';
+        else if (rtype === 'statutory') color = '#7b3060';
+        else if (rtype === 'xref') color = '#2b6cb0';
+        else if (rtype === 'semantic') color = '#276749';
+        return {
+          from: e.source_clause_id || e.from,
+          to: e.target_clause_id || e.to,
+          label: e.label,
+          color: { color, highlight: '#1a2332', opacity: 0.85 },
+          width: 2,
+          dashes: !!e.dashes,
+          font: { color: '#334155', size: 11, align: 'horizontal', background: '#fafaf8', strokeWidth: 0 },
+          arrows: { to: { enabled: true, scaleFactor: 0.7 } },
+          smooth: { enabled: true, type: 'curvedCW', roundness: 0.18 }
+        };
       }));
 
       const options = {
         physics: {
-          stabilization: { iterations: 300, updateInterval: 25 },
-          barnesHut: { gravitationalConstant: -8000, centralGravity: 0.08, springLength: 250, springConstant: 0.02, damping: 0.12, avoidOverlap: 0.6 },
+          enabled: true,
+          stabilization: {
+            enabled: true,
+            iterations: 180,
+            updateInterval: 20
+          },
+          barnesHut: {
+            gravitationalConstant: -2800,
+            centralGravity: 0.22,
+            springLength: 145,
+            springConstant: 0.05,
+            damping: 0.35,
+            avoidOverlap: 0.85
+          },
           minVelocity: 0.75
         },
         interaction: { hover: true, zoomView: true, dragView: true, tooltipDelay: 200 }
@@ -614,6 +1027,19 @@
 
       if (networkInstance) networkInstance.destroy();
       networkInstance = new vis.Network(container, { nodes, edges }, options);
+
+      // Lock nodes in place and stop rotation once stabilized
+      networkInstance.once("stabilizationIterationsDone", () => {
+        networkInstance.setOptions({ physics: { enabled: false } });
+        networkInstance.fit({ animation: { duration: 300 }, padding: 35 });
+      });
+
+      // Safety fallback: ensure physics freezes completely
+      setTimeout(() => {
+        if (networkInstance) {
+          networkInstance.setOptions({ physics: { enabled: false } });
+        }
+      }, 450);
 
       networkInstance.on("click", params => {
         if (params.nodes.length > 0) focusClause(params.nodes[0]);
@@ -659,7 +1085,7 @@
       if (btn) btn.classList.add('active');
       renderNetworkGraph();
     }
-    function fitGraphView() { if (networkInstance) networkInstance.fit({ animation: { duration: 350 } }); }
+    function fitGraphView() { if (networkInstance) networkInstance.fit({ animation: { duration: 350 }, padding: 35 }); }
     function handleClauseSearch() { searchQuery = document.getElementById('clause-search').value; renderClauseList(); }
 
     /* ── Clause Expand/Collapse ── */
@@ -670,21 +1096,190 @@
       else { el.classList.add('clamped'); btn.innerText = 'Read more'; }
     }
 
-    /* ── Full Contract Viewer ── */
+            /* ── Full Contract Viewer ── */
+    const CONTRACT_PREAMBLES = {
+      "tech_msa": {
+        formalTitle: "MASTER SERVICES AGREEMENT (IT & CLOUD SERVICES)",
+        meta: "AGREEMENT REF: CL-BRL-MSA-2024-001 &bull; BENGALURU, KARNATAKA &bull; EFFECTIVE APRIL 1, 2024",
+        parties: "<strong>THIS MASTER SERVICES AGREEMENT</strong> is made at Bengaluru, Karnataka on this 1st day of April 2024, by and between:<br><strong>1. CloudLogic Enterprise Solutions India Pvt. Ltd.</strong>, having its registered office at Outer Ring Road, Bellandur, Bengaluru 560103 (&quot;Vendor&quot;); and<br><strong>2. Bharat Retail Logistics Limited</strong>, having its corporate office at MG Road, Bengaluru 560001 (&quot;Customer&quot;).",
+        recitals: "<strong>WHEREAS:</strong><br>(A) Vendor provides enterprise cloud infrastructure, managed database hosting, and high-availability SaaS platforms under ISO/IEC 27001 standards.<br>(B) Customer operates omni-channel logistics networks and desires to engage Vendor to deliver Tier-3 cloud services.<br><strong>NOW, THEREFORE</strong>, the Parties hereby agree as follows:",
+        sigParty1: "CloudLogic Enterprise Solutions India Pvt. Ltd.",
+        sigParty2: "Bharat Retail Logistics Limited"
+      },
+      "pune_metro_ppp": {
+        formalTitle: "CONCESSION AGREEMENT FOR PUNE METRO LINE III (HINJAWADI–SHIVAJINAGAR)",
+        meta: "GOVERNMENT OF MAHARASHTRA &bull; PMRDA/3316/CR 54/UD-7 &bull; PUNE &bull; SEPTEMBER 21, 2019",
+        parties: "<strong>THIS CONCESSION AGREEMENT</strong> is entered into at Pune on this 21st day of September 2019, by and between:<br><strong>1. Pune Metropolitan Region Development Authority (PMRDA)</strong>, constituted pursuant to the Maharashtra Metropolitan Region Development Authority Act, 2016 (&quot;Authority&quot;); and<br><strong>2. Pune IT City Metro Rail Limited</strong>, a public limited special purpose company incorporated under the Companies Act, 2013 by the Consortium of TRIL Urban Transport Private Limited and Siemens Project Ventures GmbH (&quot;Concessionaire&quot;).",
+        recitals: "<strong>WHEREAS:</strong><br>(A) The Authority resolved to provide a mass rapid rail transit corridor of 23.205 km on elevated viaduct from Hinjawadi to Shivajinagar on DBFOT basis.<br>(B) The Consortium of TRIL Urban Transport and Siemens Project Ventures was selected pursuant to international competitive bidding.<br>(C) Synthetic test covenants (Article 91) were appended strictly for automated risk analysis validation.<br><strong>NOW, THEREFORE</strong>, the Parties agree as follows:",
+        sigParty1: "Pune Metropolitan Region Development Authority",
+        sigParty2: "Pune IT City Metro Rail Limited (TRIL & Siemens)"
+      },
+      "employment_nda": {
+        formalTitle: "EXECUTIVE EMPLOYMENT & RESTRICTIVE COVENANTS AGREEMENT",
+        meta: "APEX FINANCIAL TECHNOLOGIES &bull; MUMBAI, MAHARASHTRA &bull; CONFIDENTIAL INSTRUMENT",
+        parties: "<strong>THIS EXECUTIVE EMPLOYMENT AGREEMENT</strong> is made at Mumbai, Maharashtra, by and between <strong>Apex Financial Technologies India Private Limited</strong> (&quot;Company&quot;) and the individual identified as Chief Technology Officer (&quot;Executive&quot;).",
+        recitals: "<strong>WHEREAS:</strong> Company desires to employ Executive and entrust proprietary technical trade secrets, and Executive agrees to devote primary business efforts to Company operations subject to the terms hereof.<br><strong>NOW, THEREFORE</strong>, the Parties agree:",
+        sigParty1: "Apex Financial Technologies India Pvt. Ltd.",
+        sigParty2: "Executive (Chief Technology Officer)"
+      },
+      "vendor_supply": {
+        formalTitle: "COMMERCIAL SUPPLY & INDUSTRIAL PROCUREMENT AGREEMENT",
+        meta: "CONTRACT REF: PMC-AIA-2024-VSA &bull; PUNE, MAHARASHTRA",
+        parties: "<strong>THIS COMMERCIAL SUPPLY AGREEMENT</strong> is executed at Pune, Maharashtra, between <strong>Precision Machining & Components India Pvt. Ltd.</strong> (&quot;Supplier&quot;) and <strong>Apex Industrial Automations Ltd.</strong> (&quot;Purchaser&quot;).",
+        recitals: "<strong>WHEREAS:</strong> Supplier manufactures automation robotics tooling, and Purchaser desires to purchase components under regular purchase orders subject to strict delivery schedules.<br><strong>NOW, THEREFORE</strong>, the Parties agree:",
+        sigParty1: "Precision Machining & Components India Pvt. Ltd.",
+        sigParty2: "Apex Industrial Automations Ltd."
+      },
+      "highway_concession": {
+        formalTitle: "MODEL CONCESSION AGREEMENT — FOUR-LANING OF NATIONAL HIGHWAYS (BOT-TOLL)",
+        meta: "NATIONAL HIGHWAYS AUTHORITY OF INDIA (NHAI) &bull; MINISTRY OF ROAD TRANSPORT & HIGHWAYS",
+        parties: "<strong>THIS CONCESSION AGREEMENT</strong> is entered into between the <strong>National Highways Authority of India</strong> (&quot;NHAI&quot;) and the Concessionaire selected for execution of Four-Laning on Build-Operate-Transfer (BOT-Toll) mode.",
+        recitals: "<strong>WHEREAS:</strong> NHAI is entrusted with the development of National Highways and has awarded the concession pursuant to competitive bidding under the National Highways Act, 1956.<br><strong>NOW, THEREFORE</strong>, the Parties agree:",
+        sigParty1: "National Highways Authority of India",
+        sigParty2: "Highway Concessionaire SPV"
+      }
+    };
+
     function openContractViewer() {
       if (!contractData) return;
-      document.getElementById('contract-viewer-title').innerText = contractData.contract.title || 'Contract';
+      
+      const c = contractData.contract;
+      document.getElementById('contract-viewer-title').innerText = c.title || 'Full Contract';
+      document.getElementById('contract-viewer-badge').innerText = c.jurisdiction || 'India';
+      document.getElementById('cv-clause-count').innerText = `${contractData.clauses.length} Sections / Articles`;
+      
+      const searchInput = document.getElementById('cv-search-input');
+      if (searchInput) searchInput.value = '';
+
       const body = document.getElementById('contract-viewer-body');
       body.innerHTML = '';
-      contractData.clauses.forEach(c => {
+
+      // 1. Render Preamble Block
+      const preambleData = CONTRACT_PREAMBLES[c.id];
+      if (preambleData) {
+        const pBox = document.createElement('div');
+        pBox.className = 'cv-preamble-box';
+        pBox.innerHTML = 
+          `<div class="cv-doc-title">${preambleData.formalTitle}</div>` +
+          `<div class="cv-doc-meta">${preambleData.meta}</div>` +
+          `<div class="cv-parties-block">${preambleData.parties}</div>` +
+          `<div class="cv-recitals-block">${preambleData.recitals}</div>`;
+        body.appendChild(pBox);
+      } else {
+        const pBox = document.createElement('div');
+        pBox.className = 'cv-preamble-box';
+        pBox.innerHTML = 
+          `<div class="cv-doc-title">${c.title}</div>` +
+          `<div class="cv-doc-meta">${c.category} &bull; ${c.jurisdiction}</div>` +
+          `<div class="cv-parties-block">${c.description || 'Full legal instrument text.'}</div>`;
+        body.appendChild(pBox);
+      }
+
+      // 2. Render All Full Clauses
+      contractData.clauses.forEach((cl, idx) => {
         const div = document.createElement('div');
         div.className = 'contract-viewer-clause';
-        div.innerHTML = `<div class="contract-viewer-num">Section ${c.clause_num || c.num}</div><div class="contract-viewer-title">${c.title}</div><div class="contract-viewer-text">${c.text}</div>`;
+        div.id = `cv-clause-${cl.id || idx}`;
+        
+        let tagBadge = cl.tag ? `<span style="font-size:10.5px; font-weight:600; padding:2px 7px; border-radius:3px; background:#f5f3ef; border:1px solid #e2ded5; color:#64748b;">${cl.tag}</span>` : '';
+        
+        div.innerHTML = 
+          `<div class="cv-clause-header">` +
+            `<span class="contract-viewer-num">Section ${cl.clause_num || cl.num}</span>` +
+            `${tagBadge}` +
+          `</div>` +
+          `<div class="contract-viewer-title">${cl.title}</div>` +
+          `<div class="contract-viewer-text">${cl.text}</div>`;
         body.appendChild(div);
       });
+
+      // 3. Render Execution & Signature Block
+      const sigBox = document.createElement('div');
+      sigBox.className = 'cv-signature-block';
+      const p1 = preambleData ? preambleData.sigParty1 : 'Authorized Representative (Party 1)';
+      const p2 = preambleData ? preambleData.sigParty2 : 'Authorized Representative (Party 2)';
+      sigBox.innerHTML = 
+        `<div style="font-family:var(--font-serif); font-size:13px; font-style:italic; color:var(--text-secondary); text-align:center;">` +
+          `IN WITNESS WHEREOF, the Parties hereto have caused this Agreement to be executed by their respective duly authorized officers as of the date first above written.` +
+        `</div>` +
+        `<div class="cv-sig-grid">` +
+          `<div class="cv-sig-col">` +
+            `<strong>SIGNED, SEALED AND DELIVERED</strong><br>` +
+            `For and on behalf of:<br>` +
+            `<strong>${p1}</strong><br><br>` +
+            `By: ___________________________<br>` +
+            `Name: Authorized Signatory<br>` +
+            `Title: Managing Director & CEO<br>` +
+            `In the presence of: 1. _______________` +
+          `</div>` +
+          `<div class="cv-sig-col">` +
+            `<strong>SIGNED, SEALED AND DELIVERED</strong><br>` +
+            `For and on behalf of:<br>` +
+            `<strong>${p2}</strong><br><br>` +
+            `By: ___________________________<br>` +
+            `Name: Authorized Signatory<br>` +
+            `Title: Chief Executive Officer<br>` +
+            `In the presence of: 2. _______________` +
+          `</div>` +
+        `</div>`;
+      body.appendChild(sigBox);
+
       document.getElementById('contract-viewer-modal').classList.add('open');
+      document.body.style.overflow = 'hidden';
     }
-    function closeContractViewer() { document.getElementById('contract-viewer-modal').classList.remove('open'); }
+
+    function closeContractViewer() {
+      document.getElementById('contract-viewer-modal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    function handleCvOverlayClick(e) {
+      if (e.target.id === 'contract-viewer-modal') {
+        closeContractViewer();
+      }
+    }
+
+    function filterContractViewerText() {
+      const q = (document.getElementById('cv-search-input').value || '').toLowerCase().trim();
+      const clauses = document.querySelectorAll('.contract-viewer-clause');
+      
+      let matchCount = 0;
+      clauses.forEach(c => {
+        const text = c.innerText.toLowerCase();
+        if (!q) {
+          c.classList.remove('dimmed');
+          c.classList.remove('highlight-match');
+        } else if (text.includes(q)) {
+          c.classList.remove('dimmed');
+          c.classList.add('highlight-match');
+          matchCount++;
+        } else {
+          c.classList.add('dimmed');
+          c.classList.remove('highlight-match');
+        }
+      });
+
+      const countSpan = document.getElementById('cv-clause-count');
+      if (q) {
+        countSpan.innerText = `${matchCount} of ${clauses.length} matches`;
+      } else {
+        countSpan.innerText = `${clauses.length} Sections / Articles`;
+      }
+    }
+
+    function copyFullContractText() {
+      if (!contractData) return;
+      const body = document.getElementById('contract-viewer-body');
+      if (!body) return;
+      
+      const plainText = body.innerText;
+      navigator.clipboard.writeText(plainText).then(() => {
+        const btn = document.getElementById('btn-copy-contract');
+        const orig = btn.innerText;
+        btn.innerText = 'Copied to Clipboard!';
+        setTimeout(() => { btn.innerText = orig; }, 2000);
+      });
+    }
 
     function openPipelineModal() {
       document.getElementById('pipeline-modal').classList.add('open');
@@ -719,23 +1314,389 @@
       }
     }
 
-    /* ── Modal Operations ── */
-    function openUploadModal() { document.getElementById('upload-modal').classList.add('open'); }
-    function closeUploadModal() { document.getElementById('upload-modal').classList.remove('open'); }
+    /* ── Contracts Drawer / Sidebar ── */
+    function toggleContractsDrawer() {
+      const drawer = document.getElementById('contracts-sidebar');
+      const overlay = document.getElementById('contracts-sidebar-overlay');
+      if (drawer.classList.contains('open')) {
+        closeContractsDrawer();
+      } else {
+        openContractsDrawer();
+      }
+    }
 
+    function openContractsDrawer() {
+      document.getElementById('contracts-sidebar').classList.add('open');
+      document.getElementById('contracts-sidebar-overlay').classList.add('open');
+      renderContractsSidebar();
+    }
+
+    function closeContractsDrawer() {
+      document.getElementById('contracts-sidebar').classList.remove('open');
+      document.getElementById('contracts-sidebar-overlay').classList.remove('open');
+    }
+
+    async function renderContractsSidebar() {
+      try {
+        const res = await fetch('/api/contracts');
+        if (!res.ok) return;
+        const contracts = await res.json();
+        
+        document.getElementById('header-contracts-count').innerText = contracts.length;
+        document.getElementById('sidebar-contract-count').innerText = contracts.length;
+
+        const list = document.getElementById('sidebar-contracts-list');
+        list.innerHTML = '';
+
+        contracts.forEach(c => {
+          const card = document.createElement('div');
+          card.className = `contract-list-card ${c.id === currentContractId ? 'active' : ''}`;
+          
+          let scoreClass = 'safe';
+          if (c.health_score < 40) scoreClass = 'risky';
+          else if (c.health_score < 75) scoreClass = 'medium';
+
+          const isPPP = c.id.includes('metro') || c.id.includes('highway') || c.category.includes('PPP');
+
+          card.innerHTML = `
+            <div class="clc-score ${scoreClass}" title="Health Score: ${c.health_score}/100">
+              ${c.health_score}
+            </div>
+            <div class="clc-info">
+              <div class="clc-title" title="${c.title}">${c.title}</div>
+              <div class="clc-meta">${c.clause_count} clauses · ${c.jurisdiction || 'India'}</div>
+              <div class="clc-badges">
+                ${c.critical_count > 0 ? `<span class="clc-badge conflict">${c.critical_count} critical</span>` : ''}
+                ${isPPP ? `<span class="clc-badge ppp">Govt PPP</span>` : ''}
+                <span class="clc-badge category">${c.category.split('&')[0].trim()}</span>
+              </div>
+            </div>
+          `;
+
+          card.onclick = () => {
+            closeContractsDrawer();
+            const select = document.getElementById('contract-select');
+            if (select) select.value = c.id;
+            currentContractId = c.id;
+            handleContractSwitch();
+          };
+
+          list.appendChild(card);
+        });
+
+      } catch (err) {
+        console.warn("Error rendering contracts sidebar:", err);
+      }
+    }
+
+    /* ── Sample Contract Pre-Fill Helper ── */
+    function loadSampleContractText() {
+      document.getElementById('custom-contract-title').value = "Indian Tech & Managed Cloud MSA (2024)";
+      document.getElementById('custom-contract-jurisdiction').value = "India (Karnataka)";
+      document.getElementById('dropzone-filename').innerText = "Loaded: Indian_Tech_Cloud_MSA_2024.txt (Sample)";
+      
+      document.getElementById('custom-contract-text').value = 
+`1.1 Scope of Managed Cloud Services
+Vendor shall provide cloud-hosted managed software infrastructure and continuous support with a targeted 99.9% uptime SLA. Monthly service credits are governed by Clause 4.2.
+
+4.2 Service Credits Deductions
+Subject to Clause 1.1, Customer may deduct service credits up to a maximum of 5% of monthly recurring billing for verified SLA downtime.
+
+7.1 Data Protection & Statutory Breach Penalties
+Vendor shall process customer personal data in accordance with applicable laws. Vendor's total liability for regulatory penalties or statutory fines under the Digital Personal Data Protection Act, 2023 shall in no event exceed INR 25,000 between the parties.
+
+8.1 Limitation of Aggregate Liability
+To the maximum extent permitted by law, neither party's aggregate cumulative liability arising out of or related to this Agreement shall exceed INR 5,00,000 for all causes of action combined.
+
+12.1 Intellectual Property & Third-Party Indemnification
+Vendor shall defend, indemnify, and hold harmless Customer and its directors, officers, and employees against all third-party claims, damages, liabilities, fines, and expenses arising from IP infringement, without any financial limitation or cap whatsoever, and notwithstanding any provision to the contrary in Section 8.1.
+
+15.3 Post-Termination Restraint on Trade
+For a period of 24 months following termination of this Agreement for any reason, Contractor shall not engage in, advise, or consult for any competing software or fintech business operating within the territory of India.
+
+18.2 Dispute Resolution & Mediation Bypass
+This Agreement is governed by the laws of India. Any dispute arising out of or in connection with this Agreement shall be referred to and finally resolved by arbitration seated in Bengaluru under the Arbitration and Conciliation Act, 1996. Pre-litigation mediation is hereby excluded.`;
+    }
+
+    /* ── File Drag-and-Drop / Selection ── */
+    function handleDragOver(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('upload-dropzone').classList.add('drag-over');
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('upload-dropzone').classList.remove('drag-over');
+    }
+
+    function handleFileDrop(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      document.getElementById('upload-dropzone').classList.remove('drag-over');
+      if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+        processFile(e.dataTransfer.files[0]);
+      }
+    }
+
+    function handleFileSelect(e) {
+      if (e.target.files && e.target.files.length > 0) {
+        processFile(e.target.files[0]);
+      }
+    }
+
+    function processFile(file) {
+      document.getElementById('dropzone-filename').innerText = `Selected: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+      
+      const cleanTitle = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
+      if (!document.getElementById('custom-contract-title').value.trim()) {
+        document.getElementById('custom-contract-title').value = cleanTitle;
+      }
+
+      if (file.name.endsWith('.txt') || file.name.endsWith('.md')) {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          document.getElementById('custom-contract-text').value = evt.target.result;
+        };
+        reader.readAsText(file);
+      } else {
+        // PDF or DOCX file note
+        document.getElementById('custom-contract-text').value = 
+`[Binary document uploaded: ${file.name}]
+Backend PyMuPDF & Tesseract OCR will ingest and parse this document on submission.
+You may also paste specific clauses directly below if desired.`;
+      }
+    }
+
+    /* ── Modal Operations ── */
+    function openUploadModal() {
+      // Reset modal view
+      document.getElementById('analysis-input-section').style.display = 'block';
+      document.getElementById('analysis-progress-section').style.display = 'none';
+      document.getElementById('analysis-result-card').classList.remove('visible');
+      document.getElementById('analysis-result-card').classList.remove('error-card');
+      document.getElementById('analysis-progress-fill').style.width = '0%';
+      document.getElementById('btn-submit-analyze').style.display = 'inline-flex';
+      document.getElementById('btn-submit-analyze').innerText = "Run Live Analysis";
+      document.getElementById('btn-submit-analyze').disabled = false;
+      document.getElementById('upload-modal-close').style.display = 'flex';
+      document.getElementById('upload-modal').classList.add('open');
+    }
+
+    function closeUploadModal() {
+      document.getElementById('upload-modal').classList.remove('open');
+    }
+
+    /* ── Live Streaming Contract Analysis (SSE) ── */
     async function submitAnalyzeContract() {
-      const title = document.getElementById('custom-contract-title').value.trim() || "Custom Agreement";
+      const title = document.getElementById('custom-contract-title').value.trim() || "Uploaded Commercial Contract";
       const text = document.getElementById('custom-contract-text').value.trim();
       const jurisdiction = document.getElementById('custom-contract-jurisdiction').value.trim() || "India";
-      if (!text) { alert("Please paste contract text to analyse."); return; }
-      const btn = document.getElementById('btn-submit-analyze');
-      btn.innerText = "Analysing..."; btn.disabled = true;
+
+      if (!text) {
+        alert("Please paste contract text or select a file to analyze.");
+        return;
+      }
+
+      // Switch to progress view
+      document.getElementById('analysis-input-section').style.display = 'none';
+      document.getElementById('analysis-progress-section').style.display = 'block';
+      document.getElementById('btn-submit-analyze').disabled = true;
+      document.getElementById('btn-submit-analyze').innerText = "Analyzing Live...";
+
+      const stageList = document.getElementById('analysis-stage-list');
+      stageList.innerHTML = '';
+
+      const progressFill = document.getElementById('analysis-progress-fill');
+      const elapsedLabel = document.getElementById('analysis-overall-elapsed');
+      const stageHeading = document.getElementById('analysis-current-stage-label');
+
+      // Pre-create the pipeline stages
+      const STAGE_DEFS = [
+        { id: "received", label: "Contract Ingestion", icon: "1" },
+        { id: "ingestion", label: "Text Normalization", icon: "2" },
+        { id: "extraction", label: "Clause & Offset Extraction", icon: "3" },
+        { id: "classification", label: "Classification & Tagging", icon: "4" },
+        { id: "candidates", label: "Candidate Pair Shortlisting", icon: "5" },
+        { id: "analysis", label: "Cross-Clause Conflict Analysis", icon: "6" },
+        { id: "statutory", label: "Indian Statutory Compliance Audit", icon: "7" },
+        { id: "persisted", label: "Knowledge Graph Storage", icon: "8" }
+      ];
+
+      const stageElements = {};
+      STAGE_DEFS.forEach(s => {
+        const row = document.createElement('div');
+        row.className = 'analysis-stage';
+        row.id = `stage-row-${s.id}`;
+        row.innerHTML = `
+          <div class="stage-icon">${s.icon}</div>
+          <div class="stage-content">
+            <div class="stage-label">${s.label}</div>
+            <div class="stage-detail" id="stage-detail-${s.id}">Queued...</div>
+          </div>
+          <div class="stage-elapsed" id="stage-elapsed-${s.id}">—</div>
+        `;
+        stageList.appendChild(row);
+        stageElements[s.id] = row;
+      });
+
+      const PROGRESS_MAP = {
+        received: 12,
+        ingestion: 25,
+        extraction: 38,
+        classification: 50,
+        candidates: 64,
+        analysis: 78,
+        statutory: 90,
+        persisted: 96,
+        complete: 100
+      };
+
+      let newlyCreatedContractId = null;
+
       try {
-        const res = await fetch("/api/contracts/analyze", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ title, text, jurisdiction }) });
-        if (res.ok) { const result = await res.json(); closeUploadModal(); const select = document.getElementById('contract-select'); const opt = document.createElement('option'); opt.value = result.contract_id; opt.innerText = title; select.appendChild(opt); select.value = result.contract_id; handleContractSwitch(); }
-        else { alert("Analysis failed on backend."); }
-      } catch (err) { alert("Server error: " + err); }
-      finally { btn.innerText = "Run Graph Analysis"; btn.disabled = false; }
+        const response = await fetch('/api/contracts/analyze/stream', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ title, text, jurisdiction })
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
+        }
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n\n');
+          buffer = lines.pop(); // Keep incomplete chunk
+
+          for (const chunk of lines) {
+            const trimmed = chunk.trim();
+            if (!trimmed.startsWith('data:')) continue;
+            
+            try {
+              const eventData = JSON.parse(trimmed.slice(5).trim());
+              const st = eventData.stage;
+
+              // Update progress bar & labels
+              if (PROGRESS_MAP[st]) {
+                progressFill.style.width = `${PROGRESS_MAP[st]}%`;
+              }
+              elapsedLabel.innerText = `${eventData.elapsed}s`;
+              stageHeading.innerText = eventData.label || st;
+
+              // Update active & completed stages
+              Object.keys(stageElements).forEach(k => {
+                if (k === st) {
+                  stageElements[k].classList.remove('done');
+                  stageElements[k].classList.add('active');
+                  const det = document.getElementById(`stage-detail-${k}`);
+                  if (det) det.innerText = eventData.detail || "Processing...";
+                  const elp = document.getElementById(`stage-elapsed-${k}`);
+                  if (elp) elp.innerText = `${eventData.elapsed}s`;
+                } else if (stageElements[k].classList.contains('active')) {
+                  stageElements[k].classList.remove('active');
+                  stageElements[k].classList.add('done');
+                  const icon = stageElements[k].querySelector('.stage-icon');
+                  if (icon) icon.innerText = 'OK';
+                }
+              });
+
+              if (st === 'complete') {
+                newlyCreatedContractId = eventData.contract_id;
+                
+                // Mark all done
+                Object.keys(stageElements).forEach(k => {
+                  stageElements[k].classList.remove('active');
+                  stageElements[k].classList.add('done');
+                  const icon = stageElements[k].querySelector('.stage-icon');
+                  if (icon) icon.innerText = 'OK';
+                });
+
+                // Render result card
+                const resCard = document.getElementById('analysis-result-card');
+                resCard.classList.add('visible');
+                
+                const stats = eventData.stats || {};
+                document.getElementById('result-stats-row').innerHTML = `
+                  <div class="result-stat">
+                    <div class="rs-num">${stats.clauses || 0}</div>
+                    <div class="rs-lbl">Clauses</div>
+                  </div>
+                  <div class="result-stat">
+                    <div class="rs-num ${stats.critical > 0 ? 'critical' : ''}">${stats.critical || 0}</div>
+                    <div class="rs-lbl">Critical Flags</div>
+                  </div>
+                  <div class="result-stat">
+                    <div class="rs-num">${stats.findings || 0}</div>
+                    <div class="rs-lbl">Total Findings</div>
+                  </div>
+                  <div class="result-stat">
+                    <div class="rs-num">${stats.pairs || 0}</div>
+                    <div class="rs-lbl">Pairs Examined</div>
+                  </div>
+                `;
+
+                // Update footer button
+                const btnSubmit = document.getElementById('btn-submit-analyze');
+                btnSubmit.disabled = false;
+                btnSubmit.innerText = "View Contract Graph →";
+                btnSubmit.className = "btn btn-primary";
+                btnSubmit.onclick = () => {
+                  finishAndOpenContract(newlyCreatedContractId, title);
+                };
+
+                // Add option to dropdown
+                const select = document.getElementById('contract-select');
+                const opt = document.createElement('option');
+                opt.value = newlyCreatedContractId;
+                opt.innerText = title;
+                select.appendChild(opt);
+
+                // Refresh sidebar
+                renderContractsSidebar();
+
+                // Auto-open after 2.2 seconds if user doesn't click
+                setTimeout(() => {
+                  if (document.getElementById('upload-modal').classList.contains('open')) {
+                    finishAndOpenContract(newlyCreatedContractId, title);
+                  }
+                }, 2200);
+              }
+
+            } catch (parseErr) {
+              console.warn("Error parsing SSE event:", parseErr, trimmed);
+            }
+          }
+        }
+
+      } catch (err) {
+        console.error("Analysis stream error:", err);
+        const resCard = document.getElementById('analysis-result-card');
+        resCard.classList.add('visible');
+        resCard.classList.add('error-card');
+        resCard.querySelector('.result-title').innerText = "Analysis Interrupted";
+        document.getElementById('result-stats-row').innerHTML = `<div style="font-size:12px;color:#991b1b;">Error: ${err.message}</div>`;
+        document.getElementById('btn-submit-analyze').disabled = false;
+        document.getElementById('btn-submit-analyze').innerText = "Try Again";
+        document.getElementById('btn-submit-analyze').onclick = submitAnalyzeContract;
+      }
+    }
+
+    function finishAndOpenContract(contractId, title) {
+      closeUploadModal();
+      const select = document.getElementById('contract-select');
+      if (select) select.value = contractId;
+      currentContractId = contractId;
+      handleContractSwitch();
     }
 
     function openExportModal() {
@@ -749,7 +1710,20 @@
     function copyExportMemo() { const ta = document.getElementById('export-textarea'); ta.select(); navigator.clipboard.writeText(ta.value); alert("Legal memorandum copied to clipboard."); closeExportModal(); }
 
     /* ── Init ── */
-    window.onload = function() { setupResizers(); handleContractSwitch(); };
+    window.onload = function() {
+      setupResizers();
+      
+      // Check if URL has ?contract= parameter
+      const params = new URLSearchParams(window.location.search);
+      const requestedContract = params.get('contract');
+      if (requestedContract) {
+        const select = document.getElementById('contract-select');
+        if (select) select.value = requestedContract;
+      }
+
+      renderContractsSidebar();
+      handleContractSwitch();
+    };
   </script>
 </body>
 </html>
