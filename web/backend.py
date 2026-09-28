@@ -201,7 +201,7 @@ def analyze_custom_contract(req: AnalyzeRequest):
             tmp.write(req.text)
             tmp_path = tmp.name
 
-        config = {"retrieval_method": "bm25", "top_k": 10, "jurisdiction": jurisdiction}
+        config = {"retrieval_method": "bm25", "top_k": 10, "jurisdiction": jurisdiction, "use_gemini": True}
         run, pipeline_clauses, pipeline_findings = pipeline_analyse(
             tmp_path, config, contract_id=contract_id
         )

@@ -13,6 +13,9 @@ load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 
 API_ROOT = "https://generativelanguage.googleapis.com/v1beta"
 PREFERRED_MODELS = (
+    "gemini-3.1-flash-lite",          # confirmed working — use first
+    "gemini-3.1-flash-lite-preview",
+    "gemini-flash-lite-latest",
     "gemini-3-flash-preview",
     "gemini-3.5-flash",
     "gemini-2.5-flash",
