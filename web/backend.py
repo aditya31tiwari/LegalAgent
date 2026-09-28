@@ -630,6 +630,12 @@ def serve_injections():
     return FileResponse(STATIC_DIR / "injections.html")
 
 
+@app.get("/findings")
+def serve_findings():
+    """Internal Gemini findings review page — not linked from the public UI."""
+    return FileResponse(STATIC_DIR / "findings_review.html")
+
+
 if __name__ == "__main__":
     import uvicorn
     print("\n" + "="*65)
