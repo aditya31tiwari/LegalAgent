@@ -268,6 +268,13 @@ Follow this exact sequence during your live presentation:
 #### Q10: "Why SQLite instead of a dedicated Vector DB like Pinecone or ChromaDB?"
 > **Your Defense**: *"In LegalAgent, contract review is document-scoped: we compare clauses within the same agreement or against a curated statutory baseline, not across a million unrelated web documents. Storing dense vectors in SQLite (`clause_embeddings`) avoids external cloud network latency, requires zero Docker microservice overhead, and allows single-transaction ACID consistency across contracts, clauses, and graph edges."*
 
+#### Q10b: "Where exactly is Gemini used? Isn't the whole pipeline just embedding clauses, finding correlated pairs with embeddings, and asking Gemini to find the errors?"
+> **Your Defense**: *"That is a common initial assumption, but doing that naively in production fails. Here is the exact architectural reality:
+> 1. **Embeddings**: Yes, we embed every clause into 768-d vectors via `InLegal-SBERT`, store them in SQLite, and project them to 2D via SVD.
+> 2. **Correlation is Hybrid, NOT purely embeddings**: Pure embeddings miss explicit cross-references (*'Subject to Section 8.2'*) and have blind spots on distinct legal terminology like Liability vs Indemnity. We use a **Two-Tier Hybrid** (Explicit Xrefs + Category Type Matrix + InLegal-SBERT Cosine Similarity + BM25) to prune candidate pairs down to a top 30.
+> 3. **Error detection is Deterministic, NOT outsourced to Gemini**: If you ask Gemini to 'find errors' on arbitrary clause pairs, it hallucinates US common-law doctrines, misses Indian-specific statutory rules (like Section 27 ICA voidness), and takes 90 seconds per document. Instead, **conflict and statutory detection runs deterministically in `legalagent/core/analysis.py`** with 100% mathematical reproducibility and zero API costs.
+> 4. **Where Gemini is used**: Gemini (`legalagent/core/gemini.py`) serves as the **Generative RAG Adapter**. Once a conflict is detected and grounded in statutory citations, Gemini can be called at `temperature: 0.1` to draft an executive natural-language memo summarizing the risk for commercial executives."*
+
 ---
 
 ### Category C: Indian Law & Statutory Questions
