@@ -1,0 +1,18 @@
+INDIAN CLOUD SERVICES & ENTERPRISE SAAS MASTER SERVICES AGREEMENT
+Execution Jurisdiction: Bengaluru, Karnataka, India
+
+1.1 Cloud Hosting and Managed Services. The Vendor shall provide scalable enterprise cloud infrastructure, managed relational databases, and high-availability SaaS application services to the Customer in accordance with the Service Level Agreement in Schedule B.
+
+3.1 Payment and Invoicing. Customer shall pay all undisputed invoices within thirty (30) days from receipt. All payments shall be made in Indian Rupees (INR) subject to applicable TDS deductions under the Income Tax Act, 1961.
+
+4.3 Personal Data Monetization and Third-Party Transfer. The Vendor is granted the perpetual, unrestricted right to collect, aggregate, commercialize, transfer, and sell all personal data, behavioral telemetry, and employee records of Customer end-users to third-party commercial brokers without obtaining notice or consent from the individual data subjects.
+
+5.2 Data Protection Liability Cap. Notwithstanding any provision of law or regulation to the contrary, the Vendor's aggregate maximum liability for any security incident, unauthorized disclosure, or regulatory penalty under the Digital Personal Data Protection Act, 2023 shall be strictly capped at INR 25,000 (Indian Rupees Twenty-Five Thousand only).
+
+7.1 Limitation of Cumulative Liability. Except as expressly provided in this Agreement, each Party's total cumulative aggregate liability for all claims arising under or in connection with this Agreement shall not exceed the total fees paid by Customer in the preceding six (6) months, or INR 10,00,000, whichever is lower.
+
+8.2 Broad Third-Party Indemnification. The Customer shall defend, indemnify, and hold harmless the Vendor and its affiliates against all third-party claims, government penalties, liabilities, and legal expenses without any financial cap or limitation whatsoever, and notwithstanding the limitation of liability provisions set forth in Section 7.1.
+
+12.1 Post-Termination Restraint on Trade. For a period of thirty-six (36) months following the expiration or termination of this Agreement for any reason, the Customer and its affiliates shall not develop, market, invest in, or operate any competing cloud computing or enterprise SaaS product in India, nor solicit any enterprise clients of the Vendor.
+
+14.1 Governing Law and Dispute Resolution. This Agreement shall be governed by and construed in accordance with the substantive laws of India. The courts of Bengaluru shall have exclusive jurisdiction over all legal disputes arising hereunder.

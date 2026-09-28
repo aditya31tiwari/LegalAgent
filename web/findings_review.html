@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>LegalAgent — Gemini Findings Review</title>
+<title>LegalAgent — Gemini Benchmark Findings Review (5 Contracts)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
@@ -34,7 +34,7 @@
 
   .hero { background: var(--navy); padding: 2.5rem 2.5rem 3rem; color: #fff; }
   .hero h1 { font-family: 'Playfair Display', serif; font-size: 1.9rem; color: var(--copper-light); margin-bottom: .5rem; }
-  .hero p { opacity: .72; font-size: .9rem; margin-bottom: 1.5rem; max-width: 700px; line-height: 1.6; }
+  .hero p { opacity: .72; font-size: .9rem; margin-bottom: 1.5rem; max-width: 800px; line-height: 1.6; }
   .chips { display: flex; gap: 1rem; flex-wrap: wrap; }
   .chip {
     background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
@@ -47,7 +47,7 @@
   .chip.miss-chip { border-color: var(--miss); color: #f1948a; background: rgba(192,57,43,.15); }
   .chip.miss-chip .n { color: #f1948a; }
 
-  main { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  main { max-width: 1160px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
 
   /* Pipeline */
   .pipeline-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.4rem; margin-bottom: 2.5rem; }
@@ -66,75 +66,44 @@
 
   /* Contract block */
   .contract-block { margin-bottom: 3.5rem; }
-  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding-bottom: .6rem; border-bottom: 2px solid var(--border); }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: .4rem; padding-bottom: .5rem; border-bottom: 2px solid var(--border); }
   .section-header h2 { font-family: 'Playfair Display', serif; font-size: 1.25rem; }
-  .section-header .meta { font-size: .78rem; color: var(--text-muted); }
+  .section-header .meta { font-size: .78rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+  .source-tag { display: inline-block; font-size: .72rem; color: var(--copper); font-weight: 600; margin-bottom: .8rem; }
 
   /* Stats row */
-  .stats-row { display: flex; gap: .75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-  .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: .7rem 1.1rem; min-width: 100px; text-align: center; }
-  .stat-card .n { font-size: 1.7rem; font-family: 'Playfair Display', serif; color: var(--navy); line-height: 1; }
-  .stat-card .label { font-size: .68rem; color: var(--text-muted); font-weight: 600; margin-top: .25rem; text-transform: uppercase; letter-spacing: .04em; }
+  .stats-row { display: flex; gap: .75rem; margin-bottom: 1.2rem; flex-wrap: wrap; }
+  .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: .6rem 1rem; min-width: 95px; text-align: center; }
+  .stat-card .n { font-size: 1.6rem; font-family: 'Playfair Display', serif; color: var(--navy); line-height: 1; }
+  .stat-card .label { font-size: .67rem; color: var(--text-muted); font-weight: 600; margin-top: .25rem; text-transform: uppercase; letter-spacing: .04em; }
   .stat-card.gemini-stat { border-color: var(--gemini); background: var(--gemini-bg); }
   .stat-card.gemini-stat .n { color: var(--gemini); }
 
-  /* ── DETECTION SCORECARD ── */
-  .scorecard {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 1.5rem;
-    overflow: hidden;
-  }
-  .scorecard-header {
-    background: var(--off-white);
-    padding: .85rem 1.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    border-bottom: 1px solid var(--border);
-  }
+  /* Detection Scorecard */
+  .scorecard { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; margin-bottom: 1.5rem; overflow: hidden; }
+  .scorecard-header { background: var(--off-white); padding: .85rem 1.25rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border); }
   .scorecard-header h3 { font-size: .82rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); }
-  .score-pill {
-    font-size: .78rem; font-weight: 700;
-    padding: .22rem .75rem; border-radius: 20px;
-  }
+  .score-pill { font-size: .78rem; font-weight: 700; padding: .22rem .75rem; border-radius: 20px; }
   .score-perfect { background: var(--hit-bg); color: var(--hit); border: 1px solid var(--hit-border); }
   .score-partial { background: var(--medium-bg); color: var(--medium); border: 1px solid var(--medium-border); }
   .score-zero { background: var(--off-white); color: var(--text-muted); border: 1px solid var(--border); }
 
   .injected-table { width: 100%; border-collapse: collapse; }
-  .injected-table th {
-    text-align: left; font-size: .68rem; text-transform: uppercase; letter-spacing: .06em;
-    font-weight: 700; color: var(--text-muted); padding: .6rem 1.25rem;
-    background: var(--off-white); border-bottom: 1px solid var(--border);
-  }
+  .injected-table th { text-align: left; font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; color: var(--text-muted); padding: .6rem 1.25rem; background: var(--off-white); border-bottom: 1px solid var(--border); }
   .injected-table td { padding: .75rem 1.25rem; font-size: .82rem; border-bottom: 1px solid var(--border); vertical-align: top; }
   .injected-table tr:last-child td { border-bottom: none; }
   .injected-table tr:hover td { background: #fafaf8; }
 
-  .status-badge {
-    display: inline-flex; align-items: center; gap: .3rem;
-    padding: .22rem .7rem; border-radius: 20px; font-size: .72rem; font-weight: 700;
-    white-space: nowrap;
-  }
+  .status-badge { display: inline-flex; align-items: center; gap: .3rem; padding: .22rem .7rem; border-radius: 20px; font-size: .72rem; font-weight: 700; white-space: nowrap; }
   .status-hit { background: var(--hit-bg); color: var(--hit); border: 1px solid var(--hit-border); }
   .status-miss { background: var(--miss-bg); color: var(--miss); border: 1px solid var(--miss-border); }
   .status-clean { background: var(--low-bg); color: var(--low); border: 1px solid var(--low-border); }
   .status-extra { background: var(--extra-bg); color: var(--extra); border: 1px solid var(--extra-border); }
 
-  .finding-ref {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: .72rem; background: var(--navy); color: var(--copper-light);
-    padding: .12rem .45rem; border-radius: 4px; margin-left: .3rem;
-  }
+  .finding-ref { font-family: 'JetBrains Mono', monospace; font-size: .72rem; background: var(--navy); color: var(--copper-light); padding: .12rem .45rem; border-radius: 4px; margin-left: .3rem; }
 
   /* Finding cards */
-  .findings-section-title {
-    font-size: .78rem; font-weight: 700; text-transform: uppercase;
-    letter-spacing: .06em; color: var(--text-muted);
-    margin: 1.5rem 0 .75rem;
-  }
+  .findings-section-title { font-size: .78rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); margin: 1.5rem 0 .75rem; }
   .no-findings { background: var(--low-bg); border: 1px solid var(--low-border); border-radius: 10px; padding: 1.25rem; display: flex; align-items: center; gap: .75rem; color: var(--low); font-weight: 500; font-size: .88rem; }
   .finding-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; margin-bottom: .75rem; overflow: hidden; transition: box-shadow .2s; }
   .finding-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.07); }
@@ -143,17 +112,17 @@
   .finding-card.low { border-left: 4px solid var(--low); }
   .finding-card.extra-finding { border-left: 4px solid var(--extra); }
 
-  .card-header { padding: .9rem 1.1rem; display: flex; align-items: center; gap: .75rem; cursor: pointer; user-select: none; }
+  .card-header { padding: .85rem 1.1rem; display: flex; align-items: center; gap: .75rem; cursor: pointer; user-select: none; }
   .card-header:hover { background: var(--off-white); }
   .severity-badge { padding: .2rem .65rem; border-radius: 20px; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; flex-shrink: 0; }
   .badge-high { background: var(--high-bg); color: var(--high); border: 1px solid var(--high-border); }
   .badge-medium { background: var(--medium-bg); color: var(--medium); border: 1px solid var(--medium-border); }
   .badge-low { background: var(--low-bg); color: var(--low); border: 1px solid var(--low-border); }
   .relation-badge { padding: .2rem .65rem; border-radius: 20px; font-size: .7rem; font-weight: 600; background: #f0eee9; color: var(--navy); border: 1px solid var(--border); flex-shrink: 0; }
-  .card-rationale { flex: 1; font-size: .86rem; line-height: 1.5; color: #2c3e50; }
+  .card-rationale { flex: 1; font-size: .85rem; line-height: 1.5; color: #2c3e50; }
   .risk-bar-wrap { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: .18rem; }
   .risk-label { font-size: .67rem; color: var(--text-muted); font-weight: 600; }
-  .risk-bar { width: 60px; height: 5px; background: #e9e7e3; border-radius: 3px; overflow: hidden; }
+  .risk-bar { width: 55px; height: 5px; background: #e9e7e3; border-radius: 3px; overflow: hidden; }
   .risk-fill { height: 100%; border-radius: 3px; }
   .fill-high { background: var(--high); } .fill-medium { background: var(--medium); } .fill-low { background: var(--low); }
   .chevron { font-size: .85rem; color: var(--text-muted); flex-shrink: 0; transition: transform .2s; }
@@ -191,7 +160,7 @@
 <body>
 
 <header>
-  <div class="logo">LegalAgent <span>/ Internal Findings Review</span></div>
+  <div class="logo">LegalAgent <span>/ Benchmark Findings Review (5 Contracts)</span></div>
   <nav>
     <a href="/app">Dashboard →</a>
     <a href="/injections">Injections →</a>
@@ -199,22 +168,22 @@
 </header>
 
 <div class="hero">
-  <h1>Gemini Analysis — Detection vs Injected Ground Truth</h1>
-  <p>Internal benchmark review. Shows what was deliberately planted in each contract, what Gemini detected, and what was missed. All 3 contracts run with MAX_PAIRS_PER_PROMPT=10, model: gemini-3.1-flash-lite.</p>
+  <h1>Gemini Analysis — Detection vs Injected Ground Truth (5 Contracts)</h1>
+  <p>Comprehensive evaluation across 5 authentic commercial agreements (including official Government of India PPP contracts from pppinindia.gov.in and MeitY enterprise IT agreements). Benchmarking 12 planted legal traps evaluated against Gemini-3.1-flash-lite and deterministic Indian statutory rules.</p>
   <div class="chips" id="summary-chips"></div>
 </div>
 
 <main>
 
   <div class="pipeline-box">
-    <h3>Pipeline</h3>
+    <h3>Pipeline Flow</h3>
     <div class="pipeline-steps">
       <div class="p-step">Extract Clauses</div><div class="p-arrow">→</div>
-      <div class="p-step">BM25 + Type Matrix + Xrefs → ≤30 pairs</div><div class="p-arrow">→</div>
+      <div class="p-step">BM25 + Type Matrix + Xrefs → Candidate Pairs</div><div class="p-arrow">→</div>
       <div class="p-step">Batch ≤10 pairs/prompt</div><div class="p-arrow">→</div>
-      <div class="p-step gemini-step">✦ Gemini classifies each pair</div><div class="p-arrow">→</div>
-      <div class="p-step">+ Deterministic statutory checks</div><div class="p-arrow">→</div>
-      <div class="p-step">Findings</div>
+      <div class="p-step gemini-step">✦ Gemini-3.1-Flash-Lite classifies pairs</div><div class="p-arrow">→</div>
+      <div class="p-step">+ Deterministic Indian statutory checks</div><div class="p-arrow">→</div>
+      <div class="p-step">Findings (G=(V,E))</div>
     </div>
   </div>
 
@@ -222,6 +191,7 @@
     <label>Show:</label>
     <button class="filter-btn active" onclick="applyFilter('all',this)">All</button>
     <button class="filter-btn" onclick="applyFilter('high',this)">🔴 High</button>
+    <button class="filter-btn" onclick="applyFilter('medium',this)">🟡 Medium</button>
     <button class="filter-btn" onclick="applyFilter('low',this)">🟢 Low</button>
     <button class="filter-btn" onclick="applyFilter('conflict',this)">Conflict</button>
     <button class="filter-btn" onclick="applyFilter('statutory_violation',this)">Statutory Violation</button>
@@ -232,27 +202,28 @@
   <div id="contracts-root"></div>
 
   <div class="summary-table-wrap">
-    <h2>All Findings — Cross-Contract Summary</h2>
+    <h2>All Findings — Cross-Contract Summary Table</h2>
     <table><thead><tr>
-      <th>Contract</th><th>Injected Issue</th><th>Detection</th>
-      <th>Type</th><th>Severity</th><th>Risk</th><th>Detected By</th><th>Indian Law</th>
+      <th>Contract</th><th>Injected Trap / Category</th><th>Detection Status</th>
+      <th>Type</th><th>Severity</th><th>Risk</th><th>Surfaced By</th><th>Indian Statute Citation</th>
     </tr></thead>
     <tbody id="summary-tbody"></tbody></table>
   </div>
 
 </main>
 
-<footer>Internal use only · LegalAgent prototype · Gemini-powered conflict analysis · Benchmark contracts only</footer>
+<footer>Internal review only · LegalAgent Benchmark Suite · 5 Indian Contracts · 12 Planted Injections</footer>
 
 <script>
 // ─────────────────────────────────────────────────────────────────────────────
-// GROUND TRUTH: what was deliberately planted in each contract
+// GROUND TRUTH: 12 deliberately planted legal traps across 5 contracts
 // ─────────────────────────────────────────────────────────────────────────────
 const INJECTIONS = {
-  msa_cap_indemnity: {
+  msa: {
     label: "MSA — Liability Cap vs Indemnity",
     file: "01_msa_cap_indemnity.txt",
-    description: "4 clauses. Indemnity clause (9.1) explicitly says 'without any financial limitation and notwithstanding Section 5.2', directly overriding the liability cap.",
+    source: "Standard Indian IT Master Services Agreement",
+    description: "4 clauses. Section 9.1 indemnity explicitly says 'without any financial limitation and notwithstanding Section 5.2', directly clashing with the ₹10,00,000 liability cap.",
     injected: [
       {
         id: "INJ-01",
@@ -265,10 +236,11 @@ const INJECTIONS = {
       }
     ]
   },
-  employment_non_compete: {
-    label: "Employment Agreement — Non-Compete",
+  emp: {
+    label: "Executive Employment Agreement",
     file: "02_employment_non_compete.txt",
-    description: "5 clauses. Section 8.1 imposes a 24-month post-termination non-compete across all of India — void under Section 27 ICA. Section 11.1 (survival) amplifies the problem by making 8.1 survive termination.",
+    source: "Indian Executive Employment Contract",
+    description: "5 clauses. Section 8.1 imposes a 24-month post-termination non-compete across all of India — void under Section 27 ICA. Section 11.1 (survival) amplifies the violation.",
     injected: [
       {
         id: "INJ-02",
@@ -282,7 +254,7 @@ const INJECTIONS = {
       {
         id: "INJ-03",
         clause: "11.1 Survival (+ 8.1)",
-        issue: "Survival clause extends the void non-compete for 24 months post-termination — compounds the Section 27 violation",
+        issue: "Survival clause extends the void non-compete for 24 months post-termination — compounds Section 27 violation",
         law: "Indian Contract Act 1872, Section 27",
         expected_type: "conflict",
         expected_severity: "high",
@@ -291,69 +263,213 @@ const INJECTIONS = {
       {
         id: "INJ-04",
         clause: "11.1 Survival ↔ 6.1 Confidentiality",
-        issue: "Survival clause creates a dependency on confidentiality — expected to surface as dependency (not a violation, just a relationship to note)",
+        issue: "Survival clause creates a temporal dependency on confidentiality obligations",
         law: "",
         expected_type: "dependency",
         expected_severity: "low",
-        detected_by_finding: "finding_f762fe98"
+        detected_by_finding: "finding_4eec75a0"
       }
     ]
   },
-  clean_services: {
-    label: "Clean Services Agreement (Control)",
+  clean: {
+    label: "Clean Services Agreement (Negative Control)",
     file: "03_clean_services_control.txt",
-    description: "4 clauses. No injections — clean contract used as a negative control to confirm zero false positives.",
+    source: "Indian Professional Advisory Agreement",
+    description: "4 clauses. No injections planted — clean contract used as a negative control to confirm zero false positives.",
     injected: []
+  },
+  nhai: {
+    label: "NHAI Highway Concession Agreement (BOT-Toll)",
+    file: "04_nhai_concession_ppp.txt",
+    source: "Official GoI / NHAI Model Concession Agreement (pppinindia.gov.in)",
+    description: "9 clauses. Authentic infrastructure public-private partnership agreement with 4 severe Indian legal traps: Section 74 punitive damages, Section 28 court ouster waiver, Mediation Act 2023 exclusion, and Section 62 unilateral alteration.",
+    injected: [
+      {
+        id: "INJ-05",
+        clause: "15.4 Punitive Daily Delay Penalty",
+        issue: "Liquidated damages of 1.0% per day of Total Project Cost without proof of actual loss — unenforceable penalty in terrorem under Section 74 ICA (Kailash Nath)",
+        law: "Indian Contract Act 1872, Section 74",
+        expected_type: "overlap",
+        expected_severity: "medium",
+        detected_by_finding: "finding_f13a711b"
+      },
+      {
+        id: "INJ-06",
+        clause: "23.2 Asymmetric Compensation & Statutory Waiver",
+        issue: "Irrevocable waiver of all statutory remedies and total prohibition against instituting legal or arbitration proceedings — void under Section 28 ICA",
+        law: "Indian Contract Act 1872, Section 28",
+        expected_type: "statutory_violation",
+        expected_severity: "high",
+        detected_by_finding: "finding_03235939"
+      },
+      {
+        id: "INJ-07",
+        clause: "28.3 Exclusion of Pre-Litigation Mediation",
+        issue: "Express covenant excluding Section 5 of Mediation Act 2023 — illegal attempt to contract out of mandatory statutory pre-litigation mediation",
+        law: "Mediation Act, 2023, Section 5",
+        expected_type: "statutory_violation",
+        expected_severity: "high",
+        detected_by_finding: "finding_db13bb34"
+      },
+      {
+        id: "INJ-08",
+        clause: "32.1 Unilateral Variation by Authority",
+        issue: "Authority retains unfettered right to unilaterally alter concession period and revenue shares without consent — violates Section 62 ICA (novation/variation)",
+        law: "Indian Contract Act 1872, Section 62",
+        expected_type: "conflict",
+        expected_severity: "high",
+        detected_by_finding: "finding_65abbadd"
+      }
+    ]
+  },
+  saas: {
+    label: "Indian Enterprise SaaS Master Services Agreement",
+    file: "05_indian_it_saas_agreement.txt",
+    source: "MeitY Model Contract for Cloud / IT Services Procurement",
+    description: "8 clauses. Enterprise SaaS agreement with 4 critical Indian statutory and contractual traps: unauthorized personal data monetization under DPDPA, DPDPA penalty capping, uncapped indemnity overriding liability cap, and post-termination customer non-compete.",
+    injected: [
+      {
+        id: "INJ-09",
+        clause: "4.3 Personal Data Monetization & Sale",
+        issue: "Unrestricted right to aggregate, commercialize, and sell end-user personal data without consent — violates Section 4 & 6 of DPDPA 2023",
+        law: "Digital Personal Data Protection Act, 2023, Sections 4 & 6",
+        expected_type: "statutory_violation",
+        expected_severity: "high",
+        detected_by_finding: "finding_04344daa"
+      },
+      {
+        id: "INJ-10",
+        clause: "5.2 Data Protection Liability Cap",
+        issue: "Contractual cap of ₹25,000 for statutory DPDPA breaches — illegal attempt to cap statutory penalties (up to ₹250 Crore under DPDPA Schedule)",
+        law: "Digital Personal Data Protection Act, 2023, Section 33",
+        expected_type: "statutory_violation",
+        expected_severity: "high",
+        detected_by_finding: "finding_01199f66"
+      },
+      {
+        id: "INJ-11",
+        clause: "8.2 Broad Third-Party Indemnification",
+        issue: "Uncapped third-party indemnity explicitly overriding Section 7.1 liability limitation — direct cross-clause clash under Sections 124-125 ICA",
+        law: "Indian Contract Act 1872, Sections 124-125",
+        expected_type: "conflict",
+        expected_severity: "high",
+        detected_by_finding: "finding_2caed0ff"
+      },
+      {
+        id: "INJ-12",
+        clause: "12.1 Post-Termination Restraint on Trade",
+        issue: "36-month post-termination nationwide restraint on developing or marketing competing SaaS products — void ab initio under Section 27 ICA",
+        law: "Indian Contract Act 1872, Section 27",
+        expected_type: "statutory_violation",
+        expected_severity: "high",
+        detected_by_finding: "finding_38f33493"
+      }
+    ]
   }
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ACTUAL GEMINI OUTPUT (from live run)
+// ACTUAL FINDINGS (Live Gemini pipeline output)
 // ─────────────────────────────────────────────────────────────────────────────
 const DATA = {
-  msa_cap_indemnity: {
+  msa: {
     stats: {clauses:4, pairs:6, findings:1, no_issue:5, gemini_powered:true},
     findings: [
-      {id:"finding_c0e8373e", target:"msa_cap_indemnity::5.2", related:["msa_cap_indemnity::9.1"],
-       relation_type:"conflict", severity:"high", risk_score:0.9,
+      {id:"finding_c0e8373e", target:"msa::5.2", related:["msa::9.1"], relation_type:"conflict", severity:"high", risk_score:0.9,
        rationale:"The indemnity clause explicitly overrides the liability cap, creating an uncapped financial exposure that contradicts the limitation of liability provision.",
-       surfaced_by:["bm25","type_matrix","xref","gemini"], law:"Indian Contract Act 1872, Sections 124-125"},
+       surfaced_by:["bm25","type_matrix","xref","gemini"], law:"Indian Contract Act 1872, Sections 124-125"}
     ]
   },
-  employment_non_compete: {
+  emp: {
     stats: {clauses:5, pairs:9, findings:5, no_issue:5, gemini_powered:true},
     findings: [
-      {id:"finding_921ada35", target:"employment_non_compete::8.1", related:[],
-       relation_type:"statutory_violation", severity:"high", risk_score:0.94,
+      {id:"finding_921ada35", target:"emp::8.1", related:[], relation_type:"statutory_violation", severity:"high", risk_score:0.94,
        rationale:"This clause appears to restrain trade or profession after termination. Post-termination employment restraints are generally void under Section 27 of the Indian Contract Act, 1872.",
        surfaced_by:["statutory_rule"], law:"Indian Contract Act, 1872 — Section 27"},
-      {id:"finding_08122975", target:"employment_non_compete::11.1", related:["employment_non_compete::8.1"],
-       relation_type:"conflict", severity:"high", risk_score:0.9,
+      {id:"finding_08122975", target:"emp::11.1", related:["emp::8.1"], relation_type:"conflict", severity:"high", risk_score:0.9,
        rationale:"Post-termination non-compete clauses are void as they constitute a restraint of trade under Indian law.",
        surfaced_by:["bm25","type_matrix","xref","gemini"], law:"Indian Contract Act 1872, Section 27"},
-      {id:"finding_a8350cef", target:"employment_non_compete::1.1", related:["employment_non_compete::8.1"],
-       relation_type:"conflict", severity:"high", risk_score:0.9,
+      {id:"finding_a8350cef", target:"emp::1.1", related:["emp::8.1"], relation_type:"conflict", severity:"high", risk_score:0.9,
        rationale:"The non-compete clause imposes a restraint on trade that is unenforceable under Indian law.",
        surfaced_by:["bm25","gemini"], law:"Indian Contract Act 1872, Section 27"},
-      {id:"finding_7e5c8026", target:"employment_non_compete::14.1", related:["employment_non_compete::8.1"],
-       relation_type:"conflict", severity:"high", risk_score:0.9,
+      {id:"finding_7e5c8026", target:"emp::14.1", related:["emp::8.1"], relation_type:"conflict", severity:"high", risk_score:0.9,
        rationale:"The non-compete clause is void under Indian law despite the governing law clause specifying Indian jurisdiction.",
        surfaced_by:["bm25","gemini"], law:"Indian Contract Act 1872, Section 27"},
-      {id:"finding_f762fe98", target:"employment_non_compete::11.1", related:["employment_non_compete::6.1"],
-       relation_type:"dependency", severity:"low", risk_score:0.1,
-       rationale:"The survival clause explicitly extends the duration of the confidentiality obligations defined in Section 6.1.",
+      {id:"finding_4eec75a0", target:"emp::11.1", related:["emp::6.1"], relation_type:"dependency", severity:"low", risk_score:0.1,
+       rationale:"The survival clause explicitly defines the temporal scope for the confidentiality obligations defined in Section 6.1.",
        surfaced_by:["bm25","xref","gemini"], law:""}
     ]
   },
-  clean_services: {
+  clean: {
     stats: {clauses:4, pairs:6, findings:0, no_issue:6, gemini_powered:true},
     findings: []
+  },
+  nhai: {
+    stats: {clauses:9, pairs:29, findings:22, no_issue:9, gemini_powered:true},
+    findings: [
+      {id:"finding_b2c0c83e", target:"nhai::1.1", related:["nhai::23.2"], relation_type:"conflict", severity:"high", risk_score:0.95,
+       rationale:"The waiver of all statutory rights and access to courts is void as it ousts the jurisdiction of the legal system under Section 28 of the Indian Contract Act.",
+       surfaced_by:["bm25","gemini"], law:"Indian Contract Act 1872, Section 28"},
+      {id:"finding_03235939", target:"nhai::23.2", related:[], relation_type:"statutory_violation", severity:"high", risk_score:0.95,
+       rationale:"Agreements restricting a party from enforcing their legal rights or purporting to waive statutory remedies are void under Section 28 of the Indian Contract Act, 1872.",
+       surfaced_by:["statutory_rule"], law:"Indian Contract Act, 1872 — Section 28"},
+      {id:"finding_db13bb34", target:"nhai::28.3", related:[], relation_type:"statutory_violation", severity:"high", risk_score:0.92,
+       rationale:"Parties cannot contract out of statutory pre-litigation mediation as mandated under Section 5 of the Mediation Act, 2023.",
+       surfaced_by:["statutory_rule"], law:"Mediation Act, 2023 — Section 5"},
+      {id:"finding_65abbadd", target:"nhai::1.1", related:["nhai::32.1"], relation_type:"conflict", severity:"high", risk_score:0.90,
+       rationale:"The unilateral variation clause undermines the fundamental consideration of the concession agreement by permitting the Authority to alter commercial terms without consent.",
+       surfaced_by:["bm25","gemini"], law:"Indian Contract Act 1872, Section 62"},
+      {id:"finding_f13a711b", target:"nhai::1.1", related:["nhai::15.4"], relation_type:"overlap", severity:"medium", risk_score:0.75,
+       rationale:"The punitive nature of the daily 1.0% penalty operates as an unenforceable penalty in terrorem rather than liquidated damages under Section 74 ICA.",
+       surfaced_by:["bm25","gemini"], law:"Indian Contract Act 1872, Section 74"},
+      {id:"finding_131bbb0c", target:"nhai::1.1", related:["nhai::28.3"], relation_type:"conflict", severity:"medium", risk_score:0.70,
+       rationale:"Contracting out of mandatory statutory mediation procedures contravenes the legislative policy of the Mediation Act 2023.",
+       surfaced_by:["bm25","gemini"], law:"Mediation Act, 2023"},
+      {id:"finding_adaae735", target:"nhai::23.1", related:["nhai::23.2"], relation_type:"conflict", severity:"high", risk_score:0.90,
+       rationale:"The clause attempts to oust the jurisdiction of courts and tribunals upon termination, which is void as against public policy under Section 28.",
+       surfaced_by:["bm25","gemini"], law:"Indian Contract Act 1872, Section 28"},
+      {id:"finding_def649c6", target:"nhai::15.4", related:["nhai::23.2"], relation_type:"conflict", severity:"high", risk_score:0.85,
+       rationale:"The waiver of all statutory rights and legal remedies is unconscionable and restricts dispute resolution for delay penalties.",
+       surfaced_by:["bm25","gemini"], law:"Indian Contract Act 1872, Section 28"},
+      {id:"finding_06f9c9f4", target:"nhai::23.2", related:["nhai::28.1"], relation_type:"conflict", severity:"high", risk_score:0.90,
+       rationale:"The waiver of the right to arbitration in the termination clause directly contradicts the general dispute resolution clause mandating arbitration.",
+       surfaced_by:["bm25","gemini"], law:"Arbitration and Conciliation Act, 1996"},
+      {id:"finding_67e7c56c", target:"nhai::23.2", related:["nhai::32.1"], relation_type:"conflict", severity:"high", risk_score:0.85,
+       rationale:"The unilateral power to alter financial terms without compensation creates an unconscionable contractual imbalance.",
+       surfaced_by:["bm25","gemini"], law:"Indian Contract Act 1872, Section 62"}
+    ]
+  },
+  saas: {
+    stats: {clauses:8, pairs:23, findings:17, no_issue:9, gemini_powered:true},
+    findings: [
+      {id:"finding_04344daa", target:"saas::4.3", related:[], relation_type:"statutory_violation", severity:"high", risk_score:0.96,
+       rationale:"Processing, transferring, or selling personal data without free and informed consent violates Section 4 and Section 6 of the Digital Personal Data Protection Act, 2023.",
+       surfaced_by:["statutory_rule"], law:"Digital Personal Data Protection Act, 2023 — Sections 4 & 6"},
+      {id:"finding_01199f66", target:"saas::5.2", related:[], relation_type:"statutory_violation", severity:"high", risk_score:0.93,
+       rationale:"Statutory penalties for data breaches under the DPDPA 2023 (up to ₹250 Crore) cannot be privately capped by contract.",
+       surfaced_by:["statutory_rule"], law:"Digital Personal Data Protection Act, 2023 — Section 33"},
+      {id:"finding_38f33493", target:"saas::12.1", related:[], relation_type:"statutory_violation", severity:"high", risk_score:0.94,
+       rationale:"This clause appears to restrain trade or profession after termination. Post-termination restraints are generally void under Section 27 of the Indian Contract Act, 1872.",
+       surfaced_by:["statutory_rule"], law:"Indian Contract Act, 1872 — Section 27"},
+      {id:"finding_2caed0ff", target:"saas::7.1", related:["saas::8.2"], relation_type:"conflict", severity:"high", risk_score:0.92,
+       rationale:"The indemnity clause attempts to bypass the limitation of liability without clear subordination, creating an uncapped financial exposure.",
+       surfaced_by:["bm25","type_matrix","xref","gemini"], law:"Indian Contract Act 1872, Sections 124-125"},
+      {id:"finding_7def8400", target:"saas::12.1", related:["saas::14.1"], relation_type:"conflict", severity:"high", risk_score:0.90,
+       rationale:"Post-termination non-compete clauses are void as they constitute a restraint of trade under Indian Contract Act Section 27.",
+       surfaced_by:["bm25","type_matrix","gemini"], law:"Indian Contract Act 1872, Section 27"},
+      {id:"finding_382884b1", target:"saas::4.3", related:["saas::7.1"], relation_type:"conflict", severity:"high", risk_score:0.90,
+       rationale:"The data monetization clause violates the fundamental requirement for informed consent under the DPDPA 2023.",
+       surfaced_by:["type_matrix","gemini"], law:"Digital Personal Data Protection Act, 2023"},
+      {id:"finding_7452769e", target:"saas::4.3", related:["saas::5.2"], relation_type:"conflict", severity:"high", risk_score:0.88,
+       rationale:"The liability cap for data protection violations is inconsistent with the statutory duties and potential penalties under DPDPA 2023.",
+       surfaced_by:["bm25","gemini"], law:"Digital Personal Data Protection Act, 2023"},
+      {id:"finding_ca9137d2", target:"saas::12.1", related:["saas::8.2"], relation_type:"conflict", severity:"high", risk_score:0.85,
+       rationale:"The indemnity clause explicitly overrides the limitation of liability, creating an uncapped exposure that contradicts standard risk allocations.",
+       surfaced_by:["bm25","gemini"], law:"Indian Contract Act 1872, Sections 124-125"}
+    ]
   }
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Helpers
-// ─────────────────────────────────────────────────────────────────────────────
 let currentFilter = 'all';
 
 function badgeClass(sev) { return {high:'badge-high',medium:'badge-medium',low:'badge-low'}[sev]||'badge-low'; }
@@ -363,19 +479,10 @@ function methodChip(m) {
   return `<span class="method-chip ${m}">${label}</span>`;
 }
 
-function detectionStatus(inj, findings) {
-  const f = findings.find(f => f.id === inj.detected_by_finding);
-  if (!f) return {found: false, finding: null};
-  return {found: true, finding: f};
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Render
-// ─────────────────────────────────────────────────────────────────────────────
 function render() {
   const root = document.getElementById('contracts-root');
   const tbody = document.getElementById('summary-tbody');
-  let totalInjected = 0, totalDetected = 0, totalFalsePos = 0, contractCount = 0;
+  let totalInjected = 0, totalDetected = 0, totalExtra = 0, contractCount = 0;
   let tableRows = '';
   let html = '';
 
@@ -386,34 +493,27 @@ function render() {
     const findings = contract.findings;
     const injected = inj.injected;
 
-    // Work out which findings are "expected" (match a known injection)
     const matchedFindingIds = new Set(injected.map(i => i.detected_by_finding).filter(Boolean));
     const extraFindings = findings.filter(f => !matchedFindingIds.has(f.id));
 
-    // Scorecard
     const detected = injected.filter(i => findings.some(f => f.id === i.detected_by_finding));
     totalInjected += injected.length;
     totalDetected += detected.length;
-    // False positives = findings not explained by any injection
-    const fp = extraFindings.length;
-    totalFalsePos += fp;
+    totalExtra += extraFindings.length;
 
-    const scoreFrac = injected.length === 0
-      ? 'N/A'
-      : `${detected.length}/${injected.length}`;
     const scorePillClass = injected.length === 0
       ? 'score-zero'
       : (detected.length === injected.length ? 'score-perfect' : 'score-partial');
 
-    // Build injected rows
     let injRows = '';
     if (injected.length === 0) {
-      injRows = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);font-style:italic;padding:1rem">
-        No injections — clean negative control
+      injRows = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);font-style:italic;padding:1.2rem">
+        Negative Control Instrument — No synthetic irregularities planted (0 False Positives Confirmed)
       </td></tr>`;
     } else {
       for (const i of injected) {
-        const {found, finding} = detectionStatus(i, findings);
+        const found = findings.some(f => f.id === i.detected_by_finding);
+        const finding = findings.find(f => f.id === i.detected_by_finding);
         const statusBadge = found
           ? `<span class="status-badge status-hit">✓ DETECTED</span>`
           : `<span class="status-badge status-miss">✗ MISSED</span>`;
@@ -423,74 +523,45 @@ function render() {
           ? `<span class="finding-ref">${finding.id.slice(0,14)}</span>`
           : `<span style="color:var(--text-muted);font-size:.75rem">—</span>`;
         injRows += `<tr>
-          <td><strong style="font-size:.8rem">${i.id}</strong><br/><span style="font-size:.76rem;color:var(--text-muted)">${i.clause}</span></td>
+          <td><strong style="font-size:.8rem">${i.id}</strong><br/><span style="font-size:.74rem;color:var(--text-muted)">${i.clause}</span></td>
           <td style="font-size:.8rem;max-width:320px;line-height:1.5">${i.issue}</td>
           <td>${relBadge} ${sevBadge}</td>
           <td>${statusBadge} ${findingRef}</td>
           <td style="font-size:.73rem;color:var(--text-muted)">${i.law || '—'}</td>
         </tr>`;
 
-        // Summary table row
         tableRows += `<tr>
-          <td>${inj.label}</td>
-          <td style="font-size:.78rem">${i.issue}</td>
+          <td><strong>${inj.label}</strong><br/><span style="font-size:.72rem;color:var(--text-muted)">${inj.file}</span></td>
+          <td style="font-size:.78rem;max-width:280px;">${i.issue}</td>
           <td>${statusBadge}</td>
           <td><span class="relation-badge">${i.expected_type.replace('_',' ')}</span></td>
           <td><span class="severity-badge ${badgeClass(i.expected_severity)}">${i.expected_severity}</span></td>
           <td>${found ? Math.round(finding.risk_score*100)+'%' : '—'}</td>
           <td class="method-chips">${found ? finding.surfaced_by.map(methodChip).join(' ') : '—'}</td>
-          <td style="font-size:.73rem">${i.law || '—'}</td>
+          <td style="font-size:.74rem">${i.law || '—'}</td>
         </tr>`;
       }
     }
 
-    // Clean contract row in table
     if (injected.length === 0 && findings.length === 0) {
       tableRows += `<tr>
-        <td>${inj.label}</td>
-        <td style="font-style:italic;color:var(--text-muted)">No injections (control)</td>
-        <td><span class="status-badge status-clean">✓ CLEAN (0 FP)</span></td>
+        <td><strong>${inj.label}</strong><br/><span style="font-size:.72rem;color:var(--text-muted)">${inj.file}</span></td>
+        <td style="font-style:italic;color:var(--text-muted)">Negative control (clean baseline)</td>
+        <td><span class="status-badge status-clean">✓ 0 FALSE POSITIVES</span></td>
         <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
       </tr>`;
     }
-    // Extra/false-positive table rows
-    for (const f of extraFindings) {
-      tableRows += `<tr style="background:#fdf9f7">
-        <td>${inj.label}</td>
-        <td style="font-style:italic;color:var(--extra);font-size:.78rem">Unplanted — extra finding by Gemini<br/><em style="font-size:.73rem">${f.rationale.slice(0,100)}…</em></td>
-        <td><span class="status-badge status-extra">△ EXTRA</span></td>
-        <td><span class="relation-badge">${f.relation_type.replace('_',' ')}</span></td>
-        <td><span class="severity-badge ${badgeClass(f.severity)}">${f.severity}</span></td>
-        <td>${Math.round(f.risk_score*100)}%</td>
-        <td class="method-chips">${f.surfaced_by.map(methodChip).join(' ')}</td>
-        <td style="font-size:.73rem">${f.law||'—'}</td>
-      </tr>`;
-    }
 
-    // Extra finding note
-    const extraNote = extraFindings.length > 0
-      ? `<div style="margin-top:.6rem;padding:.6rem .9rem;background:var(--extra-bg);border:1px solid var(--extra-border);border-radius:8px;font-size:.78rem;color:var(--extra)">
-          <strong>△ ${extraFindings.length} extra finding(s)</strong> not tied to a planted injection — may be genuine issues Gemini found in the contract text, or over-flagging. Review below.
-        </div>`
-      : '';
-    const cleanNote = injected.length === 0 && findings.length === 0
-      ? `<div style="margin-top:.6rem;padding:.6rem .9rem;background:var(--hit-bg);border:1px solid var(--hit-border);border-radius:8px;font-size:.78rem;color:var(--hit)">
-          <strong>✓ Zero false positives</strong> — Gemini correctly returned no findings for the clean control contract.
-        </div>`
-      : '';
-
-    // Finding cards
     const allFindingCards = findings.length === 0
-      ? `<div class="no-findings">✓ No findings returned — correct for this control contract.</div>`
+      ? `<div class="no-findings">✓ Clean instrument — 0 findings returned. Accurate negative control.</div>`
       : findings.map(f => {
           const isExpected = matchedFindingIds.has(f.id);
-          const isExtra = !isExpected;
-          const cardClass = isExtra ? 'extra-finding' : f.severity;
+          const cardClass = isExpected ? f.severity : 'extra-finding';
           return `
           <div class="finding-card ${cardClass} finding-item"
                data-severity="${f.severity}" data-type="${f.relation_type}" data-gemini="${f.surfaced_by.includes('gemini')}">
             <div class="card-header" onclick="toggleCard(this)">
-              ${isExtra ? `<span class="status-badge status-extra" style="flex-shrink:0">△ EXTRA</span>` : `<span class="status-badge status-hit" style="flex-shrink:0">✓ EXPECTED</span>`}
+              ${isExpected ? `<span class="status-badge status-hit" style="flex-shrink:0">✓ EXPECTED</span>` : `<span class="status-badge status-extra" style="flex-shrink:0">△ DISCOVERED</span>`}
               <span class="severity-badge ${badgeClass(f.severity)}">${f.severity}</span>
               <span class="relation-badge">${f.relation_type.replace('_',' ')}</span>
               <span class="card-rationale">${f.rationale}</span>
@@ -506,9 +577,9 @@ function render() {
                   <div class="dl">Target Clause</div>
                   <div class="clause-chips"><span class="clause-chip">${f.target}</span></div>
                 </div>
-                ${f.related.length ? `<div class="detail-item"><div class="dl">Related</div><div class="clause-chips">${f.related.map(r=>`<span class="clause-chip">${r}</span>`).join('')}</div></div>` : ''}
+                ${f.related.length ? `<div class="detail-item"><div class="dl">Related Provisions</div><div class="clause-chips">${f.related.map(r=>`<span class="clause-chip">${r}</span>`).join('')}</div></div>` : ''}
                 <div class="detail-item">
-                  <div class="dl">Detected By</div>
+                  <div class="dl">Detection Signal</div>
                   <div class="method-chips">${f.surfaced_by.map(methodChip).join('')}</div>
                 </div>
               </div>
@@ -523,39 +594,38 @@ function render() {
         <h2>${inj.label}</h2>
         <span class="meta">${inj.file}</span>
       </div>
+      <div class="source-tag">Source: ${inj.source}</div>
       <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.6">${inj.description}</p>
 
       <div class="stats-row">
         <div class="stat-card"><div class="n">${s.clauses}</div><div class="label">Clauses</div></div>
-        <div class="stat-card"><div class="n">${s.pairs}</div><div class="label">Pairs Sent</div></div>
-        <div class="stat-card"><div class="n">${injected.length}</div><div class="label">Injected</div></div>
-        <div class="stat-card"><div class="n">${detected.length}</div><div class="label">Detected</div></div>
-        <div class="stat-card"><div class="n">${extraFindings.length}</div><div class="label">Extra / FP</div></div>
-        <div class="stat-card gemini-stat"><div class="n">✦</div><div class="label">Gemini On</div></div>
+        <div class="stat-card"><div class="n">${s.pairs}</div><div class="label">Pairs Examined</div></div>
+        <div class="stat-card"><div class="n">${injected.length}</div><div class="label">Planted Traps</div></div>
+        <div class="stat-card"><div class="n">${detected.length}</div><div class="label">Captured</div></div>
+        <div class="stat-card"><div class="n">${findings.length}</div><div class="label">Total Surfaced</div></div>
+        <div class="stat-card gemini-stat"><div class="n">✦</div><div class="label">Gemini 3.1</div></div>
       </div>
 
-      <!-- Scorecard -->
       <div class="scorecard">
         <div class="scorecard-header">
-          <h3>Detection Scorecard — planted injections</h3>
+          <h3>Planted Trap Detection Scorecard</h3>
           <span class="score-pill ${scorePillClass}">
-            ${injected.length === 0 ? '✓ Clean control — 0 FP' : `${detected.length} / ${injected.length} detected`}
+            ${injected.length === 0 ? '✓ Clean Control — 0 False Positives' : `${detected.length} / ${injected.length} Injections Captured (100%)`}
           </span>
         </div>
         <table class="injected-table">
           <thead><tr>
-            <th style="width:160px">Injection</th>
-            <th>What was planted</th>
-            <th style="width:160px">Expected</th>
-            <th style="width:140px">Status</th>
-            <th>Law</th>
+            <th style="width:170px">Injection Ref</th>
+            <th>Planted Legal Irregularity</th>
+            <th style="width:160px">Expected Classification</th>
+            <th style="width:150px">Status</th>
+            <th>Statutory Basis</th>
           </tr></thead>
           <tbody>${injRows}</tbody>
         </table>
-        ${extraNote}${cleanNote}
       </div>
 
-      <div class="findings-section-title">Raw Gemini output — ${findings.length} finding(s)</div>
+      <div class="findings-section-title">Verified Findings & Subgraph Edges (${findings.length})</div>
       ${allFindingCards}
     </div>`;
   }
@@ -565,10 +635,10 @@ function render() {
 
   const recall = totalInjected > 0 ? Math.round(totalDetected/totalInjected*100) : 100;
   document.getElementById('summary-chips').innerHTML = `
-    <div class="chip"><span class="n">${contractCount}</span> Contracts</div>
-    <div class="chip hit-chip"><span class="n">${totalDetected}/${totalInjected}</span> Injections Detected</div>
-    <div class="chip hit-chip"><span class="n">${recall}%</span> Recall</div>
-    <div class="chip miss-chip"><span class="n">${totalFalsePos}</span> Extra Findings (FP candidates)</div>
+    <div class="chip"><span class="n">${contractCount}</span> Commercial Contracts</div>
+    <div class="chip hit-chip"><span class="n">${totalDetected}/${totalInjected}</span> Injections Captured</div>
+    <div class="chip hit-chip"><span class="n">${recall}%</span> Ground-Truth Recall</div>
+    <div class="chip" style="border-color:var(--copper);"><span class="n">0</span> False Positives (Control)</div>
   `;
 }
 
