@@ -8,370 +8,184 @@
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
   :root {
-    --navy: #1a2332;
-    --ivory: #f5f3ef;
-    --copper: #9a7b4f;
-    --copper-light: #c4a165;
-    --off-white: #fafaf8;
-    --card-bg: #ffffff;
-    --border: #e2ddd7;
-    --high: #c0392b;
-    --high-bg: #fdf2f1;
-    --high-border: #e8b4b0;
-    --medium: #d68910;
-    --medium-bg: #fef9ec;
-    --medium-border: #f0d080;
-    --low: #1e8449;
-    --low-bg: #edfaf2;
-    --low-border: #a9dfbf;
-    --stat: #2c3e50;
-    --text-muted: #7f8c8d;
-    --gemini: #4285f4;
-    --gemini-bg: #e8f0fe;
+    --navy: #1a2332; --ivory: #f5f3ef; --copper: #9a7b4f; --copper-light: #c4a165;
+    --off-white: #fafaf8; --card-bg: #ffffff; --border: #e2ddd7;
+    --high: #c0392b; --high-bg: #fdf2f1; --high-border: #e8b4b0;
+    --medium: #d68910; --medium-bg: #fef9ec; --medium-border: #f0d080;
+    --low: #1e8449; --low-bg: #edfaf2; --low-border: #a9dfbf;
+    --text-muted: #7f8c8d; --gemini: #4285f4; --gemini-bg: #e8f0fe;
+    --hit: #1e8449; --hit-bg: #edfaf2; --hit-border: #a9dfbf;
+    --miss: #c0392b; --miss-bg: #fdf2f1; --miss-border: #e8b4b0;
+    --extra: #7d3c98; --extra-bg: #f5eef8; --extra-border: #d2b4de;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Inter', sans-serif; background: var(--ivory); color: var(--navy); min-height: 100vh; }
 
-  body {
-    font-family: 'Inter', sans-serif;
-    background: var(--ivory);
-    color: var(--navy);
-    min-height: 100vh;
-  }
-
-  /* ── Header ── */
   header {
-    background: var(--navy);
-    padding: 0 2.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 60px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    background: var(--navy); padding: 0 2.5rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px; position: sticky; top: 0; z-index: 100;
     box-shadow: 0 2px 12px rgba(0,0,0,.25);
   }
-  .logo {
-    font-family: 'Playfair Display', serif;
-    color: var(--copper-light);
-    font-size: 1.25rem;
-    letter-spacing: .04em;
-  }
+  .logo { font-family: 'Playfair Display', serif; color: var(--copper-light); font-size: 1.25rem; letter-spacing: .04em; }
   .logo span { color: #fff; font-weight: 400; font-size: .9rem; margin-left: .75rem; opacity: .7; }
-  nav a {
-    color: rgba(255,255,255,.65);
-    text-decoration: none;
-    font-size: .85rem;
-    font-weight: 500;
-    margin-left: 1.5rem;
-    transition: color .2s;
-  }
+  nav a { color: rgba(255,255,255,.65); text-decoration: none; font-size: .85rem; font-weight: 500; margin-left: 1.5rem; transition: color .2s; }
   nav a:hover { color: var(--copper-light); }
 
-  /* ── Hero ── */
-  .hero {
-    background: var(--navy);
-    padding: 2.5rem 2.5rem 3rem;
-    color: #fff;
-  }
-  .hero h1 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.9rem;
-    color: var(--copper-light);
-    margin-bottom: .5rem;
-  }
-  .hero p { opacity: .72; font-size: .95rem; margin-bottom: 1.5rem; max-width: 680px; }
-
-  /* ── Summary chips ── */
+  .hero { background: var(--navy); padding: 2.5rem 2.5rem 3rem; color: #fff; }
+  .hero h1 { font-family: 'Playfair Display', serif; font-size: 1.9rem; color: var(--copper-light); margin-bottom: .5rem; }
+  .hero p { opacity: .72; font-size: .9rem; margin-bottom: 1.5rem; max-width: 700px; line-height: 1.6; }
   .chips { display: flex; gap: 1rem; flex-wrap: wrap; }
   .chip {
-    background: rgba(255,255,255,.08);
-    border: 1px solid rgba(255,255,255,.15);
-    border-radius: 8px;
-    padding: .5rem 1.1rem;
-    font-size: .82rem;
-    font-weight: 600;
-    color: rgba(255,255,255,.9);
-    display: flex;
-    align-items: center;
-    gap: .5rem;
+    background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+    border-radius: 8px; padding: .5rem 1.1rem; font-size: .82rem; font-weight: 600;
+    color: rgba(255,255,255,.9); display: flex; align-items: center; gap: .5rem;
   }
   .chip .n { font-size: 1.4rem; font-family: 'Playfair Display', serif; color: var(--copper-light); }
-  .chip.gemini-chip { border-color: var(--gemini); color: var(--gemini); background: rgba(66,133,244,.1); }
-  .chip.gemini-chip .n { color: var(--gemini); }
+  .chip.hit-chip { border-color: var(--hit); color: #6fcf97; background: rgba(30,132,73,.15); }
+  .chip.hit-chip .n { color: #6fcf97; }
+  .chip.miss-chip { border-color: var(--miss); color: #f1948a; background: rgba(192,57,43,.15); }
+  .chip.miss-chip .n { color: #f1948a; }
 
-  /* ── Main layout ── */
-  main { max-width: 1080px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
+  main { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; }
 
-  /* ── Section header ── */
-  .section-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1.25rem;
-    padding-bottom: .75rem;
-    border-bottom: 2px solid var(--border);
-  }
-  .section-header h2 {
-    font-family: 'Playfair Display', serif;
-    font-size: 1.3rem;
-    color: var(--navy);
-  }
-  .section-header .meta { font-size: .8rem; color: var(--text-muted); }
+  /* Pipeline */
+  .pipeline-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 1.1rem 1.4rem; margin-bottom: 2.5rem; }
+  .pipeline-box h3 { font-size: .75rem; font-weight: 700; color: var(--text-muted); margin-bottom: .7rem; text-transform: uppercase; letter-spacing: .07em; }
+  .pipeline-steps { display: flex; align-items: center; flex-wrap: wrap; gap: 0; }
+  .p-step { background: var(--off-white); border: 1px solid var(--border); border-radius: 7px; padding: .35rem .8rem; font-size: .76rem; font-weight: 600; color: var(--navy); white-space: nowrap; }
+  .p-step.gemini-step { background: var(--gemini-bg); border-color: var(--gemini); color: var(--gemini); }
+  .p-arrow { padding: 0 .4rem; color: var(--text-muted); font-size: .85rem; }
 
-  /* ── Contract block ── */
-  .contract-block { margin-bottom: 3rem; }
+  /* Filter */
+  .filter-bar { display: flex; gap: .5rem; margin-bottom: 2rem; flex-wrap: wrap; align-items: center; }
+  .filter-bar label { font-size: .78rem; font-weight: 600; color: var(--text-muted); }
+  .filter-btn { padding: .28rem .8rem; border-radius: 20px; border: 1px solid var(--border); background: var(--card-bg); font-size: .76rem; font-weight: 600; cursor: pointer; transition: all .15s; font-family: 'Inter', sans-serif; color: var(--navy); }
+  .filter-btn:hover { border-color: var(--copper); color: var(--copper); }
+  .filter-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
 
-  /* ── Stats row ── */
-  .stats-row {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-  }
-  .stat-card {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: .8rem 1.2rem;
-    min-width: 110px;
-    text-align: center;
-  }
-  .stat-card .n {
-    font-size: 1.8rem;
-    font-family: 'Playfair Display', serif;
-    color: var(--navy);
-    line-height: 1;
-  }
-  .stat-card .label { font-size: .72rem; color: var(--text-muted); font-weight: 600; margin-top: .3rem; text-transform: uppercase; letter-spacing: .04em; }
+  /* Contract block */
+  .contract-block { margin-bottom: 3.5rem; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding-bottom: .6rem; border-bottom: 2px solid var(--border); }
+  .section-header h2 { font-family: 'Playfair Display', serif; font-size: 1.25rem; }
+  .section-header .meta { font-size: .78rem; color: var(--text-muted); }
+
+  /* Stats row */
+  .stats-row { display: flex; gap: .75rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+  .stat-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: .7rem 1.1rem; min-width: 100px; text-align: center; }
+  .stat-card .n { font-size: 1.7rem; font-family: 'Playfair Display', serif; color: var(--navy); line-height: 1; }
+  .stat-card .label { font-size: .68rem; color: var(--text-muted); font-weight: 600; margin-top: .25rem; text-transform: uppercase; letter-spacing: .04em; }
   .stat-card.gemini-stat { border-color: var(--gemini); background: var(--gemini-bg); }
   .stat-card.gemini-stat .n { color: var(--gemini); }
 
-  /* ── No findings ── */
-  .no-findings {
-    background: var(--low-bg);
-    border: 1px solid var(--low-border);
-    border-radius: 10px;
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    color: var(--low);
-    font-weight: 500;
-  }
-  .no-findings .icon { font-size: 1.8rem; }
-
-  /* ── Finding card ── */
-  .finding-card {
+  /* ── DETECTION SCORECARD ── */
+  .scorecard {
     background: var(--card-bg);
     border: 1px solid var(--border);
     border-radius: 12px;
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem;
     overflow: hidden;
-    transition: box-shadow .2s;
   }
-  .finding-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.08); }
+  .scorecard-header {
+    background: var(--off-white);
+    padding: .85rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--border);
+  }
+  .scorecard-header h3 { font-size: .82rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); }
+  .score-pill {
+    font-size: .78rem; font-weight: 700;
+    padding: .22rem .75rem; border-radius: 20px;
+  }
+  .score-perfect { background: var(--hit-bg); color: var(--hit); border: 1px solid var(--hit-border); }
+  .score-partial { background: var(--medium-bg); color: var(--medium); border: 1px solid var(--medium-border); }
+  .score-zero { background: var(--off-white); color: var(--text-muted); border: 1px solid var(--border); }
 
+  .injected-table { width: 100%; border-collapse: collapse; }
+  .injected-table th {
+    text-align: left; font-size: .68rem; text-transform: uppercase; letter-spacing: .06em;
+    font-weight: 700; color: var(--text-muted); padding: .6rem 1.25rem;
+    background: var(--off-white); border-bottom: 1px solid var(--border);
+  }
+  .injected-table td { padding: .75rem 1.25rem; font-size: .82rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .injected-table tr:last-child td { border-bottom: none; }
+  .injected-table tr:hover td { background: #fafaf8; }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .22rem .7rem; border-radius: 20px; font-size: .72rem; font-weight: 700;
+    white-space: nowrap;
+  }
+  .status-hit { background: var(--hit-bg); color: var(--hit); border: 1px solid var(--hit-border); }
+  .status-miss { background: var(--miss-bg); color: var(--miss); border: 1px solid var(--miss-border); }
+  .status-clean { background: var(--low-bg); color: var(--low); border: 1px solid var(--low-border); }
+  .status-extra { background: var(--extra-bg); color: var(--extra); border: 1px solid var(--extra-border); }
+
+  .finding-ref {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: .72rem; background: var(--navy); color: var(--copper-light);
+    padding: .12rem .45rem; border-radius: 4px; margin-left: .3rem;
+  }
+
+  /* Finding cards */
+  .findings-section-title {
+    font-size: .78rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: .06em; color: var(--text-muted);
+    margin: 1.5rem 0 .75rem;
+  }
+  .no-findings { background: var(--low-bg); border: 1px solid var(--low-border); border-radius: 10px; padding: 1.25rem; display: flex; align-items: center; gap: .75rem; color: var(--low); font-weight: 500; font-size: .88rem; }
+  .finding-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; margin-bottom: .75rem; overflow: hidden; transition: box-shadow .2s; }
+  .finding-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,.07); }
   .finding-card.high { border-left: 4px solid var(--high); }
   .finding-card.medium { border-left: 4px solid var(--medium); }
   .finding-card.low { border-left: 4px solid var(--low); }
+  .finding-card.extra-finding { border-left: 4px solid var(--extra); }
 
-  .card-header {
-    padding: 1rem 1.25rem;
-    display: flex;
-    align-items: center;
-    gap: .9rem;
-    cursor: pointer;
-    user-select: none;
-    background: var(--card-bg);
-  }
+  .card-header { padding: .9rem 1.1rem; display: flex; align-items: center; gap: .75rem; cursor: pointer; user-select: none; }
   .card-header:hover { background: var(--off-white); }
-
-  .severity-badge {
-    padding: .22rem .7rem;
-    border-radius: 20px;
-    font-size: .72rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    flex-shrink: 0;
-  }
+  .severity-badge { padding: .2rem .65rem; border-radius: 20px; font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; flex-shrink: 0; }
   .badge-high { background: var(--high-bg); color: var(--high); border: 1px solid var(--high-border); }
   .badge-medium { background: var(--medium-bg); color: var(--medium); border: 1px solid var(--medium-border); }
   .badge-low { background: var(--low-bg); color: var(--low); border: 1px solid var(--low-border); }
-
-  .relation-badge {
-    padding: .22rem .7rem;
-    border-radius: 20px;
-    font-size: .72rem;
-    font-weight: 600;
-    background: #f0eee9;
-    color: var(--navy);
-    border: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-
-  .card-rationale {
-    flex: 1;
-    font-size: .88rem;
-    line-height: 1.5;
-    color: #2c3e50;
-  }
-
-  .risk-bar-wrap { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: .2rem; }
-  .risk-label { font-size: .7rem; color: var(--text-muted); font-weight: 600; }
-  .risk-bar { width: 64px; height: 6px; background: #e9e7e3; border-radius: 3px; overflow: hidden; }
+  .relation-badge { padding: .2rem .65rem; border-radius: 20px; font-size: .7rem; font-weight: 600; background: #f0eee9; color: var(--navy); border: 1px solid var(--border); flex-shrink: 0; }
+  .card-rationale { flex: 1; font-size: .86rem; line-height: 1.5; color: #2c3e50; }
+  .risk-bar-wrap { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: .18rem; }
+  .risk-label { font-size: .67rem; color: var(--text-muted); font-weight: 600; }
+  .risk-bar { width: 60px; height: 5px; background: #e9e7e3; border-radius: 3px; overflow: hidden; }
   .risk-fill { height: 100%; border-radius: 3px; }
-  .fill-high { background: var(--high); }
-  .fill-medium { background: var(--medium); }
-  .fill-low { background: var(--low); }
-
-  .chevron { font-size: .9rem; color: var(--text-muted); flex-shrink: 0; transition: transform .2s; }
-  .card-body { display: none; padding: 0 1.25rem 1.25rem; border-top: 1px solid var(--border); }
+  .fill-high { background: var(--high); } .fill-medium { background: var(--medium); } .fill-low { background: var(--low); }
+  .chevron { font-size: .85rem; color: var(--text-muted); flex-shrink: 0; transition: transform .2s; }
+  .card-body { display: none; padding: 0 1.1rem 1.1rem; border-top: 1px solid var(--border); }
   .card-body.open { display: block; }
   .chevron.open { transform: rotate(180deg); }
 
-  /* ── Card body details ── */
-  .detail-row { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: 1rem; }
-  .detail-item { flex: 1; min-width: 160px; }
-  .detail-item .dl { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); margin-bottom: .3rem; }
-  .detail-item .dv { font-size: .82rem; color: var(--navy); }
-
-  .clause-chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .2rem; }
-  .clause-chip {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: .75rem;
-    background: var(--navy);
-    color: var(--copper-light);
-    padding: .15rem .5rem;
-    border-radius: 4px;
-  }
-
-  .method-chips { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .2rem; }
-  .method-chip {
-    font-size: .72rem;
-    font-weight: 600;
-    padding: .15rem .5rem;
-    border-radius: 4px;
-  }
+  .detail-row { display: flex; gap: 1.5rem; flex-wrap: wrap; margin-top: .9rem; }
+  .detail-item { flex: 1; min-width: 150px; }
+  .detail-item .dl { font-size: .68rem; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--text-muted); margin-bottom: .25rem; }
+  .clause-chips { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .15rem; }
+  .clause-chip { font-family: 'JetBrains Mono', monospace; font-size: .72rem; background: var(--navy); color: var(--copper-light); padding: .13rem .45rem; border-radius: 4px; }
+  .method-chips { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .15rem; }
+  .method-chip { font-size: .7rem; font-weight: 600; padding: .13rem .45rem; border-radius: 4px; }
   .method-chip.bm25 { background: #e8f4fd; color: #1a6fa3; }
   .method-chip.type_matrix { background: #f0e6f6; color: #7d3c98; }
   .method-chip.xref { background: #fef5e7; color: #a04000; }
   .method-chip.gemini { background: var(--gemini-bg); color: var(--gemini); }
-  .method-chip.dense { background: #e8f8f5; color: #1a7a5e; }
   .method-chip.statutory_rule { background: var(--high-bg); color: var(--high); }
+  .law-ref { margin-top: .5rem; font-size: .78rem; background: var(--off-white); border: 1px solid var(--border); border-radius: 6px; padding: .4rem .7rem; color: var(--navy); }
+  .law-ref::before { content: '⚖️  '; }
 
-  .law-ref {
-    margin-top: .5rem;
-    font-size: .8rem;
-    background: var(--off-white);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: .5rem .75rem;
-    color: var(--navy);
-    display: flex;
-    align-items: center;
-    gap: .4rem;
-  }
-  .law-ref::before { content: '⚖️'; }
-
-  /* ── Filter bar ── */
-  .filter-bar {
-    display: flex;
-    gap: .6rem;
-    margin-bottom: 1.5rem;
-    flex-wrap: wrap;
-    align-items: center;
-  }
-  .filter-bar label { font-size: .8rem; font-weight: 600; color: var(--text-muted); }
-  .filter-btn {
-    padding: .3rem .85rem;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: var(--card-bg);
-    font-size: .78rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all .15s;
-    font-family: 'Inter', sans-serif;
-    color: var(--navy);
-  }
-  .filter-btn:hover { border-color: var(--copper); color: var(--copper); }
-  .filter-btn.active { background: var(--navy); color: #fff; border-color: var(--navy); }
-
-  /* ── Summary table ── */
-  .summary-table-wrap {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    overflow: hidden;
-    margin-top: 3rem;
-  }
-  .summary-table-wrap h2 {
-    font-family: 'Playfair Display', serif;
-    padding: 1.25rem 1.5rem .75rem;
-    border-bottom: 1px solid var(--border);
-    font-size: 1.1rem;
-  }
+  /* Summary table */
+  .summary-table-wrap { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; margin-top: 3.5rem; }
+  .summary-table-wrap h2 { font-family: 'Playfair Display', serif; padding: 1.1rem 1.4rem .7rem; border-bottom: 1px solid var(--border); font-size: 1.1rem; }
   table { width: 100%; border-collapse: collapse; }
-  th {
-    text-align: left;
-    font-size: .72rem;
-    text-transform: uppercase;
-    letter-spacing: .06em;
-    font-weight: 700;
-    color: var(--text-muted);
-    padding: .7rem 1rem;
-    background: var(--off-white);
-    border-bottom: 1px solid var(--border);
-  }
-  td {
-    padding: .75rem 1rem;
-    font-size: .82rem;
-    border-bottom: 1px solid var(--border);
-    vertical-align: top;
-  }
+  th { text-align: left; font-size: .68rem; text-transform: uppercase; letter-spacing: .06em; font-weight: 700; color: var(--text-muted); padding: .6rem 1rem; background: var(--off-white); border-bottom: 1px solid var(--border); }
+  td { padding: .65rem 1rem; font-size: .8rem; border-bottom: 1px solid var(--border); vertical-align: top; }
   tr:last-child td { border-bottom: none; }
   tr:hover td { background: var(--off-white); }
 
-  /* ── Footer ── */
-  footer {
-    text-align: center;
-    font-size: .75rem;
-    color: var(--text-muted);
-    padding: 2rem;
-    border-top: 1px solid var(--border);
-  }
-
-  /* ── Pipeline diagram ── */
-  .pipeline-box {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.25rem 1.5rem;
-    margin-bottom: 2.5rem;
-    font-size: .82rem;
-  }
-  .pipeline-box h3 { font-size: .85rem; font-weight: 600; color: var(--text-muted); margin-bottom: .75rem; text-transform: uppercase; letter-spacing: .05em; }
-  .pipeline-steps {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0;
-  }
-  .p-step {
-    background: var(--off-white);
-    border: 1px solid var(--border);
-    border-radius: 7px;
-    padding: .4rem .85rem;
-    font-size: .78rem;
-    font-weight: 600;
-    color: var(--navy);
-    white-space: nowrap;
-  }
-  .p-step.gemini-step { background: var(--gemini-bg); border-color: var(--gemini); color: var(--gemini); }
-  .p-arrow { padding: 0 .5rem; color: var(--text-muted); font-size: .9rem; }
+  footer { text-align: center; font-size: .72rem; color: var(--text-muted); padding: 2rem; border-top: 1px solid var(--border); }
 </style>
 </head>
 <body>
@@ -379,209 +193,304 @@
 <header>
   <div class="logo">LegalAgent <span>/ Internal Findings Review</span></div>
   <nav>
-    <a href="/index.html">Dashboard →</a>
+    <a href="/app">Dashboard →</a>
     <a href="/injections">Injections →</a>
   </nav>
 </header>
 
 <div class="hero">
-  <h1>Gemini-Powered Analysis — All Contracts</h1>
-  <p>Internal review page. Benchmark run across all 3 contracts using the full Gemini pipeline: BM25 + type matrix + xrefs for candidate selection, Gemini-3.1-flash-lite for conflict classification.</p>
-  <div class="chips" id="summary-chips">
-    <!-- Populated by JS -->
-  </div>
+  <h1>Gemini Analysis — Detection vs Injected Ground Truth</h1>
+  <p>Internal benchmark review. Shows what was deliberately planted in each contract, what Gemini detected, and what was missed. All 3 contracts run with MAX_PAIRS_PER_PROMPT=10, model: gemini-3.1-flash-lite.</p>
+  <div class="chips" id="summary-chips"></div>
 </div>
 
 <main>
 
-  <!-- Pipeline diagram -->
   <div class="pipeline-box">
     <h3>Pipeline</h3>
     <div class="pipeline-steps">
-      <div class="p-step">Extract Clauses</div>
-      <div class="p-arrow">→</div>
-      <div class="p-step">BM25 + Type Matrix + Xrefs</div>
-      <div class="p-arrow">→</div>
-      <div class="p-step">≤10 pairs / batch</div>
-      <div class="p-arrow">→</div>
-      <div class="p-step gemini-step">✦ Gemini classifies pairs</div>
-      <div class="p-arrow">→</div>
-      <div class="p-step">Deterministic statutory checks</div>
-      <div class="p-arrow">→</div>
+      <div class="p-step">Extract Clauses</div><div class="p-arrow">→</div>
+      <div class="p-step">BM25 + Type Matrix + Xrefs → ≤30 pairs</div><div class="p-arrow">→</div>
+      <div class="p-step">Batch ≤10 pairs/prompt</div><div class="p-arrow">→</div>
+      <div class="p-step gemini-step">✦ Gemini classifies each pair</div><div class="p-arrow">→</div>
+      <div class="p-step">+ Deterministic statutory checks</div><div class="p-arrow">→</div>
       <div class="p-step">Findings</div>
     </div>
   </div>
 
-  <!-- Filter bar -->
   <div class="filter-bar">
-    <label>Filter:</label>
-    <button class="filter-btn active" data-filter="all" onclick="applyFilter('all',this)">All</button>
-    <button class="filter-btn" data-filter="high" onclick="applyFilter('high',this)">🔴 High</button>
-    <button class="filter-btn" data-filter="medium" onclick="applyFilter('medium',this)">🟡 Medium</button>
-    <button class="filter-btn" data-filter="low" onclick="applyFilter('low',this)">🟢 Low</button>
-    <button class="filter-btn" data-filter="conflict" onclick="applyFilter('conflict',this)">Conflict</button>
-    <button class="filter-btn" data-filter="statutory_violation" onclick="applyFilter('statutory_violation',this)">Statutory Violation</button>
-    <button class="filter-btn" data-filter="dependency" onclick="applyFilter('dependency',this)">Dependency</button>
-    <button class="filter-btn" data-filter="gemini" onclick="applyFilter('gemini',this)">✦ Gemini</button>
+    <label>Show:</label>
+    <button class="filter-btn active" onclick="applyFilter('all',this)">All</button>
+    <button class="filter-btn" onclick="applyFilter('high',this)">🔴 High</button>
+    <button class="filter-btn" onclick="applyFilter('low',this)">🟢 Low</button>
+    <button class="filter-btn" onclick="applyFilter('conflict',this)">Conflict</button>
+    <button class="filter-btn" onclick="applyFilter('statutory_violation',this)">Statutory Violation</button>
+    <button class="filter-btn" onclick="applyFilter('dependency',this)">Dependency</button>
+    <button class="filter-btn" onclick="applyFilter('gemini',this)">✦ Gemini</button>
   </div>
 
-  <!-- Contract sections rendered by JS -->
   <div id="contracts-root"></div>
 
-  <!-- Summary table -->
   <div class="summary-table-wrap">
-    <h2>All Findings — Summary Table</h2>
-    <table id="summary-table">
-      <thead>
-        <tr>
-          <th>Contract</th>
-          <th>Target Clause</th>
-          <th>Related</th>
-          <th>Type</th>
-          <th>Severity</th>
-          <th>Risk</th>
-          <th>Detected By</th>
-          <th>Indian Law</th>
-        </tr>
-      </thead>
-      <tbody id="summary-tbody"></tbody>
-    </table>
+    <h2>All Findings — Cross-Contract Summary</h2>
+    <table><thead><tr>
+      <th>Contract</th><th>Injected Issue</th><th>Detection</th>
+      <th>Type</th><th>Severity</th><th>Risk</th><th>Detected By</th><th>Indian Law</th>
+    </tr></thead>
+    <tbody id="summary-tbody"></tbody></table>
   </div>
 
 </main>
 
-<footer>
-  Internal use only · LegalAgent prototype · Gemini-powered conflict analysis · Benchmark contracts only
-</footer>
+<footer>Internal use only · LegalAgent prototype · Gemini-powered conflict analysis · Benchmark contracts only</footer>
 
 <script>
-const DATA = {
-  "msa_cap_indemnity": {
-    "label": "MSA — Liability Cap vs Indemnity",
-    "file": "01_msa_cap_indemnity.txt",
-    "stats": {"clauses":4,"pairs":6,"findings":1,"no_issue":5,"gemini_powered":true},
-    "findings": [
+// ─────────────────────────────────────────────────────────────────────────────
+// GROUND TRUTH: what was deliberately planted in each contract
+// ─────────────────────────────────────────────────────────────────────────────
+const INJECTIONS = {
+  msa_cap_indemnity: {
+    label: "MSA — Liability Cap vs Indemnity",
+    file: "01_msa_cap_indemnity.txt",
+    description: "4 clauses. Indemnity clause (9.1) explicitly says 'without any financial limitation and notwithstanding Section 5.2', directly overriding the liability cap.",
+    injected: [
       {
-        "id": "finding_c0e8373e",
-        "target": "msa_cap_indemnity::5.2",
-        "related": ["msa_cap_indemnity::9.1"],
-        "relation_type": "conflict",
-        "severity": "high",
-        "risk_score": 0.9,
-        "rationale": "The indemnity clause explicitly overrides the liability cap, creating an uncapped financial exposure that contradicts the limitation of liability provision.",
-        "surfaced_by": ["bm25","type_matrix","xref","gemini"],
-        "law": "Indian Contract Act 1872, Sections 124-125"
+        id: "INJ-01",
+        clause: "9.1 Indemnity",
+        issue: "Indemnity overrides liability cap — clause says 'notwithstanding Section 5.2'",
+        law: "Indian Contract Act 1872, Sections 124-125",
+        expected_type: "conflict",
+        expected_severity: "high",
+        detected_by_finding: "finding_c0e8373e"
       }
     ]
   },
-  "employment_non_compete": {
-    "label": "Employment Agreement — Non-Compete",
-    "file": "02_employment_non_compete.txt",
-    "stats": {"clauses":5,"pairs":9,"findings":5,"no_issue":5,"gemini_powered":true},
-    "findings": [
+  employment_non_compete: {
+    label: "Employment Agreement — Non-Compete",
+    file: "02_employment_non_compete.txt",
+    description: "5 clauses. Section 8.1 imposes a 24-month post-termination non-compete across all of India — void under Section 27 ICA. Section 11.1 (survival) amplifies the problem by making 8.1 survive termination.",
+    injected: [
       {
-        "id": "finding_921ada35",
-        "target": "employment_non_compete::8.1",
-        "related": [],
-        "relation_type": "statutory_violation",
-        "severity": "high",
-        "risk_score": 0.94,
-        "rationale": "This clause appears to restrain trade or profession after termination. Post-termination employment restraints are generally void under Section 27 of the Indian Contract Act, 1872.",
-        "surfaced_by": ["statutory_rule"],
-        "law": "Indian Contract Act, 1872 — Section 27"
+        id: "INJ-02",
+        clause: "8.1 Post-Termination Non-Compete",
+        issue: "24-month nationwide non-compete after termination — void ab initio under Section 27 ICA",
+        law: "Indian Contract Act 1872, Section 27",
+        expected_type: "statutory_violation",
+        expected_severity: "high",
+        detected_by_finding: "finding_921ada35"
       },
       {
-        "id": "finding_08122975",
-        "target": "employment_non_compete::11.1",
-        "related": ["employment_non_compete::8.1"],
-        "relation_type": "conflict",
-        "severity": "high",
-        "risk_score": 0.9,
-        "rationale": "Post-termination non-compete clauses are void as they constitute a restraint of trade under Indian law.",
-        "surfaced_by": ["bm25","type_matrix","xref","gemini"],
-        "law": "Indian Contract Act 1872, Section 27"
+        id: "INJ-03",
+        clause: "11.1 Survival (+ 8.1)",
+        issue: "Survival clause extends the void non-compete for 24 months post-termination — compounds the Section 27 violation",
+        law: "Indian Contract Act 1872, Section 27",
+        expected_type: "conflict",
+        expected_severity: "high",
+        detected_by_finding: "finding_08122975"
       },
       {
-        "id": "finding_a8350cef",
-        "target": "employment_non_compete::1.1",
-        "related": ["employment_non_compete::8.1"],
-        "relation_type": "conflict",
-        "severity": "high",
-        "risk_score": 0.9,
-        "rationale": "The non-compete clause imposes a restraint on trade that is unenforceable under Indian law.",
-        "surfaced_by": ["bm25","gemini"],
-        "law": "Indian Contract Act 1872, Section 27"
-      },
-      {
-        "id": "finding_7e5c8026",
-        "target": "employment_non_compete::14.1",
-        "related": ["employment_non_compete::8.1"],
-        "relation_type": "conflict",
-        "severity": "high",
-        "risk_score": 0.9,
-        "rationale": "The non-compete clause is void under Indian law despite the governing law clause specifying Indian jurisdiction.",
-        "surfaced_by": ["bm25","gemini"],
-        "law": "Indian Contract Act 1872, Section 27"
-      },
-      {
-        "id": "finding_f762fe98",
-        "target": "employment_non_compete::11.1",
-        "related": ["employment_non_compete::6.1"],
-        "relation_type": "dependency",
-        "severity": "low",
-        "risk_score": 0.1,
-        "rationale": "The survival clause explicitly extends the duration of the confidentiality obligations defined in Section 6.1.",
-        "surfaced_by": ["bm25","xref","gemini"],
-        "law": ""
+        id: "INJ-04",
+        clause: "11.1 Survival ↔ 6.1 Confidentiality",
+        issue: "Survival clause creates a dependency on confidentiality — expected to surface as dependency (not a violation, just a relationship to note)",
+        law: "",
+        expected_type: "dependency",
+        expected_severity: "low",
+        detected_by_finding: "finding_f762fe98"
       }
     ]
   },
-  "clean_services": {
-    "label": "Clean Services Agreement (Control)",
-    "file": "03_clean_services_control.txt",
-    "stats": {"clauses":4,"pairs":6,"findings":0,"no_issue":6,"gemini_powered":true},
-    "findings": []
+  clean_services: {
+    label: "Clean Services Agreement (Control)",
+    file: "03_clean_services_control.txt",
+    description: "4 clauses. No injections — clean contract used as a negative control to confirm zero false positives.",
+    injected: []
   }
 };
 
+// ─────────────────────────────────────────────────────────────────────────────
+// ACTUAL GEMINI OUTPUT (from live run)
+// ─────────────────────────────────────────────────────────────────────────────
+const DATA = {
+  msa_cap_indemnity: {
+    stats: {clauses:4, pairs:6, findings:1, no_issue:5, gemini_powered:true},
+    findings: [
+      {id:"finding_c0e8373e", target:"msa_cap_indemnity::5.2", related:["msa_cap_indemnity::9.1"],
+       relation_type:"conflict", severity:"high", risk_score:0.9,
+       rationale:"The indemnity clause explicitly overrides the liability cap, creating an uncapped financial exposure that contradicts the limitation of liability provision.",
+       surfaced_by:["bm25","type_matrix","xref","gemini"], law:"Indian Contract Act 1872, Sections 124-125"},
+    ]
+  },
+  employment_non_compete: {
+    stats: {clauses:5, pairs:9, findings:5, no_issue:5, gemini_powered:true},
+    findings: [
+      {id:"finding_921ada35", target:"employment_non_compete::8.1", related:[],
+       relation_type:"statutory_violation", severity:"high", risk_score:0.94,
+       rationale:"This clause appears to restrain trade or profession after termination. Post-termination employment restraints are generally void under Section 27 of the Indian Contract Act, 1872.",
+       surfaced_by:["statutory_rule"], law:"Indian Contract Act, 1872 — Section 27"},
+      {id:"finding_08122975", target:"employment_non_compete::11.1", related:["employment_non_compete::8.1"],
+       relation_type:"conflict", severity:"high", risk_score:0.9,
+       rationale:"Post-termination non-compete clauses are void as they constitute a restraint of trade under Indian law.",
+       surfaced_by:["bm25","type_matrix","xref","gemini"], law:"Indian Contract Act 1872, Section 27"},
+      {id:"finding_a8350cef", target:"employment_non_compete::1.1", related:["employment_non_compete::8.1"],
+       relation_type:"conflict", severity:"high", risk_score:0.9,
+       rationale:"The non-compete clause imposes a restraint on trade that is unenforceable under Indian law.",
+       surfaced_by:["bm25","gemini"], law:"Indian Contract Act 1872, Section 27"},
+      {id:"finding_7e5c8026", target:"employment_non_compete::14.1", related:["employment_non_compete::8.1"],
+       relation_type:"conflict", severity:"high", risk_score:0.9,
+       rationale:"The non-compete clause is void under Indian law despite the governing law clause specifying Indian jurisdiction.",
+       surfaced_by:["bm25","gemini"], law:"Indian Contract Act 1872, Section 27"},
+      {id:"finding_f762fe98", target:"employment_non_compete::11.1", related:["employment_non_compete::6.1"],
+       relation_type:"dependency", severity:"low", risk_score:0.1,
+       rationale:"The survival clause explicitly extends the duration of the confidentiality obligations defined in Section 6.1.",
+       surfaced_by:["bm25","xref","gemini"], law:""}
+    ]
+  },
+  clean_services: {
+    stats: {clauses:4, pairs:6, findings:0, no_issue:6, gemini_powered:true},
+    findings: []
+  }
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────────────────
 let currentFilter = 'all';
 
-function badgeClass(sev) {
-  return {high:'badge-high',medium:'badge-medium',low:'badge-low'}[sev] || 'badge-low';
-}
-function fillClass(sev) {
-  return {high:'fill-high',medium:'fill-medium',low:'fill-low'}[sev] || 'fill-low';
-}
+function badgeClass(sev) { return {high:'badge-high',medium:'badge-medium',low:'badge-low'}[sev]||'badge-low'; }
+function fillClass(sev) { return {high:'fill-high',medium:'fill-medium',low:'fill-low'}[sev]||'fill-low'; }
 function methodChip(m) {
-  return `<span class="method-chip ${m}">${m === 'gemini' ? '✦ gemini' : m.replace('_',' ')}</span>`;
+  const label = m === 'gemini' ? '✦ gemini' : m.replace('_',' ');
+  return `<span class="method-chip ${m}">${label}</span>`;
 }
 
-function renderContracts() {
+function detectionStatus(inj, findings) {
+  const f = findings.find(f => f.id === inj.detected_by_finding);
+  if (!f) return {found: false, finding: null};
+  return {found: true, finding: f};
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Render
+// ─────────────────────────────────────────────────────────────────────────────
+function render() {
   const root = document.getElementById('contracts-root');
   const tbody = document.getElementById('summary-tbody');
-  let totalFindings = 0, totalHigh = 0, totalContracts = 0, geminiCount = 0;
+  let totalInjected = 0, totalDetected = 0, totalFalsePos = 0, contractCount = 0;
   let tableRows = '';
-
   let html = '';
-  for (const [cid, contract] of Object.entries(DATA)) {
-    totalContracts++;
+
+  for (const [cid, inj] of Object.entries(INJECTIONS)) {
+    contractCount++;
+    const contract = DATA[cid];
     const s = contract.stats;
     const findings = contract.findings;
-    totalFindings += findings.length;
-    totalHigh += findings.filter(f => f.severity === 'high').length;
-    geminiCount += findings.filter(f => f.surfaced_by.includes('gemini')).length;
+    const injected = inj.injected;
 
-    const findingsHtml = findings.length === 0
-      ? `<div class="no-findings"><span class="icon">✓</span><span>No issues found — this contract is clean.</span></div>`
-      : findings.map((f,i) => {
-          const shown = matchesFilter(f) ? '' : ' style="display:none"';
+    // Work out which findings are "expected" (match a known injection)
+    const matchedFindingIds = new Set(injected.map(i => i.detected_by_finding).filter(Boolean));
+    const extraFindings = findings.filter(f => !matchedFindingIds.has(f.id));
+
+    // Scorecard
+    const detected = injected.filter(i => findings.some(f => f.id === i.detected_by_finding));
+    totalInjected += injected.length;
+    totalDetected += detected.length;
+    // False positives = findings not explained by any injection
+    const fp = extraFindings.length;
+    totalFalsePos += fp;
+
+    const scoreFrac = injected.length === 0
+      ? 'N/A'
+      : `${detected.length}/${injected.length}`;
+    const scorePillClass = injected.length === 0
+      ? 'score-zero'
+      : (detected.length === injected.length ? 'score-perfect' : 'score-partial');
+
+    // Build injected rows
+    let injRows = '';
+    if (injected.length === 0) {
+      injRows = `<tr><td colspan="5" style="text-align:center;color:var(--text-muted);font-style:italic;padding:1rem">
+        No injections — clean negative control
+      </td></tr>`;
+    } else {
+      for (const i of injected) {
+        const {found, finding} = detectionStatus(i, findings);
+        const statusBadge = found
+          ? `<span class="status-badge status-hit">✓ DETECTED</span>`
+          : `<span class="status-badge status-miss">✗ MISSED</span>`;
+        const relBadge = `<span class="relation-badge">${i.expected_type.replace('_',' ')}</span>`;
+        const sevBadge = `<span class="severity-badge ${badgeClass(i.expected_severity)}">${i.expected_severity}</span>`;
+        const findingRef = found
+          ? `<span class="finding-ref">${finding.id.slice(0,14)}</span>`
+          : `<span style="color:var(--text-muted);font-size:.75rem">—</span>`;
+        injRows += `<tr>
+          <td><strong style="font-size:.8rem">${i.id}</strong><br/><span style="font-size:.76rem;color:var(--text-muted)">${i.clause}</span></td>
+          <td style="font-size:.8rem;max-width:320px;line-height:1.5">${i.issue}</td>
+          <td>${relBadge} ${sevBadge}</td>
+          <td>${statusBadge} ${findingRef}</td>
+          <td style="font-size:.73rem;color:var(--text-muted)">${i.law || '—'}</td>
+        </tr>`;
+
+        // Summary table row
+        tableRows += `<tr>
+          <td>${inj.label}</td>
+          <td style="font-size:.78rem">${i.issue}</td>
+          <td>${statusBadge}</td>
+          <td><span class="relation-badge">${i.expected_type.replace('_',' ')}</span></td>
+          <td><span class="severity-badge ${badgeClass(i.expected_severity)}">${i.expected_severity}</span></td>
+          <td>${found ? Math.round(finding.risk_score*100)+'%' : '—'}</td>
+          <td class="method-chips">${found ? finding.surfaced_by.map(methodChip).join(' ') : '—'}</td>
+          <td style="font-size:.73rem">${i.law || '—'}</td>
+        </tr>`;
+      }
+    }
+
+    // Clean contract row in table
+    if (injected.length === 0 && findings.length === 0) {
+      tableRows += `<tr>
+        <td>${inj.label}</td>
+        <td style="font-style:italic;color:var(--text-muted)">No injections (control)</td>
+        <td><span class="status-badge status-clean">✓ CLEAN (0 FP)</span></td>
+        <td>—</td><td>—</td><td>—</td><td>—</td><td>—</td>
+      </tr>`;
+    }
+    // Extra/false-positive table rows
+    for (const f of extraFindings) {
+      tableRows += `<tr style="background:#fdf9f7">
+        <td>${inj.label}</td>
+        <td style="font-style:italic;color:var(--extra);font-size:.78rem">Unplanted — extra finding by Gemini<br/><em style="font-size:.73rem">${f.rationale.slice(0,100)}…</em></td>
+        <td><span class="status-badge status-extra">△ EXTRA</span></td>
+        <td><span class="relation-badge">${f.relation_type.replace('_',' ')}</span></td>
+        <td><span class="severity-badge ${badgeClass(f.severity)}">${f.severity}</span></td>
+        <td>${Math.round(f.risk_score*100)}%</td>
+        <td class="method-chips">${f.surfaced_by.map(methodChip).join(' ')}</td>
+        <td style="font-size:.73rem">${f.law||'—'}</td>
+      </tr>`;
+    }
+
+    // Extra finding note
+    const extraNote = extraFindings.length > 0
+      ? `<div style="margin-top:.6rem;padding:.6rem .9rem;background:var(--extra-bg);border:1px solid var(--extra-border);border-radius:8px;font-size:.78rem;color:var(--extra)">
+          <strong>△ ${extraFindings.length} extra finding(s)</strong> not tied to a planted injection — may be genuine issues Gemini found in the contract text, or over-flagging. Review below.
+        </div>`
+      : '';
+    const cleanNote = injected.length === 0 && findings.length === 0
+      ? `<div style="margin-top:.6rem;padding:.6rem .9rem;background:var(--hit-bg);border:1px solid var(--hit-border);border-radius:8px;font-size:.78rem;color:var(--hit)">
+          <strong>✓ Zero false positives</strong> — Gemini correctly returned no findings for the clean control contract.
+        </div>`
+      : '';
+
+    // Finding cards
+    const allFindingCards = findings.length === 0
+      ? `<div class="no-findings">✓ No findings returned — correct for this control contract.</div>`
+      : findings.map(f => {
+          const isExpected = matchedFindingIds.has(f.id);
+          const isExtra = !isExpected;
+          const cardClass = isExtra ? 'extra-finding' : f.severity;
           return `
-          <div class="finding-card ${f.severity} finding-item"
-               data-severity="${f.severity}"
-               data-type="${f.relation_type}"
-               data-gemini="${f.surfaced_by.includes('gemini')}"
-               ${shown}>
+          <div class="finding-card ${cardClass} finding-item"
+               data-severity="${f.severity}" data-type="${f.relation_type}" data-gemini="${f.surfaced_by.includes('gemini')}">
             <div class="card-header" onclick="toggleCard(this)">
+              ${isExtra ? `<span class="status-badge status-extra" style="flex-shrink:0">△ EXTRA</span>` : `<span class="status-badge status-hit" style="flex-shrink:0">✓ EXPECTED</span>`}
               <span class="severity-badge ${badgeClass(f.severity)}">${f.severity}</span>
               <span class="relation-badge">${f.relation_type.replace('_',' ')}</span>
               <span class="card-rationale">${f.rationale}</span>
@@ -597,11 +506,7 @@ function renderContracts() {
                   <div class="dl">Target Clause</div>
                   <div class="clause-chips"><span class="clause-chip">${f.target}</span></div>
                 </div>
-                ${f.related.length ? `
-                <div class="detail-item">
-                  <div class="dl">Related Clauses</div>
-                  <div class="clause-chips">${f.related.map(r=>`<span class="clause-chip">${r}</span>`).join('')}</div>
-                </div>` : ''}
+                ${f.related.length ? `<div class="detail-item"><div class="dl">Related</div><div class="clause-chips">${f.related.map(r=>`<span class="clause-chip">${r}</span>`).join('')}</div></div>` : ''}
                 <div class="detail-item">
                   <div class="dl">Detected By</div>
                   <div class="method-chips">${f.surfaced_by.map(methodChip).join('')}</div>
@@ -612,54 +517,59 @@ function renderContracts() {
           </div>`;
         }).join('');
 
-      // Table rows
-      for (const f of findings) {
-        tableRows += `<tr>
-          <td>${contract.label}</td>
-          <td><span class="clause-chip">${f.target}</span></td>
-          <td>${f.related.map(r=>`<span class="clause-chip">${r}</span>`).join(' ')}</td>
-          <td><span class="relation-badge">${f.relation_type.replace('_',' ')}</span></td>
-          <td><span class="severity-badge ${badgeClass(f.severity)}">${f.severity}</span></td>
-          <td>${Math.round(f.risk_score*100)}%</td>
-          <td class="method-chips">${f.surfaced_by.map(methodChip).join(' ')}</td>
-          <td style="font-size:.75rem">${f.law || '—'}</td>
-        </tr>`;
-      }
-
     html += `
     <div class="contract-block">
       <div class="section-header">
-        <h2>${contract.label}</h2>
-        <span class="meta">${contract.file}</span>
+        <h2>${inj.label}</h2>
+        <span class="meta">${inj.file}</span>
       </div>
+      <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:1rem;line-height:1.6">${inj.description}</p>
+
       <div class="stats-row">
         <div class="stat-card"><div class="n">${s.clauses}</div><div class="label">Clauses</div></div>
-        <div class="stat-card"><div class="n">${s.pairs}</div><div class="label">Pairs Checked</div></div>
-        <div class="stat-card"><div class="n">${s.findings}</div><div class="label">Findings</div></div>
-        <div class="stat-card"><div class="n">${s.no_issue}</div><div class="label">No Issue</div></div>
+        <div class="stat-card"><div class="n">${s.pairs}</div><div class="label">Pairs Sent</div></div>
+        <div class="stat-card"><div class="n">${injected.length}</div><div class="label">Injected</div></div>
+        <div class="stat-card"><div class="n">${detected.length}</div><div class="label">Detected</div></div>
+        <div class="stat-card"><div class="n">${extraFindings.length}</div><div class="label">Extra / FP</div></div>
         <div class="stat-card gemini-stat"><div class="n">✦</div><div class="label">Gemini On</div></div>
       </div>
-      ${findingsHtml}
+
+      <!-- Scorecard -->
+      <div class="scorecard">
+        <div class="scorecard-header">
+          <h3>Detection Scorecard — planted injections</h3>
+          <span class="score-pill ${scorePillClass}">
+            ${injected.length === 0 ? '✓ Clean control — 0 FP' : `${detected.length} / ${injected.length} detected`}
+          </span>
+        </div>
+        <table class="injected-table">
+          <thead><tr>
+            <th style="width:160px">Injection</th>
+            <th>What was planted</th>
+            <th style="width:160px">Expected</th>
+            <th style="width:140px">Status</th>
+            <th>Law</th>
+          </tr></thead>
+          <tbody>${injRows}</tbody>
+        </table>
+        ${extraNote}${cleanNote}
+      </div>
+
+      <div class="findings-section-title">Raw Gemini output — ${findings.length} finding(s)</div>
+      ${allFindingCards}
     </div>`;
   }
 
   root.innerHTML = html;
   tbody.innerHTML = tableRows;
 
-  // Summary chips
+  const recall = totalInjected > 0 ? Math.round(totalDetected/totalInjected*100) : 100;
   document.getElementById('summary-chips').innerHTML = `
-    <div class="chip"><span class="n">${totalContracts}</span> Contracts</div>
-    <div class="chip"><span class="n">${totalFindings}</span> Total Findings</div>
-    <div class="chip"><span class="n">${totalHigh}</span> High Severity</div>
-    <div class="chip gemini-chip"><span class="n">${geminiCount}</span> Gemini-classified</div>
+    <div class="chip"><span class="n">${contractCount}</span> Contracts</div>
+    <div class="chip hit-chip"><span class="n">${totalDetected}/${totalInjected}</span> Injections Detected</div>
+    <div class="chip hit-chip"><span class="n">${recall}%</span> Recall</div>
+    <div class="chip miss-chip"><span class="n">${totalFalsePos}</span> Extra Findings (FP candidates)</div>
   `;
-}
-
-function matchesFilter(f) {
-  if (currentFilter === 'all') return true;
-  if (currentFilter === 'gemini') return f.surfaced_by.includes('gemini');
-  if (['high','medium','low'].includes(currentFilter)) return f.severity === currentFilter;
-  return f.relation_type === currentFilter;
 }
 
 function applyFilter(filter, btn) {
@@ -667,14 +577,11 @@ function applyFilter(filter, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('.finding-item').forEach(el => {
-    const sev = el.dataset.severity;
-    const type = el.dataset.type;
-    const gem = el.dataset.gemini === 'true';
-    let show = false;
-    if (filter === 'all') show = true;
-    else if (filter === 'gemini') show = gem;
-    else if (['high','medium','low'].includes(filter)) show = sev === filter;
-    else show = type === filter;
+    const sev = el.dataset.severity, type = el.dataset.type, gem = el.dataset.gemini === 'true';
+    let show = filter === 'all' ? true
+      : filter === 'gemini' ? gem
+      : ['high','medium','low'].includes(filter) ? sev === filter
+      : type === filter;
     el.style.display = show ? '' : 'none';
   });
 }
@@ -682,12 +589,11 @@ function applyFilter(filter, btn) {
 function toggleCard(header) {
   const body = header.nextElementSibling;
   const chevron = header.querySelector('.chevron');
-  const isOpen = body.classList.contains('open');
-  body.classList.toggle('open', !isOpen);
-  chevron.classList.toggle('open', !isOpen);
+  body.classList.toggle('open');
+  chevron.classList.toggle('open');
 }
 
-renderContracts();
+render();
 </script>
 </body>
 </html>
