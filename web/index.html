@@ -555,6 +555,27 @@
 
     .empty-state { padding: 40px 20px; text-align: center; color: var(--text-faint); font-size: 12px; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    /* ── decluttered findings (final build) ── */
+    .finding-card.compact { padding: 10px 12px; margin-bottom: 8px; cursor: pointer; }
+    .finding-card.compact .finding-title { font-size: 13.5px; margin: 4px 0 3px; }
+    .finding-kind { font-size: 10px; font-weight: 600; letter-spacing: .02em; color: var(--text-secondary); }
+    .finding-card.compact .finding-relation { margin-left: auto; text-transform: capitalize; }
+    .clamp3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+    .finding-details { margin-top: 6px; }
+    .finding-details > summary { font-size: 11px; color: var(--copper, #9a6b3f); cursor: pointer; user-select: none; }
+    .finding-details[open] > summary { margin-bottom: 6px; }
+    .statute-list { margin: 4px 0 0 0; padding-left: 0; list-style: none; font-size: 11px; line-height: 1.45; }
+    .statute-list li { margin-bottom: 4px; }
+    .conf-chip { display: inline-block; font-size: 9px; font-weight: 700; text-transform: uppercase; padding: 0 5px; margin-right: 5px; border-radius: 3px; }
+    .conf-high { background: #dcfce7; color: #166534; } .conf-medium { background: #fef9c3; color: #854d0e; }
+    .conf-low, .conf-unverified { background: #f1f5f9; color: #64748b; }
+    .sev-low { background: #f1f5f9; color: #64748b; }
+    .finding-card.low { opacity: .85; }
+    .weak-group { margin-top: 10px; border-top: 1px dashed #cbd5e1; padding-top: 8px; }
+    .weak-group > summary { font-size: 11.5px; color: var(--text-secondary); cursor: pointer; margin-bottom: 8px; }
+    .muted-line { font-size: 11px; color: var(--text-muted); }
+    #contract-select { max-width: 340px; }
+    .header-btn { white-space: nowrap; }
   </style>
 </head>
 <body>
@@ -598,31 +619,18 @@
         <span class="mono" id="status-db-text">SQLite Live</span>
       </div>
 
-      <button onclick="toggleContractsDrawer()" class="header-btn header-btn-outline" title="Browse portfolio of contracts">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 10h16M4 14h16M4 18h16" stroke-width="2" stroke-linecap="round"/></svg>
-        Contracts (<span id="header-contracts-count">6</span>)
-      </button>
-
-      <select id="contract-select" class="header-select" onchange="handleContractSwitch()">
+      <span id="header-contracts-count" style="display:none">0</span>
+      <select id="contract-select" class="header-select" onchange="handleContractSwitch()" title="Contracts analysed by the pipeline">
         <!-- filled from /api/contracts (real pipeline runs) by renderContractsSidebar() -->
       </select>
 
-      <a href="/findings" target="_blank" class="header-btn header-btn-outline" style="text-decoration:none;" title="Gemini 5-Contract Benchmark Review">
-        Findings Review
-      </a>
-
-      <a href="/injections" target="_blank" class="header-btn header-btn-outline" style="text-decoration:none;" title="Adversarial Injection Benchmark Dossier">
-        Injections
-      </a>
-
       <button onclick="openUploadModal()" class="header-btn header-btn-primary">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-width="2" stroke-linecap="round"/></svg>
-        Upload / Analyze
+        Upload &amp; analyse
       </button>
-      <button onclick="openPipelineModal()" class="header-btn header-btn-outline">
-        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h16M17 9l3 3-3 3" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        Pipeline
-      </button>
+      <a href="/scores" target="_blank" class="header-btn header-btn-outline" style="text-decoration:none;" title="Every score behind every finding">
+        Under the hood ↗
+      </a>
       <button onclick="openExportModal()" class="header-btn header-btn-outline">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-width="2" stroke-linecap="round"/></svg>
         Export
@@ -634,9 +642,9 @@
   <div class="metrics-bar">
     <div class="metrics-group">
       <div class="metric-item"><span class="metric-label">Clauses</span><span class="metric-value" id="metric-clauses">—</span></div>
-      <div class="metric-item"><span class="metric-label">Contradictions</span><span class="metric-value danger" id="metric-conflicts">—</span></div>
-      <div class="metric-item"><span class="metric-label">Statutory Flags</span><span class="metric-value statutory" id="metric-statutory">—</span></div>
-      <div class="metric-item"><span class="metric-label">Graph Edges</span><span class="metric-value" id="metric-edges">—</span></div>
+      <div class="metric-item"><span class="metric-label">Clause ↔ Clause</span><span class="metric-value danger" id="metric-conflicts">—</span></div>
+      <div class="metric-item"><span class="metric-label">Clause ↔ Indian law</span><span class="metric-value statutory" id="metric-statutory">—</span></div>
+      <div class="metric-item"><span class="metric-label">High severity</span><span class="metric-value" id="metric-edges">—</span></div>
     </div>
     <div class="metrics-tagline truncate" id="metric-tagline">Master Services Agreement featuring liability clash with indemnity and statutory review.</div>
   </div>
@@ -667,14 +675,14 @@
     <main class="panel-center" id="panel-center">
       <div class="graph-toolbar">
         <div class="graph-title-chip">
-          <span>Clause Interdependency Graph</span>
-          <span class="graph-notation">G=(V,E)</span>
+          <span>Clause graph</span>
+          <span class="graph-notation" id="graph-count"></span>
         </div>
         <div class="filter-bar">
           <button onclick="setGraphFilter('all', this)" class="filter-chip active">All</button>
-          <button onclick="setGraphFilter('conflict', this)" class="filter-chip">Conflicts</button>
-          <button onclick="setGraphFilter('statutory', this)" class="filter-chip">Statutory</button>
-          <button onclick="setGraphFilter('xref', this)" class="filter-chip">Cross-Refs</button>
+          <button onclick="setGraphFilter('pair', this)" class="filter-chip">Clause ↔ Clause</button>
+          <button onclick="setGraphFilter('law', this)" class="filter-chip">Clause ↔ Law</button>
+          <button onclick="setGraphFilter('xref', this)" class="filter-chip">Cross-refs</button>
           <div class="filter-sep"></div>
           <button onclick="fitGraphView()" class="filter-btn-fit" title="Zoom to Fit">Fit</button>
         </div>
@@ -682,12 +690,11 @@
       <div class="graph-canvas" id="network-canvas"></div>
       <div class="graph-legend">
         <div class="legend-items">
-          <div class="legend-item"><span class="legend-line" style="background:var(--edge-conflict)"></span><span>Contradiction</span></div>
-          <div class="legend-item"><span class="legend-line" style="background:var(--edge-statutory)"></span><span>Statute Void</span></div>
-          <div class="legend-item"><span class="legend-line" style="background:var(--edge-xref)"></span><span>Cross-Reference</span></div>
-          <div class="legend-item"><span class="legend-line" style="background:var(--edge-semantic)"></span><span>Semantic Link</span></div>
+          <div class="legend-item"><span class="legend-line" style="background:#9b2c2c"></span><span>Clause ↔ clause issue</span></div>
+          <div class="legend-item"><span class="legend-line" style="background:#2b6cb0"></span><span>Cross-reference</span></div>
+          <div class="legend-item"><span style="display:inline-block;width:12px;height:9px;border:2px solid #7b3060;border-radius:2px"></span><span>Clause with an Indian-law issue</span></div>
         </div>
-        <div class="legend-hint">Click nodes or edges to inspect</div>
+        <div class="legend-hint">Click a clause or line to inspect</div>
       </div>
     </main>
 
@@ -964,13 +971,12 @@
 
     function renderMetrics() {
       document.getElementById('metric-clauses').innerText = contractData.clauses.length;
-      document.getElementById('metric-edges').innerText = contractData.edges.length;
+      const fs = contractData.findings || [];
+      document.getElementById('metric-edges').innerText = fs.filter(f => f.severity === 'high').length;
       document.getElementById('feed-count').innerText = contractData.clauses.length;
-      const conflicts = contractData.findings.filter(f => f.relation_type === 'contractual_conflict').length;
-      const statutory = contractData.findings.filter(f => f.relation_type === 'statutory_violation').length;
-      document.getElementById('metric-conflicts').innerText = conflicts;
-      document.getElementById('metric-statutory').innerText = statutory;
-      document.getElementById('findings-total-pill').innerText = `${contractData.findings.length} ISSUE${contractData.findings.length !== 1 ? 'S' : ''} SURFACED`;
+      document.getElementById('metric-conflicts').innerText = fs.filter(f => !isLawFinding(f)).length;
+      document.getElementById('metric-statutory').innerText = fs.filter(isLawFinding).length;
+      document.getElementById('findings-total-pill').innerText = `${fs.length} FINDING${fs.length !== 1 ? 'S' : ''}`;
     }
 
     /* ── Clause List ── */
@@ -1097,60 +1103,88 @@
         return;
       }
 
-      // ── Standard Findings (All / Conflicts / Statutory) ──
-      let findingsList = contractData.findings || [];
-      if (currentGraphFilter === 'conflict') {
-        findingsList = findingsList.filter(f => (f.relation_type || '').includes('conflict'));
-      } else if (currentGraphFilter === 'statutory') {
-        findingsList = findingsList.filter(f => (f.relation_type || '').includes('statutory') || f.severity === 'statutory');
-      }
+      // ── Findings: All / Clause↔Clause / Clause↔Law; low-confidence grouped (shown, not hidden) ──
+      const sevRank = { high: 0, medium: 1, low: 2 };
+      let findingsList = (contractData.findings || []).map((f, i) => ({ f, i }));
+      if (currentGraphFilter === 'pair') findingsList = findingsList.filter(x => !isLawFinding(x.f));
+      else if (currentGraphFilter === 'law') findingsList = findingsList.filter(x => isLawFinding(x.f));
+      findingsList.sort((a, b) => (sevRank[a.f.severity] ?? 3) - (sevRank[b.f.severity] ?? 3));
+      const main = findingsList.filter(x => x.f.severity !== 'low');
+      const weak = findingsList.filter(x => x.f.severity === 'low');
 
-      if (pill) {
-        pill.innerText = `${findingsList.length} ISSUE${findingsList.length !== 1 ? 'S' : ''} SURFACED`;
-      }
-
+      if (pill) pill.innerText = `${findingsList.length} FINDING${findingsList.length !== 1 ? 'S' : ''}`;
       if (findingsList.length === 0) {
-        container.innerHTML = '<div class="empty-state">No critical conflicts or statutory flags match this filter.</div>';
+        container.innerHTML = '<div class="empty-state">No findings for this filter.</div>';
         return;
       }
+      main.forEach(({ f, i }) => container.appendChild(findingCard(f, i)));
+      if (weak.length) {
+        const det = document.createElement('details');
+        det.className = 'weak-group';
+        det.innerHTML = `<summary>Low-confidence signals (${weak.length}) — shown for review, not as verdicts</summary>`;
+        weak.forEach(({ f, i }) => det.appendChild(findingCard(f, i)));
+        container.appendChild(det);
+      }
+    }
 
-      findingsList.forEach((f, idx) => {
-        let cardClass = '', sevClass = 'sev-high';
-        if (f.severity === 'statutory') { cardClass = 'statutory'; sevClass = 'sev-statutory'; }
-        else if (f.severity === 'medium') { cardClass = 'medium'; sevClass = 'sev-medium'; }
+    function isLawFinding(f) { return (f.relation_type || '').includes('statutory'); }
 
-        const card = document.createElement('div');
-        card.className = `finding-card ${cardClass}`;
-        card.id = `finding-${idx}`;
-        card.dataset.source = f.source_clause_ref || '';
-        card.dataset.target = f.target_clause_ref || '';
-        card.dataset.relationType = f.relation_type || '';
-        card.style.animationDelay = `${idx * 50}ms`;
-        // Everything below comes from documents or models: always escaped (report TC13).
-        const clauseRef = (ref) => {
-          const c = (contractData.clauses || []).find(x => x.id === ref);
-          return c ? `Clause ${escapeHtml(c.clause_num || '')} — ${escapeHtml((c.text || '').slice(0, 260))}${(c.text || '').length > 260 ? '…' : ''}`
-                   : escapeHtml(ref || '');
-        };
-        const sameClause = (f.source_clause_ref || '') === (f.target_clause_ref || '');
-        card.innerHTML = `
-          <div class="finding-top">
-            <span class="severity-badge ${sevClass}">${escapeHtml((f.severity || 'high').toUpperCase())}</span>
-            <span class="finding-relation">${escapeHtml(f.relation_type || '')}</span>
-          </div>
-          <div class="finding-title">${escapeHtml(f.title || '')}</div>
-          <div class="finding-desc">${escapeHtml(f.description || '')}</div>
-          <div class="provision-box"><div class="provision-label">Source Provision</div><div class="provision-text">${clauseRef(f.source_clause_ref)}</div></div>
-          ${sameClause ? '' : `<div class="provision-box"><div class="provision-label conflict">Related Provision</div><div class="provision-text conflict-ref">${clauseRef(f.target_clause_ref)}</div></div>`}
-          <div class="citation-box"><div class="citation-label">Statutory Authority (India Code)</div><div class="citation-text">${escapeHtml(f.statute_citation || '—')}</div></div>
-          <div class="remedy-box"><div class="remedy-label">Recommended Amendment</div><div class="remedy-text" id="remedy-${idx}">${escapeHtml(f.remedy_suggestion || '')}</div></div>
-          ${f.id ? `<button class="btn btn-secondary" style="margin-top:6px; padding:3px 10px; font-size:11px;"
+    function clauseNum(ref) {
+      const c = (contractData.clauses || []).find(x => x.id === ref);
+      return c ? (c.clause_num || c.num || ref) : (ref || '').split('::').pop();
+    }
+
+    // Statute string "Act, Section X — title [medium confidence]; …" -> list items with a confidence chip.
+    function statuteList(s) {
+      if (!s || s === '—') return '<div class="muted-line">No statute retrieved.</div>';
+      return '<ul class="statute-list">' + s.split(/;\s+(?=[A-Z])/).slice(0, 4).map(part => {
+        const m = part.match(/\[(high|medium|low) confidence\]|\[(unverified)\]/);
+        const conf = m ? (m[1] || m[2]) : '';
+        const text = part.replace(/\s*\[(?:high|medium|low) confidence\]|\s*\[unverified\]/, '');
+        return `<li>${conf ? `<span class="conf-chip conf-${conf}">${conf}</span>` : ''}${escapeHtml(text.slice(0, 220))}</li>`;
+      }).join('') + '</ul>';
+    }
+
+    function findingCard(f, idx) {
+      const law = isLawFinding(f);
+      const sev = (f.severity || 'medium').toLowerCase();
+      const sevClass = sev === 'high' ? 'sev-high' : sev === 'low' ? 'sev-low' : 'sev-medium';
+      const card = document.createElement('div');
+      card.className = `finding-card compact ${law ? 'statutory' : ''} ${sev}`;
+      card.id = `finding-${idx}`;
+      card.dataset.source = f.source_clause_ref || '';
+      card.dataset.target = f.target_clause_ref || '';
+      card.dataset.relationType = f.relation_type || '';
+      const a = clauseNum(f.source_clause_ref), b = clauseNum(f.target_clause_ref);
+      const same = (f.source_clause_ref || '') === (f.target_clause_ref || '');
+      // Everything below comes from documents or models: always escaped (report TC13).
+      const clauseText = (ref) => {
+        const c = (contractData.clauses || []).find(x => x.id === ref);
+        return c ? escapeHtml((c.text || '').slice(0, 400)) + ((c.text || '').length > 400 ? '…' : '') : '';
+      };
+      const desc = (f.description || '').replace(/^\[(high|medium|low) confidence, p=[0-9.]+\]\s*/, '');
+      card.innerHTML = `
+        <div class="finding-top">
+          <span class="severity-badge ${sevClass}">${escapeHtml(sev.toUpperCase())}</span>
+          <span class="finding-kind">${law ? 'Clause ↔ Indian law' : 'Clause ↔ Clause'}</span>
+          <span class="finding-relation">${escapeHtml((f.relation_type || '').replace('_', ' '))}</span>
+        </div>
+        <div class="finding-title">${same ? `Clause ${escapeHtml(a)}` : `Clause ${escapeHtml(a)} ↔ Clause ${escapeHtml(b)}`}</div>
+        <div class="finding-desc clamp3">${escapeHtml(desc)}</div>
+        <details class="finding-details" onclick="event.stopPropagation()">
+          <summary>Details · clauses, Indian law, explain</summary>
+          <div class="provision-box"><div class="provision-label">Clause ${escapeHtml(a)}</div><div class="provision-text">${clauseText(f.source_clause_ref)}</div></div>
+          ${same ? '' : `<div class="provision-box"><div class="provision-label conflict">Clause ${escapeHtml(b)}</div><div class="provision-text conflict-ref">${clauseText(f.target_clause_ref)}</div></div>`}
+          <div class="citation-box"><div class="citation-label">Retrieved Indian law (India Code)</div>${statuteList(f.statute_citation)}</div>
+          ${f.id ? `<div style="display:flex;gap:6px;margin-top:6px;">
+              <a class="btn btn-secondary" style="padding:3px 10px;font-size:11px;text-decoration:none;" target="_blank" href="/scores?contract=${encodeURIComponent(currentContractId)}&finding=${encodeURIComponent(f.id)}">Scores ↗</a>
+              <button class="btn btn-secondary" style="padding:3px 10px; font-size:11px;"
               title="Opt-in: sends these two clauses and the retrieved statute sections to Gemini"
-              onclick="event.stopPropagation(); expandFinding('${escapeHtml(f.id)}', ${idx}, this)">Expand with Gemini (cloud) ↗</button>
+              onclick="event.stopPropagation(); expandFinding('${escapeHtml(f.id)}', ${idx}, this)">Explain with Gemini (cloud, opt-in) ↗</button></div>
              <div class="expand-box" id="expand-${idx}" style="display:none; margin-top:6px; padding:8px 10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; font-size:11.5px;"></div>` : ''}
-        `;
-        container.appendChild(card);
-      });
+        </details>`;
+      card.onclick = () => { focusClause(f.source_clause_ref); };
+      return card;
     }
 
     async function expandFinding(findingId, idx, btn) {
@@ -1179,17 +1213,44 @@
     /* ── Network Graph ── */
     function renderNetworkGraph() {
       const container = document.getElementById('network-canvas');
-      const nodes = new vis.DataSet(contractData.clauses.map(c => {
-        let bg = '#ffffff', border = '#64748b';
-        if (c.tag.includes("Risk") || c.tag === "Liability") { bg = '#fdf8f8'; border = '#9b2c2c'; }
-        else if (c.tag.includes("Indemnity") || c.tag.includes("Statutory") || c.tag.includes("DPDPA") || c.tag === "Compliance") { bg = '#fdf6fa'; border = '#7b3060'; }
-        else if (c.tag === "Commercial" || c.tag === "Payment") { bg = '#f6fcf8'; border = '#276749'; }
+      // Edges = clause↔clause findings + cross-references (no self-loops); law findings colour the node.
+      const fs = contractData.findings || [];
+      const lawSev = {};
+      fs.filter(isLawFinding).forEach(f => {
+        const r = { high: 3, medium: 2, low: 1 }[f.severity] || 1;
+        lawSev[f.source_clause_ref] = Math.max(lawSev[f.source_clause_ref] || 0, r);
+      });
+      let edgeList = [];
+      if (currentGraphFilter === 'all' || currentGraphFilter === 'pair') {
+        const seen = new Set();
+        fs.filter(f => !isLawFinding(f) && f.source_clause_ref !== f.target_clause_ref).forEach(f => {
+          const k = [f.source_clause_ref, f.target_clause_ref].sort().join('|');
+          if (seen.has(k)) return; seen.add(k);
+          edgeList.push({ id: `f_${f.id}`, from: f.source_clause_ref, to: f.target_clause_ref, relation_type: 'pair',
+                          title: `${f.severity} · ${f.relation_type}`, width: f.severity === 'high' ? 3 : 1.5 });
+        });
+      }
+      if (currentGraphFilter === 'all' || currentGraphFilter === 'xref') {
+        edgeList = edgeList.concat((contractData.edges || []).filter(e => (e.relation_type || e.type) === 'xref'
+          && (e.source_clause_id || e.from) !== (e.target_clause_id || e.to)));
+      }
+      const used = new Set();
+      edgeList.forEach(e => { used.add(e.source_clause_id || e.from); used.add(e.target_clause_id || e.to); });
+      if (currentGraphFilter === 'all' || currentGraphFilter === 'law') Object.keys(lawSev).forEach(id => used.add(id));
+      const shown = contractData.clauses.filter(c => used.has(c.id));
+      const gc = document.getElementById('graph-count');
+      if (gc) gc.innerText = `${shown.length} of ${contractData.clauses.length} clauses`;
+      const nodes = new vis.DataSet(shown.map(c => {
+        let bg = '#ffffff', border = '#94a3b8';
+        if (lawSev[c.id] === 3) { bg = '#fdf2f8'; border = '#7b3060'; }
+        else if (lawSev[c.id]) { bg = '#fdf8fb'; border = '#b07aa1'; }
         return {
           id: c.id,
-          label: `Section ${c.clause_num || c.num}\n${c.title}`,
+          label: `${c.clause_num || c.num}`,
+          title: `Clause ${c.clause_num || c.num}: ${(c.title || '').slice(0, 80)}`,
           shape: "box",
-          margin: { top: 10, right: 14, bottom: 10, left: 14 },
-          borderWidth: 2,
+          margin: { top: 6, right: 9, bottom: 6, left: 9 },
+          borderWidth: lawSev[c.id] ? 3 : 1.5,
           borderWidthSelected: 3,
           color: {
             background: bg,
@@ -1208,27 +1269,20 @@
         };
       }));
 
-      let edgeList = contractData.edges || [];
-      if (currentGraphFilter !== 'all') edgeList = edgeList.filter(e => (e.relation_type || e.type) === currentGraphFilter);
       const edges = new vis.DataSet(edgeList.map((e, idx) => {
-        let color = '#64748b';
         const rtype = e.relation_type || e.type;
-        if (rtype === 'conflict') color = '#9b2c2c';
-        else if (rtype === 'statutory') color = '#7b3060';
-        else if (rtype === 'xref') color = '#2b6cb0';
-        else if (rtype === 'semantic') color = '#276749';
+        const color = rtype === 'xref' ? '#2b6cb0' : '#9b2c2c';
         const edgeId = (e.id !== undefined && e.id !== null) ? String(e.id) : `edge_${e.source_clause_id || e.from}_${e.target_clause_id || e.to}_${idx}`;
         return {
           id: edgeId,
           from: e.source_clause_id || e.from,
           to: e.target_clause_id || e.to,
-          label: e.label,
-          color: { color, highlight: '#1a2332', opacity: 0.85 },
-          width: 2,
-          dashes: !!e.dashes,
-          font: { color: '#334155', size: 11, align: 'horizontal', background: '#fafaf8', strokeWidth: 0 },
-          arrows: { to: { enabled: true, scaleFactor: 0.7 } },
-          smooth: { enabled: true, type: 'curvedCW', roundness: 0.18 },
+          title: e.title || (rtype === 'xref' ? 'cross-reference' : ''),
+          color: { color, highlight: '#1a2332', opacity: rtype === 'xref' ? 0.6 : 0.8 },
+          width: e.width && e.width < 4 ? e.width : (rtype === 'xref' ? 1.2 : 2),
+          dashes: rtype === 'xref',
+          arrows: { to: { enabled: rtype === 'xref', scaleFactor: 0.5 } },
+          smooth: { enabled: true, type: 'continuous', roundness: 0.2 },
           rawEdge: e
         };
       }));
@@ -1267,8 +1321,9 @@
       setTimeout(() => {
         if (networkInstance) {
           networkInstance.setOptions({ physics: { enabled: false } });
+          networkInstance.fit({ animation: false, padding: 30 });
         }
-      }, 450);
+      }, 600);
 
       networkInstance.on("click", params => {
         if (params.nodes.length > 0) focusClause(params.nodes[0]);
@@ -1323,7 +1378,7 @@
 
       const rtype = (edge.relation_type || edge.type || 'xref').toLowerCase();
       let badgeClass = 'sev-xref', badgeLabel = 'CROSS-REFERENCE';
-      if (rtype === 'conflict') { badgeClass = 'sev-high'; badgeLabel = 'CONFLICT'; }
+      if (rtype === 'conflict' || rtype === 'pair') { badgeClass = 'sev-high'; badgeLabel = 'CLAUSE ↔ CLAUSE'; }
       else if (rtype === 'statutory') { badgeClass = 'sev-statutory'; badgeLabel = 'STATUTORY VIOLATION'; }
       else if (rtype === 'semantic') { badgeClass = 'sev-semantic'; badgeLabel = 'SEMANTIC RELATION'; }
 
@@ -1333,7 +1388,9 @@
       const toTitle = toClause ? toClause.title : 'Target Clause';
 
       let relExplanation = '';
-      if (rtype === 'conflict') {
+      if (rtype === 'pair') {
+        relExplanation = `The judge flagged Clause ${fromNum} and Clause ${toNum} as interacting (${escapeHtml(edge.title || '')}). The matching finding is highlighted below.`;
+      } else if (rtype === 'conflict') {
         relExplanation = 'These two clauses impose mutually inconsistent contractual covenants or contradict liability bounds.';
       } else if (rtype === 'statutory') {
         relExplanation = 'This relationship indicates a direct clash between the contractual term and mandatory statutory law or public policy.';

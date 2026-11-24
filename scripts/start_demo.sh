@@ -26,6 +26,10 @@ echo "selected judge: $(venv/bin/python -c "import json;s=json.load(open('result
 if [[ -z "$RUN" ]]; then echo "selection is the rules judge — Kev not started"; fi
 if [[ -n "$RUN" ]] && ! curl -sf http://127.0.0.1:8008/v1/models >/dev/null; then
   echo "starting Kev judge ($RUN) on 127.0.0.1:8008 …"
+  # 6 GB card: Kev's state-prefix cache (default 64k tokens) grows until long PDF clauses run out of memory.
+  # A small cache + expandable segments keeps Kev under ~4 GB with no measurable slowdown for our requests.
+  export KEV_PREFIX_CACHE="${KEV_PREFIX_CACHE:-2}" KEV_PREFIX_MAX_TOKENS="${KEV_PREFIX_MAX_TOKENS:-6000}" KEV_TRUNCATE_STATES=1
+  export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
   (cd "$KEV" && setsid nohup "$KPY" -m kev.serve --run "$RUN" --port 8008 > /tmp/kev_demo_serve.log 2>&1 < /dev/null &)
   for _ in $(seq 1 90); do curl -sf http://127.0.0.1:8008/v1/models >/dev/null && break; sleep 2; done
 fi

@@ -63,9 +63,21 @@ def make_cuad_example() -> Path | None:
     return p
 
 
+def make_clean_pune() -> Path:
+    """The adversarial excerpt carries an italic answer-key note after each planted clause
+    ("*(Statutory Conflict: …)*"). Strip them so the system sees only the contract text."""
+    import re
+    src = (ROOT / "data/demo/samples/02_pune_metro_adversarial_15_injections.md").read_text(encoding="utf-8")
+    clean = re.sub(r"\s*\*\([^*]{0,600}?\)\.?\*", "", src)
+    GEN.mkdir(parents=True, exist_ok=True)
+    p = GEN / "pune_metro_15_planted_clean.md"
+    p.write_text(clean, encoding="utf-8")
+    return p
+
+
 DOCS = [
     ("Pune Metro Line-3 Concession — 15 planted irregularities (excerpt)", "Indian Infrastructure (PPP) · Adversarial test",
-     "data/demo/samples/02_pune_metro_adversarial_15_injections.md"),
+     "data/demo/generated/pune_metro_15_planted_clean.md"),
     ("Indian Tech Services MSA", "Indian Commercial · IT Services", "data/demo/samples/03_indian_tech_services_msa.md"),
     ("Executive Employment Agreement", "Indian Employment", "data/demo/samples/04_executive_employment_agreement.md"),
     ("Commercial Vendor Supply Agreement", "Indian Commercial · Supply", "data/demo/samples/05_commercial_vendor_supply_agreement.md"),
@@ -83,12 +95,15 @@ def main():
     ap.add_argument("--judge", default="local", choices=["local", "rules", "gemini"])
     ap.add_argument("--max-candidates", type=int, default=60)
     ap.add_argument("--skip-pdfs", action="store_true")
+    ap.add_argument("--only", default="", help="comma list of ids (e.g. demo_01) to re-run without wiping the others")
     args = ap.parse_args()
+    only = {x for x in args.only.split(",") if x}
 
     from legalagent.db import get_db_connection, init_db
     from legalagent.core.pipeline import analyse
     from live import persist
 
+    make_clean_pune()
     casebook = make_casebook()
     DOCS.insert(1, ("Supreme Court casebook — 18 real clauses from judgments (court outcome in each heading)",
                     "Real cases · Supreme Court of India", str(casebook.relative_to(ROOT))))
@@ -99,9 +114,13 @@ def main():
 
     init_db()
     conn = get_db_connection()
-    for table in ("findings", "graph_edges", "clauses", "clause_embeddings", "contracts"):
+    for table in ("findings", "graph_edges", "clauses", "clause_embeddings", "contracts", "finding_details"):
         try:
-            conn.execute(f"DELETE FROM {table};")
+            if only:
+                col = "id" if table == "contracts" else "contract_id"
+                conn.executemany(f"DELETE FROM {table} WHERE {col}=?;", [(x,) for x in only])
+            else:
+                conn.execute(f"DELETE FROM {table};")
         except Exception:
             pass
     conn.commit()
@@ -109,6 +128,8 @@ def main():
 
     for i, (title, category, rel) in enumerate(DOCS, 1):
         if args.skip_pdfs and rel.endswith(".pdf"):
+            continue
+        if only and f"demo_{i:02d}" not in only:
             continue
         path = ROOT / rel
         if not path.exists():
