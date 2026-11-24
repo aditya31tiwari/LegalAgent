@@ -91,6 +91,22 @@ def analyse_pair(clause_a: Clause, clause_b: Clause, surfaced_by: list[str]) -> 
             surfaced_by,
         )
 
+    # A survival clause that cites another clause by number ("Section 8.1 shall
+    # survive") makes that clause's post-termination life depend on it, whatever
+    # the cited clause's own type.
+    if survival and "xref" in surfaced_by:
+        cited = clause_b if survival is clause_a else clause_a
+        if any(xref["resolved"] and xref["clause_id"] == cited.id for xref in survival.xrefs):
+            return _finding(
+                cited,
+                [survival],
+                "dependency",
+                "medium",
+                0.62,
+                "The survival clause names this clause, so whether its obligations continue after termination depends on the survival clause.",
+                surfaced_by,
+            )
+
     return None
 
 
