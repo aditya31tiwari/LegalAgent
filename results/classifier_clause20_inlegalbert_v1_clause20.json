@@ -1,0 +1,63 @@
+{
+  "model": "law-ai/InLegalBERT",
+  "threshold": 0.5,
+  "train_seconds": 3951,
+  "epochs": 3.0,
+  "lr": 3e-05,
+  "batch_size": 16,
+  "max_len": 256,
+  "labels": [
+    "amendment_and_integration",
+    "assignment_change_of_control",
+    "audit_and_records",
+    "compliance_and_law",
+    "confidentiality",
+    "dispute_resolution",
+    "exclusivity_and_restraint",
+    "governing_law",
+    "indemnification",
+    "insurance",
+    "ip_ownership",
+    "license_grant",
+    "limitation_of_liability",
+    "notices",
+    "other",
+    "payment_and_fees",
+    "survival",
+    "tax",
+    "term_and_renewal",
+    "termination",
+    "warranty"
+  ],
+  "splits": {
+    "validation": {
+      "micro_f1": 0.8917124705546434,
+      "macro_f1": 0.8586485913495119,
+      "micro_p": 0.9162388147278862,
+      "micro_r": 0.8684649610678532,
+      "top1_acc": 0.918148703664024,
+      "exact_match": 0.9013284765373902,
+      "n": 9334
+    },
+    "test": {
+      "micro_f1": 0.9246993202021963,
+      "macro_f1": 0.8337240954407286,
+      "micro_p": 0.9235724233983287,
+      "micro_r": 0.9258289703315882,
+      "top1_acc": 0.9288175876411171,
+      "exact_match": 0.9276292335115864,
+      "n": 8415,
+      "ms_per_clause": 5.56
+    },
+    "test_ood": {
+      "micro_f1": 0.7150380339379754,
+      "macro_f1": 0.6606807742470776,
+      "micro_p": 0.8335607094133697,
+      "micro_r": 0.6260245901639344,
+      "top1_acc": 0.8095238095238095,
+      "exact_match": 0.6406926406926406,
+      "n": 693,
+      "ms_per_clause": 5.88
+    }
+  }
+}

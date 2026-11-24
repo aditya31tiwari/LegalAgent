@@ -1,0 +1,41 @@
+{
+  "judge": "kev_base_zero_shot",
+  "serve": "jaredpalmer/kev-0.8b",
+  "threshold": null,
+  "criterion": "checklist binary accuracy, tie-break CUAD lawyer-pair recall (no teacher labels)",
+  "candidates": [
+    {
+      "judge": "kev_base_zero_shot",
+      "checklist_accuracy": 0.7142857142857143,
+      "checklist_bad_caught": 0.6875,
+      "checklist_fixed_cleared": 0.75,
+      "cuad_recall": null,
+      "teacher_risky_f1": 0.4631578947368421,
+      "run": "jaredpalmer/kev-0.8b",
+      "threshold_file": "models/kev_base_threshold.json",
+      "tau": false
+    },
+    {
+      "judge": "rules",
+      "checklist_accuracy": 0.4642857142857143,
+      "checklist_bad_caught": 0.125,
+      "checklist_fixed_cleared": 0.9166666666666666,
+      "cuad_recall": 0.075,
+      "teacher_risky_f1": 0.037037037037037035,
+      "run": null,
+      "threshold_file": null,
+      "tau": false
+    },
+    {
+      "judge": "kev_finetuned_v1_imbalanced",
+      "checklist_accuracy": 0.42857142857142855,
+      "checklist_bad_caught": 0.0,
+      "checklist_fixed_cleared": 1.0,
+      "cuad_recall": null,
+      "teacher_risky_f1": null,
+      "run": "models/kev_judge_v1_imbalanced",
+      "threshold_file": "models/kev_judge_v1_imbalanced/threshold.json",
+      "tau": false
+    }
+  ]
+}

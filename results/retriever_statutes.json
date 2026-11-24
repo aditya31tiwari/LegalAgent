@@ -1,0 +1,8 @@
+{
+  "base": "bhavyagiri/InLegal-Sbert",
+  "pairs": 2967,
+  "epochs": 1,
+  "batch_size": 64,
+  "loss": "CachedMultipleNegativesRankingLoss (mini-batch 8)",
+  "train_seconds": 79
+}

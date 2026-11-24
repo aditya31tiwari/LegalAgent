@@ -1,0 +1,30 @@
+{
+  "n_pairs": 172,
+  "reference": "teacher_gemini",
+  "gold": null,
+  "label_dist": {
+    "no_issue": 120,
+    "dependency": 25,
+    "ambiguity": 16,
+    "conflict": 4,
+    "overlap": 7
+  },
+  "rules": {
+    "accuracy": 0.6976744186046512,
+    "macro_f1": 0.24413793103448275,
+    "risky_precision": 0.5,
+    "risky_recall": 0.019230769230769232,
+    "risky_f1": 0.037037037037037035,
+    "ms_per_pair": 0.0,
+    "data_leaves_machine": false
+  },
+  "kev_base_zero_shot": {
+    "accuracy": 0.19767441860465115,
+    "macro_f1": 0.11635728186186903,
+    "risky_precision": 0.3188405797101449,
+    "risky_recall": 0.8461538461538461,
+    "risky_f1": 0.4631578947368421,
+    "ms_per_pair": 624.0,
+    "data_leaves_machine": false
+  }
+}

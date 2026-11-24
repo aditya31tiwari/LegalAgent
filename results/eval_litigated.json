@@ -1,0 +1,233 @@
+{
+  "cases": [
+    {
+      "case": "Percept D'Mark (India) Pvt. Ltd. v. Zaheer Khan & Anr.",
+      "year": 2006,
+      "kind": "single_clause",
+      "court": "void",
+      "statute": "Indian Contract Act, 1872, Section 27",
+      "expected_flag": true,
+      "statutory_rule": "no_flag",
+      "clause_types": [
+        "exclusivity_and_restraint"
+      ]
+    },
+    {
+      "case": "Superintendence Company of India (P) Ltd. v. Krishan Murgai",
+      "year": 1980,
+      "kind": "single_clause",
+      "court": "void",
+      "statute": "Indian Contract Act, 1872, Section 27; Specific Relief Act, 1963, Section 42/57",
+      "expected_flag": true,
+      "statutory_rule": "no_flag",
+      "clause_types": [
+        "exclusivity_and_restraint"
+      ]
+    },
+    {
+      "case": "Niranjan Shankar Golikari v. Century Spinning and Mfg. Co. Ltd.",
+      "year": 1967,
+      "kind": "single_clause",
+      "court": "upheld",
+      "statute": "Indian Contract Act, 1872, Section 27",
+      "expected_flag": false,
+      "statutory_rule": "no_flag",
+      "clause_types": []
+    },
+    {
+      "case": "Gujarat Bottling Co. Ltd. & Ors. v. The Coca Cola Co. & Ors.",
+      "year": 1995,
+      "kind": "single_clause",
+      "court": "upheld",
+      "statute": "Indian Contract Act, 1872, Section 27",
+      "expected_flag": false,
+      "statutory_rule": "no_flag",
+      "clause_types": [
+        "exclusivity_and_restraint"
+      ]
+    },
+    {
+      "case": "M/s Kailash Nath Associates v. Delhi Development Authority & Anr.",
+      "year": 2015,
+      "kind": "single_clause",
+      "court": "penalty",
+      "statute": "Indian Contract Act, 1872, Section 74",
+      "expected_flag": true,
+      "statutory_rule": "no_flag",
+      "clause_types": []
+    },
+    {
+      "case": "Maula Bux v. Union of India",
+      "year": 1969,
+      "kind": "single_clause",
+      "court": "penalty",
+      "statute": "Indian Contract Act, 1872, Section 74",
+      "expected_flag": true,
+      "statutory_rule": "no_flag",
+      "clause_types": []
+    },
+    {
+      "case": "Oil & Natural Gas Corporation Ltd. v. Saw Pipes Ltd.",
+      "year": 2003,
+      "kind": "single_clause",
+      "court": "upheld",
+      "statute": "Indian Contract Act, 1872, Sections 73-74; Arbitration and Conciliation Act, 1996, Section 34",
+      "expected_flag": false,
+      "statutory_rule": "no_flag",
+      "clause_types": [
+        "remedies",
+        "limitation_of_liability",
+        "liquidated_damages"
+      ]
+    },
+    {
+      "case": "Central Inland Water Transport Corporation Ltd. v. Brojo Nath Ganguly & Anr.",
+      "year": 1986,
+      "kind": "single_clause",
+      "court": "void",
+      "statute": "Indian Contract Act, 1872, Section 23; Constitution of India, Article 14",
+      "expected_flag": true,
+      "statutory_rule": "no_flag",
+      "clause_types": [
+        "notices"
+      ]
+    },
+    {
+      "case": "Union of India & Anr. v. M/s IndusInd Bank Ltd. & Anr.",
+      "year": 2016,
+      "kind": "single_clause",
+      "court": "upheld",
+      "statute": "Indian Contract Act, 1872, Section 28 (pre- and post-1997 amendment)",
+      "expected_flag": false,
+      "statutory_rule": "no_flag",
+      "clause_types": []
+    },
+    {
+      "case": "Jagdish Chander v. Ramesh Chander & Ors.",
+      "year": 2007,
+      "kind": "single_clause",
+      "court": "other",
+      "statute": "Arbitration and Conciliation Act, 1996, Sections 7 and 11",
+      "expected_flag": true,
+      "statutory_rule": "no_flag",
+      "clause_types": [
+        "arbitration"
+      ]
+    },
+    {
+      "case": "M/s N.N. Global Mercantile Pvt. Ltd. v. M/s Indo Unique Flame Ltd.",
+      "year": 2023,
+      "kind": "single_clause",
+      "court": "other",
+      "statute": "Indian Stamp Act, 1899, Sections 33-35; Arbitration and Conciliation Act, 1996, Sections 8, 11 and 16",
+      "expected_flag": true,
+      "statutory_rule": "no_flag",
+      "clause_types": []
+    },
+    {
+      "case": "Perkins Eastman Architects DPC & Anr. v. HSCC (India) Ltd.",
+      "year": 2019,
+      "kind": "single_clause",
+      "court": "void",
+      "statute": "Arbitration and Conciliation Act, 1996, Section 11 and Section 12(5) read with the Seventh Schedule",
+      "expected_flag": true,
+      "statutory_rule": "no_flag",
+      "clause_types": [
+        "arbitration"
+      ]
+    },
+    {
+      "case": "TRF Ltd. v. Energo Engineering Projects Ltd.",
+      "year": 2017,
+      "kind": "cross_clause",
+      "court": "void",
+      "statute": "Arbitration and Conciliation Act, 1996, Section 12(5) read with the Seventh Schedule (as amended in 2015)",
+      "expected_flag": true,
+      "rules": "no_issue",
+      "statutory_rule": "no_flag",
+      "clause_types": [
+        "arbitration"
+      ]
+    },
+    {
+      "case": "Enercon (India) Ltd. & Ors. v. Enercon GmbH & Anr.",
+      "year": 2014,
+      "kind": "cross_clause",
+      "court": "other",
+      "statute": "Arbitration and Conciliation Act, 1996, Part I (Sections 2(2), 20, 45)",
+      "expected_flag": true,
+      "rules": "no_issue",
+      "statutory_rule": "no_flag",
+      "clause_types": [
+        "arbitration"
+      ]
+    },
+    {
+      "case": "Union of India v. Hardy Exploration and Production (India) Inc.",
+      "year": 2018,
+      "kind": "cross_clause",
+      "court": "other",
+      "statute": "Arbitration and Conciliation Act, 1996, Sections 2(2), 20, 34; UNCITRAL Model Law Article 20",
+      "expected_flag": true,
+      "rules": "no_issue",
+      "statutory_rule": "no_flag",
+      "clause_types": [
+        "arbitration"
+      ]
+    },
+    {
+      "case": "BGS SGS Soma JV v. NHPC Ltd.",
+      "year": 2019,
+      "kind": "single_clause",
+      "court": "other",
+      "statute": "Arbitration and Conciliation Act, 1996, Sections 2(1)(e), 20, 34, 42",
+      "expected_flag": true,
+      "statutory_rule": "no_flag",
+      "clause_types": [
+        "arbitration"
+      ]
+    },
+    {
+      "case": "Mankastu Impex Pvt. Ltd. v. Airvisual Ltd.",
+      "year": 2020,
+      "kind": "cross_clause",
+      "court": "other",
+      "statute": "Arbitration and Conciliation Act, 1996, Sections 2(2), 11",
+      "expected_flag": true,
+      "rules": "no_issue",
+      "statutory_rule": "no_flag",
+      "clause_types": [
+        "arbitration"
+      ]
+    },
+    {
+      "case": "M/s Swastik Gases (P) Ltd. v. Indian Oil Corporation Ltd.",
+      "year": 2013,
+      "kind": "cross_clause",
+      "court": "upheld",
+      "statute": "Indian Contract Act, 1872, Section 28; Arbitration and Conciliation Act, 1996, Sections 2(1)(e), 11",
+      "expected_flag": false,
+      "rules": "no_issue",
+      "statutory_rule": "no_flag",
+      "clause_types": [
+        "dispute_resolution"
+      ]
+    }
+  ],
+  "summary": {
+    "statutory_rule": {
+      "cases": 18,
+      "caught": 0,
+      "missed": 13,
+      "false_alarms": 0,
+      "correctly_quiet": 5
+    },
+    "rules": {
+      "cases": 5,
+      "caught": 0,
+      "missed": 4,
+      "false_alarms": 0,
+      "correctly_quiet": 1
+    }
+  }
+}

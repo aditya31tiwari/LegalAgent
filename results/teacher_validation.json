@@ -1,0 +1,85 @@
+{
+  "checklist|gemini-4-hydrogen-high": {
+    "pairs": 28,
+    "risky_detected_on_bad": 1.0,
+    "no_issue_on_fixed": 0.8333333333333334,
+    "binary_accuracy": 0.9285714285714286,
+    "exact_relation_on_bad": 0.625,
+    "misses": [
+      "noncompete_survival_fixed",
+      "confidentiality_vs_regulator_fixed"
+    ]
+  },
+  "clause_types_vs_lawyer_gold|agy_claude-sonnet-5-5-medium": {
+    "clauses": 285,
+    "any_overlap": 0.7929824561403509,
+    "first_type_correct": 0.6982456140350877
+  },
+  "clause_types_vs_lawyer_gold|agy_gemini-4-hydrogen-high": {
+    "clauses": 428,
+    "any_overlap": 0.852803738317757,
+    "first_type_correct": 0.75
+  },
+  "citations|agy_claude-sonnet-5-5-medium": {
+    "flagged_pairs": 163,
+    "with_citation": 163,
+    "verified_in_india_code": 125,
+    "verified_rate": 0.7668711656441718,
+    "top_cited": [
+      [
+        "Indian Contract Act, 1872, Section 37",
+        62
+      ],
+      [
+        "Indian Contract Act, 1872, Section 27",
+        10
+      ],
+      [
+        "Indian Contract Act, 1872, Section 62",
+        10
+      ],
+      [
+        "Indian Contract Act, 1872, Section 56",
+        8
+      ],
+      [
+        "Indian Contract Act, 1872, Section 39",
+        6
+      ]
+    ]
+  },
+  "citations|agy_gemini-4-hydrogen-high": {
+    "flagged_pairs": 272,
+    "with_citation": 266,
+    "verified_in_india_code": 228,
+    "verified_rate": 0.8571428571428571,
+    "top_cited": [
+      [
+        "Indian Contract Act, 1872, Section 37",
+        118
+      ],
+      [
+        "Indian Contract Act, 1872, Section 29",
+        32
+      ],
+      [
+        "Indian Contract Act, 1872, Section 27",
+        11
+      ],
+      [
+        "Indian Contract Act, 1872, Section 32",
+        10
+      ],
+      [
+        "Indian Contract Act, 1872, Section 62",
+        8
+      ]
+    ]
+  },
+  "agreement|agy_claude-sonnet-5-5-medium vs agy_gemini-4-hydrogen-high": {
+    "pairs": 300,
+    "relation_agreement": 0.5766666666666667,
+    "relation_kappa": 0.38472966862605773,
+    "risky_kappa": 0.5666666666666667
+  }
+}

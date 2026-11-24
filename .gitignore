@@ -61,7 +61,6 @@ Thumbs.db
 *.xlsx
 *.zip
 output/
-results/
 runs/
 temp/
 .agents/rules/graphify.md
@@ -83,3 +82,7 @@ models/kev_judge/
 data/statutes/*.npy
 results/*.log
 logs/
+
+# evaluation outputs are part of the deliverable
+!results/
+results/*.log

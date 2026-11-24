@@ -159,8 +159,32 @@ def eval_statutes(args):
     ft = ROOT / "models" / "inlegal_sbert_statutes"
     if (ft / "config.json").exists():
         configs["hybrid_ft+act_prior"] = dict(method="hybrid", act_prior=True, model_name=str(ft))
-    out = {"queries": len(qs)}
+    # Gold #2 (independent): the statute each Supreme Court judgment actually applied.
+    lit = []
+    lp = ROOT / "research/litigated_clauses/cases.jsonl"
+    if lp.exists():
+        for c in map(json.loads, lp.read_text(encoding="utf-8").splitlines()):
+            golds = [s for part in c.get("statute", "").split(";") for s in [verify_citation(part.strip())] if s]
+            if golds:
+                q = c["clause_a"]["text"] + " " + ((c.get("clause_b") or {}).get("text") or "")
+                lit.append((q[:1500], {(g["act"], g["section"]) for g in golds}))
+    out = {"queries": len(qs), "litigated_queries": len(lit),
+           "note": "teacher-citation gold is ~94% Indian Contract Act (s.37 over-cited) - see always_ica baseline; "
+                   "the litigated gold (statute applied by the Supreme Court) is the independent test"}
+    ica = "The Indian Contract Act, 1872"
+    out["always_ica_baseline"] = {"act_recall@3": sum(g[0] == ica for _, g, _ in qs) / max(1, len(qs)),
+                                  "litigated_act_recall@3": sum(any(a == ica for a, _ in gs) for _, gs in lit) / max(1, len(lit))}
     for name, kw in configs.items():
+        if lit:
+            hit_s = {1: 0, 3: 0, 5: 0}
+            hit_a = 0
+            for q, gs in lit:
+                res = [(s["act"], s["section"]) for s, _ in retrieve_sections(q, k=5, **kw)]
+                for k in hit_s:
+                    hit_s[k] += any(r in gs for r in res[:k])
+                hit_a += any(a in {g[0] for g in gs} for a, _ in res[:3])
+            out.setdefault("litigated", {})[name] = {f"recall@{k}": v / len(lit) for k, v in hit_s.items()} | {"act_recall@3": hit_a / len(lit)}
+            print("litigated", name, out["litigated"][name], flush=True)
         hits = {1: 0, 3: 0, 5: 0}
         act_hits = 0
         for q, gold, _ in qs:
@@ -439,9 +463,17 @@ def tables(args):
         lines += [f"## Statute grounding — retrieving the cited Indian section ({s['queries']} queries)", "",
                   "| retriever | R@1 | R@3 | R@5 | correct Act in top-3 |", "|---|---|---|---|---|"]
         for k, v in s.items():
-            if isinstance(v, dict):
+            if isinstance(v, dict) and "recall@1" in v:
                 lines.append(f"| {k} | {fmt(v['recall@1'])} | {fmt(v['recall@3'])} | {fmt(v['recall@5'])} | {fmt(v['act_recall@3'])} |")
-        lines.append("")
+        b = s.get("always_ica_baseline", {})
+        lines += [f"| *always answer Indian Contract Act* (baseline) | — | — | — | {fmt(b.get('act_recall@3'))} |", "",
+                  f"⚠ {s.get('note', '')}", ""]
+        if s.get("litigated"):
+            lines += [f"### Statute retrieval vs the statute the Supreme Court applied ({s.get('litigated_queries')} cases; independent gold)", "",
+                      "| retriever | section R@1 | section R@3 | section R@5 | correct Act in top-3 |", "|---|---|---|---|---|"]
+            for k, v in s["litigated"].items():
+                lines.append(f"| {k} | {fmt(v['recall@1'])} | {fmt(v['recall@3'])} | {fmt(v['recall@5'])} | {fmt(v['act_recall@3'])} |")
+            lines += [f"| *always answer Indian Contract Act* (baseline) | — | — | — | {fmt(b.get('litigated_act_recall@3'))} |", ""]
     j = load("eval_judge")
     if j:
         lines += [f"## Pair judge comparison ({j['n_pairs']} held-out pairs, reference = {j['reference']}; {j.get('gold') or 'no human gold yet'})", "",

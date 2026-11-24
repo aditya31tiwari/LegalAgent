@@ -1,0 +1,16 @@
+{
+  "pairs": 280,
+  "rules": {
+    "recall": 0.075,
+    "ms_per_pair": 0.0,
+    "by_case": {
+      "Cap On Liability x Uncapped Liability": 0.1,
+      "Anti-Assignment x Change Of Control": 0.0,
+      "License Grant x Ip Ownership Assignment": 0.025,
+      "Termination For Convenience x Post-Termination Services": 0.3,
+      "Non-Compete x Post-Termination Services": 0.05,
+      "Exclusivity x Non-Compete": 0.0,
+      "Liquidated Damages x Cap On Liability": 0.05
+    }
+  }
+}

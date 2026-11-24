@@ -1,0 +1,71 @@
+{
+  "queries": 47,
+  "litigated_queries": 10,
+  "note": "teacher-citation gold is ~94% Indian Contract Act (s.37 over-cited) - see always_ica baseline; the litigated gold (statute applied by the Supreme Court) is the independent test",
+  "always_ica_baseline": {
+    "act_recall@3": 0.9361702127659575,
+    "litigated_act_recall@3": 0.7
+  },
+  "litigated": {
+    "bm25": {
+      "recall@1": 0.0,
+      "recall@3": 0.0,
+      "recall@5": 0.0,
+      "act_recall@3": 0.3
+    },
+    "dense_inlegal_sbert": {
+      "recall@1": 0.0,
+      "recall@3": 0.0,
+      "recall@5": 0.0,
+      "act_recall@3": 0.2
+    },
+    "hybrid": {
+      "recall@1": 0.0,
+      "recall@3": 0.0,
+      "recall@5": 0.0,
+      "act_recall@3": 0.2
+    },
+    "hybrid+act_prior": {
+      "recall@1": 0.0,
+      "recall@3": 0.1,
+      "recall@5": 0.1,
+      "act_recall@3": 0.3
+    },
+    "hybrid_ft+act_prior": {
+      "recall@1": 0.1,
+      "recall@3": 0.2,
+      "recall@5": 0.5,
+      "act_recall@3": 0.6
+    }
+  },
+  "bm25": {
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "act_recall@3": 0.2553191489361702
+  },
+  "dense_inlegal_sbert": {
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "act_recall@3": 0.0425531914893617
+  },
+  "hybrid": {
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "act_recall@3": 0.10638297872340426
+  },
+  "hybrid+act_prior": {
+    "recall@1": 0.0,
+    "recall@3": 0.0,
+    "recall@5": 0.0,
+    "act_recall@3": 0.1702127659574468
+  },
+  "hybrid_ft+act_prior": {
+    "recall@1": 0.0,
+    "recall@3": 0.02127659574468085,
+    "recall@5": 0.06382978723404255,
+    "act_recall@3": 0.7021276595744681
+  }
+}

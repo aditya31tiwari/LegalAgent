@@ -1,0 +1,70 @@
+{
+  "pairs": 28,
+  "rules": {
+    "binary_accuracy": 0.4642857142857143,
+    "risky_detected_on_bad": 0.125,
+    "no_issue_on_fixed": 0.9166666666666666,
+    "ms_per_pair": 0.0,
+    "misses": [
+      "survival_confidentiality_bad",
+      "notice_periods_bad",
+      "arbitration_vs_courts_bad",
+      "ld_vs_cap_bad",
+      "noncompete_survival_bad",
+      "assignment_change_of_control_bad",
+      "payment_tax_grossup_bad",
+      "warranty_disclaimer_bad",
+      "ip_assignment_vs_license_bad",
+      "force_majeure_payment_bad",
+      "confidentiality_vs_regulator_bad",
+      "inj_91.2_91.4",
+      "inj_91.3_91.4",
+      "inj_91.6_91.7",
+      "cap_indemnity_fixed"
+    ]
+  },
+  "kev_base_zero_shot": {
+    "binary_accuracy": 0.7142857142857143,
+    "risky_detected_on_bad": 0.6875,
+    "no_issue_on_fixed": 0.75,
+    "ms_per_pair": 1722.3,
+    "misses": [
+      "noncompete_survival_bad",
+      "payment_tax_grossup_bad",
+      "force_majeure_payment_bad",
+      "confidentiality_vs_regulator_bad",
+      "inj_91.2_91.4",
+      "cap_indemnity_fixed",
+      "payment_tax_grossup_fixed",
+      "confidentiality_vs_regulator_fixed"
+    ]
+  },
+  "teacher:gemini-4-hydrogen-high": {
+    "binary_accuracy": 0.9285714285714286,
+    "pairs": 28
+  },
+  "kev_finetuned_v1_imbalanced": {
+    "binary_accuracy": 0.42857142857142855,
+    "risky_detected_on_bad": 0.0,
+    "no_issue_on_fixed": 1.0,
+    "ms_per_pair": 262.7,
+    "misses": [
+      "cap_indemnity_bad",
+      "survival_confidentiality_bad",
+      "notice_periods_bad",
+      "arbitration_vs_courts_bad",
+      "ld_vs_cap_bad",
+      "noncompete_survival_bad",
+      "assignment_change_of_control_bad",
+      "payment_tax_grossup_bad",
+      "warranty_disclaimer_bad",
+      "ip_assignment_vs_license_bad",
+      "force_majeure_payment_bad",
+      "confidentiality_vs_regulator_bad",
+      "inj_91.1_91.2",
+      "inj_91.2_91.4",
+      "inj_91.3_91.4",
+      "inj_91.6_91.7"
+    ]
+  }
+}
