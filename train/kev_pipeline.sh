@@ -15,22 +15,24 @@ stop_port() { pkill -f "kev.serve .*--port $1" 2>/dev/null; sleep 3; }
 log "waiting for GPU queues to finish"
 while pgrep -f "train/gpu_queue.sh|/tmp/queue2.sh" >/dev/null; do sleep 20; done
 
-log "waiting for teacher labelling to finish (max 30 min)"
-for _ in $(seq 1 90); do pgrep -f "label_with_agy.py" >/dev/null || break; sleep 20; done
-
 if [[ -z "${SKIP_EXPORT:-}" ]]; then
+  log "waiting for teacher labelling to finish (max 30 min)"
+  for _ in $(seq 1 90); do pgrep -f "label_with_agy.py" >/dev/null || break; sleep 20; done
   log "import teacher labels";  "$PY" scripts/build_judge_set.py import-labels --teacher antigravity-gemini-4-hydrogen-high
   log "export Kev records (re-classified with current CLAUSE-22 classifier)";  "$PY" train/export_kev_data.py
 fi
 
 log "fine-tune Kev-0.8B (log: logs/kev_train.log)"
 rm -rf "$REPO/models/kev_judge"   # kev.train refuses to overwrite a run directory (e.g. a killed attempt)
+pkill -f "web/server[.]py" 2>/dev/null; pkill -f "kev[.]serve" 2>/dev/null; sleep 3   # 6 GB card: training needs all of it
 start=$(date +%s)
 # kev.train defaults to Qwen3-0.6B-Base; kev-0.8b is built on Qwen3.5-0.8B-Base (revision pinned
 # in its model card), and warm_start() refuses a mismatched backbone.
 (cd "$KEV" && "$KPY" -m kev.train --data "$REPO/data/derived/kev/train.jsonl" --init_from jaredpalmer/kev-0.8b \
    --base Qwen/Qwen3.5-0.8B-Base --base_revision dc7cdfe2ee4154fa7e30f5b51ca41bfa40174e68 \
-   --lr 1e-4 --epochs 2 --accum 8 --max_state 1536 --out "$REPO/models/kev_judge") > /tmp/kev_train.log 2>&1
+   --lr 1e-4 --epochs "${KEV_EPOCHS:-1}" --accum 8 --max_state 1280 \
+   --device cuda --dtype bf16 --weights_dtype bf16 --checkpointing 1 \
+   --out "$REPO/models/kev_judge") > /tmp/kev_train.log 2>&1
 status=$?
 echo "{\"base\": \"jaredpalmer/kev-0.8b\", \"lr\": 1e-4, \"epochs\": 2, \"accum\": 8, \"exit\": $status, \"train_seconds\": $(( $(date +%s) - start )), \"train_records\": $(wc -l < data/derived/kev/train.jsonl)}" > results/kev_train.json
 log "train exit=$status: $(cat results/kev_train.json)"

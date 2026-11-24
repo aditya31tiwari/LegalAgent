@@ -69,17 +69,18 @@ def _load_minilm_lr():
         return None
     import joblib
     from sentence_transformers import SentenceTransformer
+    from legalagent.core.device import pick_device
     bundle = joblib.load(LABELLER_PATH)
-    return bundle, SentenceTransformer(bundle["model_name"])
+    return bundle, SentenceTransformer(bundle["model_name"], device=pick_device(0.6))
 
 
 @lru_cache(maxsize=1)
 def _load_inlegalbert():
     if not (INLEGALBERT_DIR / "config.json").exists():
         return None
-    import torch
     from transformers import AutoModelForSequenceClassification, AutoTokenizer
-    device = "cuda" if torch.cuda.is_available() else "cpu"
+    from legalagent.core.device import pick_device
+    device = pick_device(0.8)
     tok = AutoTokenizer.from_pretrained(INLEGALBERT_DIR)
     model = AutoModelForSequenceClassification.from_pretrained(INLEGALBERT_DIR).to(device).eval()
     if device == "cuda":
@@ -120,17 +121,30 @@ def predict_proba(texts: list[str], backend: str) -> tuple[list[str], "list"]:
     """Raw per-label probabilities for evaluation code. Returns (labels, n x L array)."""
     import numpy as np
     if backend == "minilm_lr":
+        from legalagent.core.retrieval import safe_encode
         bundle, encoder = _load_minilm_lr()
-        return list(bundle["labels"]), bundle["clf"].predict_proba(encoder.encode(texts, normalize_embeddings=True, batch_size=64))
+        return list(bundle["labels"]), bundle["clf"].predict_proba(safe_encode(encoder, texts, normalize_embeddings=True, batch_size=64))
     if backend == "inlegalbert":
         import torch
-        tok, model, labels, _thr, device = _load_inlegalbert()
-        out = []
-        with torch.no_grad():
-            for i in range(0, len(texts), 64):
-                enc = tok(texts[i:i + 64], truncation=True, max_length=256, padding=True, return_tensors="pt").to(device)
-                out.append(torch.sigmoid(model(**enc).logits.float()).cpu().numpy())
-        return labels, (np.vstack(out) if out else np.zeros((0, len(labels))))
+        from legalagent.core.device import is_oom
+        tok, model, labels, _thr, _dev = _load_inlegalbert()
+
+        def run(m, device):
+            out = []
+            with torch.no_grad():
+                for i in range(0, len(texts), 32):
+                    enc = tok(texts[i:i + 32], truncation=True, max_length=256, padding=True, return_tensors="pt").to(device)
+                    out.append(torch.sigmoid(m(**enc).logits.float()).cpu().numpy())
+            return np.vstack(out) if out else np.zeros((0, len(labels)))
+
+        device = next(model.parameters()).device.type
+        try:
+            return labels, run(model, device)
+        except Exception as exc:
+            if device != "cuda" or not is_oom(exc):
+                raise
+            torch.cuda.empty_cache()
+            return labels, run(model.float().to("cpu"), "cpu")   # GPU busy (e.g. Kev): slower, not failed
     raise ValueError(f"predict_proba not supported for backend {backend!r}")
 
 

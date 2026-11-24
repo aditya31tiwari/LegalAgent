@@ -51,7 +51,8 @@ def build_graph(clauses: list[dict], embed=None):
     pos = {cid: i for i, cid in enumerate(ids)}
     n = len(ids)
     if embed is None:
-        embed = _load_model(EMBED_MODEL).encode([c["text"][:1500] for c in clauses], normalize_embeddings=True, batch_size=64)
+        from legalagent.core.retrieval import safe_encode
+        embed = safe_encode(_load_model(EMBED_MODEL), [c["text"][:1500] for c in clauses], normalize_embeddings=True, batch_size=64)
     multi = np.zeros((n, len(vocab)), dtype=np.float32)
     for i, c in enumerate(clauses):
         for l in c["labels"]:

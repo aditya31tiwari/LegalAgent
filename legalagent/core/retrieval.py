@@ -41,7 +41,7 @@ def index_text(clause: Clause) -> str:
     return XREF_RE.sub(" ", text).strip()
 
 
-@lru_cache(maxsize=2)
+@lru_cache(maxsize=4)
 def _load_model(model_name: str):
     try:
         from sentence_transformers import SentenceTransformer
@@ -49,7 +49,22 @@ def _load_model(model_name: str):
         raise ImportError(
             "Dense retrieval needs sentence-transformers: pip install sentence-transformers"
         ) from exc
-    return SentenceTransformer(model_name)
+    from legalagent.core.device import pick_device
+    return SentenceTransformer(model_name, device=pick_device(0.6))
+
+
+def safe_encode(model, texts, **kw):
+    """encode(), retried on CPU if the shared GPU is out of memory (e.g. Kev server resident)."""
+    from legalagent.core.device import is_oom
+    try:
+        return model.encode(texts, **kw)
+    except Exception as exc:
+        if not is_oom(exc):
+            raise
+        import torch
+        torch.cuda.empty_cache()
+        model.to("cpu")
+        return model.encode(texts, **kw)
 
 
 def _bm25_matrix(texts: list[str]):
@@ -66,7 +81,7 @@ def _bm25_matrix(texts: list[str]):
 
 def _dense_matrix(texts: list[str], model_name: str):
     """Cosine similarity matrix from normalized embeddings."""
-    emb = _load_model(model_name).encode(texts, normalize_embeddings=True)
+    emb = safe_encode(_load_model(model_name), texts, normalize_embeddings=True)
     return emb @ emb.T
 
 

@@ -111,7 +111,7 @@ def build_library(parquet: Path = RAW_PARQUET, out: Path = LIBRARY) -> int:
             "in_force": bool(r.in_force),
         })
         txt = _clean(r.text)
-        m = re.match(r"Chapter [^|]*\|\s*Section [^:]*:\s*(.*?)\s*\.\s*—\s*(.*)", txt)
+        m = re.match(r"Chapter [^|]*\|\s*Section [^:]*:\s*(.*?)\s*\.\s*â€”\s*(.*)", txt)
         if m and not entry["heading"]:
             entry["heading"] = m.group(1).strip()
             txt = m.group(2)
@@ -178,7 +178,7 @@ def _bm25():
 
 @lru_cache(maxsize=2)
 def _dense(model_name: str):
-    from legalagent.core.retrieval import _load_model
+    from legalagent.core.retrieval import _load_model, safe_encode
     model = _load_model(model_name)
     cache = LIBRARY.with_suffix(f".{model_name.replace('/', '__')}.npy")
     import numpy as np
@@ -186,7 +186,7 @@ def _dense(model_name: str):
         emb = np.load(cache)
         if len(emb) == len(load_library()):
             return model, emb
-    emb = model.encode([_doc_text(s) for s in load_library()], normalize_embeddings=True, batch_size=64)
+    emb = safe_encode(model, [_doc_text(s) for s in load_library()], normalize_embeddings=True, batch_size=64)
     np.save(cache, emb)
     return model, emb
 
@@ -195,6 +195,11 @@ def default_dense_model() -> str:
     """Fine-tuned statute retriever if trained (train/finetune_retriever.py), else base InLegal-SBERT."""
     ft = ROOT / "models" / "inlegal_sbert_statutes"
     return str(ft) if (ft / "config.json").exists() else DENSE_MODEL
+
+
+def safe_encode(model, texts, **kw):
+    from legalagent.core.retrieval import safe_encode as _se
+    return _se(model, texts, **kw)
 
 
 def retrieve_sections(query: str, k: int = 3, method: str = "hybrid", model_name: str | None = None,
@@ -207,7 +212,7 @@ def retrieve_sections(query: str, k: int = 3, method: str = "hybrid", model_name
         ranks.append(np.argsort(-_bm25().get_scores(_tok(query))))
     if method in ("dense", "hybrid"):
         model, emb = _dense(model_name)
-        q = model.encode([query], normalize_embeddings=True)[0]
+        q = safe_encode(model, [query], normalize_embeddings=True)[0]
         ranks.append(np.argsort(-(emb @ q)))
     fused = np.zeros(len(lib))
     for order in ranks:
@@ -229,7 +234,7 @@ def explain_sections(query: str, k: int = 5, model_name: str | None = None) -> l
     model_name = model_name or default_dense_model()
     bm = _bm25().get_scores(_tok(query))
     model, emb = _dense(model_name)
-    cos = emb @ model.encode([query], normalize_embeddings=True)[0]
+    cos = emb @ safe_encode(model, [query], normalize_embeddings=True)[0]
     bm_rank = np.empty(len(lib), int); bm_rank[np.argsort(-bm)] = np.arange(1, len(lib) + 1)
     de_rank = np.empty(len(lib), int); de_rank[np.argsort(-cos)] = np.arange(1, len(lib) + 1)
     rrf_bm = 1.0 / (60 + bm_rank)
@@ -247,7 +252,7 @@ def explain_sections(query: str, k: int = 5, model_name: str | None = None) -> l
     } for i in top]
 
 
-_SEC_RE = re.compile(r"(?:section|sec\.?|s\.)\s*(\d+[A-Z]?)(?:\s*(?:-|to|–)\s*(\d+[A-Z]?))?", re.I)
+_SEC_RE = re.compile(r"(?:section|sec\.?|s\.)\s*(\d+[A-Z]?)(?:\s*(?:-|to|â€“)\s*(\d+[A-Z]?))?", re.I)
 
 
 def verify_citation(citation: str) -> dict | None:

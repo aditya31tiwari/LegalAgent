@@ -22,7 +22,9 @@
   .card { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:14px 16px; margin-bottom:14px; }
   .card h2 { font-size:14px; margin:0 0 8px; color:var(--navy); }
   .muted { color:var(--muted); font-size:12px; }
-  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  .grid2 { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px; }
+  .grid2 > * { min-width:0; }
+  #page-img { display:block; max-width:100%; max-height:560px; width:auto; margin:0 auto; object-fit:contain; }
   @media (max-width:900px) { .grid2 { grid-template-columns:1fr; } }
   table { border-collapse:collapse; width:100%; font-size:12px; }
   th, td { border-bottom:1px solid var(--line); padding:5px 6px; text-align:left; vertical-align:top; }
@@ -61,7 +63,7 @@
       <div class="card">
         <h2>Source page <span id="page-badge" class="pill"></span></h2>
         <div class="row"><input type="range" id="page" min="1" value="1" style="flex:1"><span id="page-num" class="muted"></span></div>
-        <img id="page-img" alt="page image" style="width:100%; border:1px solid var(--line); border-radius:4px; background:#fff;">
+        <img id="page-img" alt="page image" style="border:1px solid var(--line); border-radius:4px; background:#fff;">
         <div class="muted" id="page-note"></div>
         <canvas id="chart-ocr" style="max-height:90px; margin-top:8px"></canvas>
       </div>
@@ -72,7 +74,7 @@
     </div>
     <div class="grid2">
       <div class="card"><h2>Clause tree (parts → clauses → sub-clauses)</h2><div id="doc-tree" class="scroll" style="max-height:480px; font-size:12px"></div></div>
-      <div class="card"><h2>Structure summary</h2><canvas id="chart-parts"></canvas><canvas id="chart-labels" style="margin-top:10px"></canvas></div>
+      <div class="card"><h2>Structure summary</h2><div style="height:300px"><canvas id="chart-parts"></canvas></div><canvas id="chart-labels" style="margin-top:10px"></canvas></div>
     </div>
   </section>
 
@@ -192,9 +194,12 @@ async function loadDoc() {
        ${c.labels.map(l => `<span class="pill">${esc(l)}</span>`).join('')}
        ${c.xrefs.length ? `<span class="pill x">→ ${c.xrefs.map(x => esc(x.split('::').pop())).join(', ')}</span>` : ''}</div>`).join('') + '</details>').join('');
   // summary charts
-  draw('chart-parts', { type: 'bar', data: { labels: Object.keys(byPart).map(p => p.slice(0, 28)), datasets: [{ label: 'clauses per part',
-      data: Object.values(byPart).map(v => v.length), backgroundColor: Object.keys(byPart).map(colorOf) }] },
-    options: { indexAxis: 'y', plugins: { legend: { display: false } } } });
+  const bigParts = Object.entries(byPart).sort((a, b) => b[1].length - a[1].length).slice(0, 15);
+  $('chart-parts').parentElement.style.minHeight = '0';
+  draw('chart-parts', { type: 'bar', data: { labels: bigParts.map(([p]) => p.slice(0, 34)), datasets: [{ label: 'clauses per part',
+      data: bigParts.map(([, v]) => v.length), backgroundColor: bigParts.map(([p]) => colorOf(p)) }] },
+    options: { indexAxis: 'y', maintainAspectRatio: false, plugins: { legend: { display: false },
+      title: { display: true, text: `largest ${bigParts.length} of ${Object.keys(byPart).length} parts` } } } });
   const lc = {};
   d.clauses.forEach(c => c.labels.forEach(l => lc[l] = (lc[l] || 0) + 1));
   const top = Object.entries(lc).sort((a, b) => b[1] - a[1]).slice(0, 15);

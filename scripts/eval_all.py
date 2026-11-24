@@ -238,6 +238,69 @@ def eval_checklist(args):
     save("eval_checklist", out, merge=True)
 
 
+def eval_cuadpairs(args):
+    """Recall on lawyer-grounded CUAD interaction pairs (scripts/make_cuad_pairs.py); no LLM labels."""
+    rows = [json.loads(l) for l in (ROOT / "research/teacher_labels/cuad_interaction_pairs.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
+    if args.limit:
+        rows = rows[: args.limit]
+    preds, latency = _judge_predictions(rows, KEV_SERVERS)
+    out = {"pairs": len(rows)}
+    for name, p in preds.items():
+        by_case = defaultdict(list)
+        for r, x in zip(rows, p):
+            by_case[r["case"]].append(x != "no_issue")
+        out[name] = {"recall": float(np.mean([x != "no_issue" for x in p])), "ms_per_pair": round(latency[name], 1),
+                     "by_case": {k: round(float(np.mean(v)), 3) for k, v in by_case.items()}}
+        print(name, out[name], flush=True)
+    save("eval_cuadpairs", out, merge=True)
+
+
+def eval_litigated(args):
+    """
+    Real clauses from Indian Supreme Court judgments (research/litigated_clauses/cases.jsonl);
+    the court's decision is the ground truth. Cross-clause cases go to every pair judge;
+    single-clause cases go to the Indian statutory rules (the component meant to catch them).
+    Upheld clauses are negatives (a flag there is a false alarm).
+    """
+    from legalagent.core.types import Clause
+    from legalagent.core.analysis import analyse_statutory
+    from legalagent.core.classification import classify
+    cases = [json.loads(l) for l in (ROOT / "research/litigated_clauses/cases.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
+    pair_rows = [{"pair_id": c["case_id"], "a_id": f"lit::{c['case_id']}::a", "b_id": f"lit::{c['case_id']}::b",
+                  "a_text": c["clause_a"]["text"], "b_text": c["clause_b"]["text"], "surfaced_by": ["xref"]}
+                 for c in cases if c["kind"] == "cross_clause" and c.get("clause_b") and c["clause_b"].get("text")]
+    preds, _lat = _judge_predictions(pair_rows, KEV_SERVERS) if pair_rows else ({}, {})
+    by_pair = {r["pair_id"]: {name: p[i] for name, p in preds.items()} for i, r in enumerate(pair_rows)}
+    out = {"cases": []}
+    for c in cases:
+        row = {"case": c["case_name"], "year": c["year"], "kind": c["kind"], "court": c["outcome"],
+               "statute": c.get("statute", ""), "expected_flag": c["expected_flag"]}
+        if c["kind"] == "cross_clause" and c["case_id"] in by_pair:
+            for name, rel in by_pair[c["case_id"]].items():
+                row[name] = rel
+        cl = classify([Clause(id="lit::1", contract_id="lit", number="1", text=c["clause_a"]["text"])])
+        stat = analyse_statutory(cl, "India")
+        row["statutory_rule"] = ", ".join(r["section"] for f in stat for r in f.refs) or "no_flag"
+        row["clause_types"] = [l["label"] for l in cl[0].labels]
+        out["cases"].append(row)
+        print(row, flush=True)
+    # summary per component: agreement with the court's expected flag
+    summ = {}
+    for name in ["statutory_rule", *preds.keys()]:
+        rows = [r for r in out["cases"] if name in r]
+        if not rows:
+            continue
+        flagged = lambda v: v not in ("no_issue", "no_flag")
+        tp = sum(flagged(r[name]) and r["expected_flag"] for r in rows)
+        fp = sum(flagged(r[name]) and not r["expected_flag"] for r in rows)
+        fn = sum(not flagged(r[name]) and r["expected_flag"] for r in rows)
+        tn = sum(not flagged(r[name]) and not r["expected_flag"] for r in rows)
+        summ[name] = {"cases": len(rows), "caught": tp, "missed": fn, "false_alarms": fp, "correctly_quiet": tn}
+    out["summary"] = summ
+    print(summ)
+    save("eval_litigated", out, merge=True)
+
+
 def eval_judge(args):
     from sklearn.metrics import f1_score, precision_recall_fscore_support
 
@@ -383,6 +446,27 @@ def tables(args):
             elif isinstance(v, dict) and k.startswith("teacher:"):
                 lines.append(f"| {k} | {fmt(v['binary_accuracy'])} | — | — | API | |")
         lines.append("")
+    cp = load("eval_cuadpairs")
+    if cp:
+        lines += [f"## CUAD lawyer-grounded interaction pairs ({cp['pairs']} pairs; no LLM labels) — recall of each judge", "",
+                  "| judge | recall | ms/pair | per category pair |", "|---|---|---|---|"]
+        for k, v in cp.items():
+            if isinstance(v, dict) and "recall" in v:
+                lines.append(f"| {k} | {fmt(v['recall'])} | {v['ms_per_pair']} | " + "; ".join(f"{c}: {fmt(x)}" for c, x in v["by_case"].items()) + " |")
+        lines.append("")
+    lt = load("eval_litigated")
+    if lt and lt.get("cases"):
+        judges = [k for k in ("rules", "kev_base_zero_shot", "kev_finetuned") if any(k in r for r in lt["cases"])]
+        lines += ["## Litigated clauses — Supreme Court of India decisions as ground truth (case study, not a statistic)", "",
+                  "| case | year | kind | court held | should flag | statutory rule | " + " | ".join(judges) + " |",
+                  "|---|---|---|---|---|---|" + "---|" * len(judges)]
+        for r in lt["cases"]:
+            lines.append(f"| {r['case']} | {r['year']} | {r['kind']} | {r['court']} | {'yes' if r['expected_flag'] else 'no'} | {r['statutory_rule']} | "
+                         + " | ".join(str(r.get(j, '—')) for j in judges) + " |")
+        lines += ["", "| component | cases | caught | missed | false alarms | correctly quiet |", "|---|---|---|---|---|---|"]
+        for k, v in lt.get("summary", {}).items():
+            lines.append(f"| {k} | {v['cases']} | {v['caught']} | {v['missed']} | {v['false_alarms']} | {v['correctly_quiet']} |")
+        lines.append("")
     h = load("eval_judge_vs_human")
     if h:
         lines += [f"## Judges vs blind human labels ({h['pairs']} held-out pairs)", "", "| judge | relation accuracy | risky/not accuracy |", "|---|---|---|"]
@@ -433,14 +517,15 @@ def tables(args):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("what", choices=["classifier", "retrieval", "statutes", "judge", "checklist", "e2e", "tables"])
+    ap.add_argument("what", choices=["classifier", "retrieval", "statutes", "judge", "checklist", "cuadpairs", "litigated", "e2e", "tables"])
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--contracts", type=int, default=120)
     ap.add_argument("--judges", default="rules,local")
     ap.add_argument("--max-candidates", type=int, default=60)
     args = ap.parse_args()
     {"classifier": eval_classifier, "retrieval": eval_retrieval, "statutes": eval_statutes,
-     "judge": eval_judge, "checklist": eval_checklist, "e2e": eval_e2e, "tables": tables}[args.what](args)
+     "judge": eval_judge, "checklist": eval_checklist, "cuadpairs": eval_cuadpairs, "litigated": eval_litigated,
+     "e2e": eval_e2e, "tables": tables}[args.what](args)
 
 
 if __name__ == "__main__":

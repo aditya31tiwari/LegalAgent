@@ -243,7 +243,9 @@ def import_labels(args):
     src = ROOT / "research" / "teacher_labels"
     pairs = {json.loads(l)["pair_id"]: json.loads(l) for l in (src / "pairs_to_label.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()}
     labels, bad = {}, 0
-    for f in sorted((src / "labels").glob("*.jsonl")):
+    # Only the primary teacher trains Kev; other model families (second opinion) and the
+    # checklist are evaluation-only and live in the same folder.
+    for f in sorted((src / "labels").glob(args.label_glob)):
         for l in f.read_text(encoding="utf-8").splitlines():
             try:
                 r = json.loads(l)
@@ -270,6 +272,7 @@ def main():
     ap.add_argument("what", choices=["pairs", "india-clauses", "import-labels"])
     ap.add_argument("--export", action="store_true", help="pairs: write unlabelled pairs for an external teacher and stop")
     ap.add_argument("--teacher", default="antigravity-gemini-4")
+    ap.add_argument("--label-glob", default="agy_gemini-4-hydrogen-high.jsonl")
     ap.add_argument("--contracts", type=int, default=220)
     ap.add_argument("--per-contract", type=int, default=14)
     ap.add_argument("--india-per-contract", type=int, default=150)
