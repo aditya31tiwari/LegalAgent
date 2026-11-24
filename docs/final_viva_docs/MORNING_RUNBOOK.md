@@ -25,6 +25,8 @@ On the frontend laptop (same hotspot): `http://<ip>:8080/…`
    2 full scanned PDFs). Pick each once (warms up). Filters *Clause ↔ Clause / Clause ↔ Law / Cross-refs* work,
    *Details* opens on a card.
 2. `/app` → **Upload & analyse** → `data/demo/samples/04_executive_employment_agreement.md` → live stages → opens.
+   **Do this once before the panel arrives**: the first upload after a restart loads the models (≈50 s);
+   later uploads of a short contract take ≈15 s.
 3. `/scores` → Document → clauses (pick the Pune PDF; page image shows) · Clause-pair scores (first time per
    contract 10–30 s) · Finding explained · Results.
 4. `/report` → all tables visible (rebuild: `venv/bin/python scripts/build_report.py`).
