@@ -90,14 +90,52 @@ def choose_model(available: list[str] | None = None) -> str:
     raise GeminiConfigurationError("No Gemini model supports generateContent for this key")
 
 
+def model_chain(available: list[str] | None = None) -> list[str]:
+    """GEMINI_MODEL first (if available), then the preferred list, then other flash models."""
+    available = available if available is not None else list(_cached_models())
+    chain = []
+    configured = os.getenv("GEMINI_MODEL", "").strip()
+    if configured in available:
+        chain.append(configured)
+    chain += [m for m in PREFERRED_MODELS if m in available and m not in chain]
+    chain += sorted(m for m in available if "flash" in m.lower() and m not in chain
+                    and not any(x in m for x in ("tts", "image", "omni")))
+    return chain[:6] or [choose_model(available)]
+
+
 def generate_json(prompt: str, model: str | None = None) -> dict:
-    """Generate a JSON object (JSON mode, temperature 0.1). Rotates API keys on retry."""
-    selected_model = model or choose_model()
+    """
+    Generate a JSON object (JSON mode, temperature 0.1). Rotates API keys on retry and, when a
+    model stays overloaded (503/429) or is retired (404), moves on to the next model in the chain
+    (Gemini preview models are often busy at night; one busy model must not break Expand).
+    """
+    if model:
+        return _generate_with(prompt, model)
+    last = None
+    chain = model_chain()
+    now = time.time()
+    fresh = [m for m in chain if now - _BUSY.get(m, 0) > BUSY_SKIP_S] or chain   # skip models that just failed
+    for m in fresh:
+        try:
+            return _generate_with(prompt, m, max_retries=1)
+        except GeminiConfigurationError as exc:
+            last = exc
+            if not any(code in str(exc) for code in ("503", "429", "404", "500", "502", "504", "timed out")):
+                raise
+            _BUSY[m] = time.time()
+    raise last or GeminiConfigurationError("no Gemini model answered")
+
+
+_BUSY: dict[str, float] = {}   # model -> time it last failed with overload / not found
+BUSY_SKIP_S = 600
+
+
+def _generate_with(prompt: str, selected_model: str, max_retries: int | None = None) -> dict:
     body = {
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {"responseMimeType": "application/json", "temperature": 0.1},
     }
-    max_retries = max(3, len(_keys()) + 1)
+    max_retries = max_retries or max(3, len(_keys()) + 1)
     for attempt in range(max_retries):
         url = f"{API_ROOT}/models/{quote(selected_model, safe='')}:generateContent?key={quote(_api_key())}"
         request = Request(
