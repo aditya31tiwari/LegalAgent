@@ -15,7 +15,7 @@ statutes
   Positive pairs = (clause-pair text, Indian statute section) where the teacher's citation
   resolves to a real section in the library (train split only), plus (section heading,
   section text) pairs for every section so the encoder adapts to statutory language.
-Loss: MultipleNegativesRankingLoss (in-batch negatives), 1 epoch, fp16.
+Loss: CachedMultipleNegativesRankingLoss (in-batch negatives, GradCache), batch 64, 1 epoch, fp16.
 """
 import json
 import random
@@ -82,13 +82,15 @@ def main():
     model = SentenceTransformer(BASE)
     model.max_seq_length = 256
     examples = [InputExample(texts=[a, b]) for a, b in pairs]
-    loader = DataLoader(examples, shuffle=True, batch_size=32)
-    loss = losses.MultipleNegativesRankingLoss(model)
+    # GradCache variant of MNRL: effective batch 64 (more in-batch negatives) computed in
+    # mini-batches of 8, so it fits a 6 GB laptop GPU next to nothing else.
+    loader = DataLoader(examples, shuffle=True, batch_size=64)
+    loss = losses.CachedMultipleNegativesRankingLoss(model, mini_batch_size=8)
     t0 = time.time()
     model.fit(train_objectives=[(loader, loss)], epochs=1, warmup_steps=int(0.1 * len(loader)), use_amp=True, show_progress_bar=False)
     out = ROOT / "models" / f"inlegal_sbert_{what}"
     model.save(str(out))
-    meta = {"base": BASE, "pairs": len(pairs), "epochs": 1, "batch_size": 32, "loss": "MultipleNegativesRankingLoss",
+    meta = {"base": BASE, "pairs": len(pairs), "epochs": 1, "batch_size": 64, "loss": "CachedMultipleNegativesRankingLoss (mini-batch 8)",
             "train_seconds": round(time.time() - t0)}
     (out / "finetune_meta.json").write_text(json.dumps(meta, indent=2))
     (ROOT / "results").mkdir(exist_ok=True)

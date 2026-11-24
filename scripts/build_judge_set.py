@@ -250,7 +250,9 @@ def import_labels(args):
                 rel, sev = str(r["relation"]).lower(), str(r.get("severity", "low")).lower()
                 assert r["pair_id"] in pairs and rel in RELATIONS and sev in SEVERITIES
                 labels[r["pair_id"]] = {"relation": rel, "severity": sev, "risk": max(0.0, min(1.0, float(r.get("risk", 0)))),
-                                        "rationale": str(r.get("rationale", ""))[:400], "citation": str(r.get("citation", ""))[:200]}
+                                        "rationale": str(r.get("rationale", ""))[:400], "citation": str(r.get("citation", ""))[:200],
+                                        # optional richer fields (later runs); kept verbatim for audit and gold-set selection
+                                        **{k: r[k] for k in ("a_types", "b_types", "fix_clause", "suggested_fix", "confidence", "_provenance") if k in r}}
             except Exception:
                 bad += 1
     OUT.mkdir(parents=True, exist_ok=True)

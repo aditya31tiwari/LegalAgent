@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LegalAgent — Under the Hood</title>
+<script src="/vendor/chart.umd.min.js"></script>
+<style>
+  :root { --bg:#faf9f6; --panel:#ffffff; --ink:#1e293b; --muted:#64748b; --line:#e2e8f0;
+          --navy:#1e3a5f; --copper:#b26b3c; --red:#dc2626; --amber:#d97706; --green:#059669; --blue:#2563eb; }
+  * { box-sizing: border-box; }
+  body { margin:0; font:14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; background:var(--bg); color:var(--ink); }
+  header { padding:14px 22px; background:var(--navy); color:#fff; display:flex; gap:18px; align-items:center; flex-wrap:wrap; }
+  header h1 { font-size:17px; margin:0; font-weight:600; }
+  header a { color:#cbd5e1; font-size:12px; }
+  nav { display:flex; gap:4px; }
+  nav button { background:transparent; color:#cbd5e1; border:1px solid #475569; padding:5px 12px; border-radius:4px; cursor:pointer; }
+  nav button.on { background:#fff; color:var(--navy); }
+  main { padding:18px 22px; max-width:1300px; margin:0 auto; }
+  .row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }
+  select { padding:6px 8px; border:1px solid var(--line); border-radius:4px; background:#fff; max-width:100%; }
+  .card { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:14px 16px; margin-bottom:14px; }
+  .card h2 { font-size:14px; margin:0 0 8px; color:var(--navy); }
+  .muted { color:var(--muted); font-size:12px; }
+  .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  @media (max-width:900px) { .grid2 { grid-template-columns:1fr; } }
+  table { border-collapse:collapse; width:100%; font-size:12px; }
+  th, td { border-bottom:1px solid var(--line); padding:5px 6px; text-align:left; vertical-align:top; }
+  th { color:var(--muted); font-weight:600; position:sticky; top:0; background:#fff; }
+  td.num { text-align:right; font-variant-numeric:tabular-nums; }
+  .pill { display:inline-block; padding:1px 6px; border-radius:10px; font-size:10.5px; background:#eef2ff; color:#3730a3; margin:1px; }
+  .x { background:#dbeafe; color:#1e40af; } .pick { background:#dcfce7; color:#166534; font-weight:600; }
+  .clause { font-size:12px; background:#f8fafc; border:1px solid var(--line); border-radius:4px; padding:8px; white-space:pre-wrap; max-height:140px; overflow:auto; }
+  .scroll { max-height:420px; overflow:auto; }
+  canvas { max-height:360px; }
+  .formula { font-family:ui-monospace, Menlo, monospace; font-size:12px; background:#f1f5f9; padding:8px 10px; border-radius:4px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>LegalAgent — Under the Hood</h1>
+  <nav>
+    <button data-tab="document">Document → clauses</button>
+    <button data-tab="clause" class="on">Clause-pair scores</button>
+    <button data-tab="finding">Finding explained</button>
+    <button data-tab="results">Results</button>
+  </nav>
+  <a href="/app">← back to dashboard</a>
+</header>
+<main>
+  <div class="row" id="contract-row">
+    <label class="muted">Contract</label>
+    <select id="contract"></select>
+  </div>
+
+  <!-- ───────── Document → clauses ───────── -->
+  <section id="tab-document" hidden>
+    <div class="row"><label class="muted">Document</label><select id="doc"></select>
+      <span class="muted" id="doc-stats"></span></div>
+    <div class="grid2">
+      <div class="card">
+        <h2>Source page <span id="page-badge" class="pill"></span></h2>
+        <div class="row"><input type="range" id="page" min="1" value="1" style="flex:1"><span id="page-num" class="muted"></span></div>
+        <img id="page-img" alt="page image" style="width:100%; border:1px solid var(--line); border-radius:4px; background:#fff;">
+        <div class="muted" id="page-note"></div>
+        <canvas id="chart-ocr" style="max-height:90px; margin-top:8px"></canvas>
+      </div>
+      <div class="card">
+        <h2>Extracted text → clauses <span class="muted">(click a clause in the tree to jump)</span></h2>
+        <div id="doc-text" class="clause" style="max-height:620px; font-size:11.5px; line-height:1.5"></div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card"><h2>Clause tree (parts → clauses → sub-clauses)</h2><div id="doc-tree" class="scroll" style="max-height:480px; font-size:12px"></div></div>
+      <div class="card"><h2>Structure summary</h2><canvas id="chart-parts"></canvas><canvas id="chart-labels" style="margin-top:10px"></canvas></div>
+    </div>
+  </section>
+
+  <!-- ───────── Clause-pair scores ───────── -->
+  <section id="tab-clause">
+    <div class="row"><label class="muted">Clause</label><select id="clause" style="min-width:420px"></select></div>
+    <div class="card"><h2>Selected clause</h2><div id="clause-meta" class="muted"></div><div class="clause" id="clause-text"></div></div>
+    <div class="card">
+      <h2>How strongly each method links this clause to its neighbours</h2>
+      <div class="muted">BM25 normalised to the best neighbour (0–1); dense = cosine similarity of sentence embeddings;
+        GNN = predicted probability the pair is risky; type matrix = CLAUSE-22 clash weight of the two clause types.</div>
+      <canvas id="chart-neigh"></canvas>
+    </div>
+    <div class="card">
+      <h2>Raw scores and ranks (sorted by the hybrid score the pipeline uses)</h2>
+      <div class="formula">hybrid(j) = 1/(60 + rank<sub>BM25</sub>(j)) + 1/(60 + rank<sub>dense</sub>(j))  &nbsp;·&nbsp; reciprocal-rank fusion, k = 60</div>
+      <div class="scroll"><table id="neigh-table"></table></div>
+    </div>
+  </section>
+
+  <!-- ───────── Finding explained ───────── -->
+  <section id="tab-finding" hidden>
+    <div class="row"><label class="muted">Finding</label><select id="finding" style="min-width:420px"></select></div>
+    <div class="card"><h2 id="finding-title"></h2><div id="finding-desc" class="muted"></div>
+      <div class="grid2" id="finding-clauses" style="margin-top:8px"></div></div>
+    <div class="grid2">
+      <div class="card"><h2>Judge output — relation</h2><div class="muted" id="judge-note"></div><canvas id="chart-rel"></canvas></div>
+      <div class="card"><h2>Judge output — severity</h2><canvas id="chart-sev"></canvas></div>
+    </div>
+    <div class="card">
+      <h2>Indian statute retrieval (RAG over 3,142 India Code sections)</h2>
+      <div class="formula">fused = 1/(60 + rank<sub>BM25</sub>) + 1/(60 + rank<sub>InLegal-SBERT</sub>) + 0.004 × prior(Act)</div>
+      <canvas id="chart-stat"></canvas>
+      <div class="scroll"><table id="stat-table"></table></div>
+    </div>
+  </section>
+
+  <!-- ───────── Results ───────── -->
+  <section id="tab-results" hidden>
+    <div class="grid2">
+      <div class="card"><h2>Clause classification (micro-F1)</h2><canvas id="r-cls"></canvas><div class="muted">test = LexGLUE official test; test_ood = CUAD contracts never seen in training</div></div>
+      <div class="card"><h2>Related-clause retrieval (recall@k)</h2><div class="row"><select id="r-corpus"><option value="cuad">CUAD (US)</option><option value="india">Indian concessions</option></select></div><canvas id="r-ret"></canvas></div>
+      <div class="card"><h2>Pair judges on held-out pairs (vs teacher)</h2><canvas id="r-judge"></canvas></div>
+      <div class="card"><h2>Known-answer checklist (independent of the teacher)</h2><canvas id="r-check"></canvas></div>
+      <div class="card"><h2>Clause-graph GNN vs ablations</h2><canvas id="r-gnn"></canvas></div>
+      <div class="card"><h2>Teacher validation</h2><div id="r-teacher"></div></div>
+    </div>
+  </section>
+</main>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+const COLORS = { bm25_norm:'#b26b3c', cos_minilm:'#2563eb', cos_inlegal_sbert:'#7c3aed', cos_inlegal_sbert_ft:'#059669',
+                 gnn_prob:'#dc2626', type_matrix_weight:'#64748b' };
+const NAMES = { bm25_norm:'BM25 (normalised)', cos_minilm:'MiniLM cosine', cos_inlegal_sbert:'InLegal-SBERT cosine',
+                cos_inlegal_sbert_ft:'InLegal-SBERT fine-tuned cosine', gnn_prob:'GNN risk probability', type_matrix_weight:'Type-matrix weight' };
+const charts = {};
+function draw(id, cfg) { if (charts[id]) charts[id].destroy(); charts[id] = new Chart($(id), cfg); }
+async function j(url) { const r = await fetch(url); if (!r.ok) throw new Error((await r.json()).detail || r.statusText); return r.json(); }
+
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => {
+  document.querySelectorAll('nav button').forEach(x => x.classList.toggle('on', x === b));
+  ['document','clause','finding','results'].forEach(t => $('tab-' + t).hidden = t !== b.dataset.tab);
+  $('contract-row').style.display = ['results', 'document'].includes(b.dataset.tab) ? 'none' : 'flex';
+  if (b.dataset.tab === 'results') loadResults();
+  if (b.dataset.tab === 'document') loadDocs();
+});
+
+// ───────── Document → clauses ─────────
+const PART_COLORS = ['#fde68a', '#bfdbfe', '#c7d2fe', '#bbf7d0', '#fecaca', '#fbcfe8', '#ddd6fe', '#a5f3fc', '#fed7aa', '#e9d5ff'];
+let docsLoaded = false, docData = null;
+async function loadDocs() {
+  if (docsLoaded) return; docsLoaded = true;
+  const docs = await j('/api/docs');
+  $('doc').innerHTML = docs.map(d => `<option value="${esc(d.id)}">${esc(d.name)}</option>`).join('');
+  $('doc').onchange = loadDoc;
+  $('page').oninput = showPage;
+  await loadDoc();
+}
+async function loadDoc() {
+  $('doc-stats').innerText = 'ingesting (first time for a scanned PDF = OCR; cached afterwards)…';
+  $('doc-text').innerText = '';
+  docData = await j(`/api/docs/${encodeURIComponent($('doc').value)}/structure`);
+  const d = docData, s = d.stats;
+  const parts = [...new Set(d.clauses.map(c => c.part || '(no part)'))];
+  const colorOf = p => PART_COLORS[parts.indexOf(p || '(no part)') % PART_COLORS.length];
+  $('doc-stats').innerText = `${s.pages} page(s) · ${s.ocr_pages || 0} OCR'd${s.cached ? ' (cache hit)' : ''} · ${d.text.length.toLocaleString()} chars · ` +
+    `${d.clauses.length} clauses · ${parts.length} parts · ${d.clauses.reduce((n, c) => n + c.xrefs.length, 0)} resolved cross-refs · ${d.seconds}s`;
+  // pages
+  const isPdf = d.name.toLowerCase().endsWith('.pdf');
+  $('page').max = d.pages.length; $('page').value = 1; $('page').disabled = !isPdf;
+  $('page-img').style.display = isPdf ? 'block' : 'none';
+  $('page-note').innerText = isPdf ? '' : 'Markdown/text source — no page images.';
+  draw('chart-ocr', { type: 'bar', data: { labels: d.pages.map(p => p.page), datasets: [{ label: 'characters extracted per page',
+      data: d.pages.map(p => p.chars), backgroundColor: d.pages.map(p => p.ocr ? '#b26b3c' : '#1e3a5f') }] },
+    options: { plugins: { legend: { display: false }, title: { display: true, text: 'chars per page (copper = OCR, navy = native text)' } },
+               scales: { x: { display: false } }, animation: false } });
+  showPage();
+  // highlighted text (built as one HTML string; spans are escaped text)
+  let html = '', pos = 0;
+  for (const c of d.clauses) {
+    if (c.start > pos) html += `<span style="color:#94a3b8">${esc(d.text.slice(pos, c.start))}</span>`;
+    html += `<span id="cl-${esc(c.id)}" title="${esc(c.number)} · ${esc(c.part || '')} · ${esc(c.labels.join(', '))}" ` +
+            `style="background:${colorOf(c.part)}; border-radius:3px"><b style="background:#1e3a5f;color:#fff;padding:0 4px;border-radius:3px;font-size:10px">${esc(c.number)}</b> ` +
+            `${esc(d.text.slice(c.start, Math.min(c.end, c.start + 1500)))}${c.end - c.start > 1500 ? '…' : ''}</span>`;
+    pos = c.end;
+  }
+  $('doc-text').innerHTML = html || esc(d.text.slice(0, 20000));
+  // tree
+  const byPart = {};
+  d.clauses.forEach(c => (byPart[c.part || '(no part)'] ||= []).push(c));
+  $('doc-tree').innerHTML = Object.entries(byPart).map(([p, cs]) =>
+    `<details ${parts.length < 12 ? 'open' : ''}><summary style="background:${colorOf(p)};padding:2px 6px;border-radius:3px;cursor:pointer"><b>${esc(p)}</b> <span class="muted">(${cs.length})</span></summary>` +
+    cs.map(c => `<div style="padding:2px 0 2px ${8 + 14 * (c.number.split('.').length - 1)}px; cursor:pointer" onclick="jumpTo('${esc(c.id)}')">
+       <b>${esc(c.number)}</b> ${esc((c.heading || '').slice(0, 60))}
+       ${c.labels.map(l => `<span class="pill">${esc(l)}</span>`).join('')}
+       ${c.xrefs.length ? `<span class="pill x">→ ${c.xrefs.map(x => esc(x.split('::').pop())).join(', ')}</span>` : ''}</div>`).join('') + '</details>').join('');
+  // summary charts
+  draw('chart-parts', { type: 'bar', data: { labels: Object.keys(byPart).map(p => p.slice(0, 28)), datasets: [{ label: 'clauses per part',
+      data: Object.values(byPart).map(v => v.length), backgroundColor: Object.keys(byPart).map(colorOf) }] },
+    options: { indexAxis: 'y', plugins: { legend: { display: false } } } });
+  const lc = {};
+  d.clauses.forEach(c => c.labels.forEach(l => lc[l] = (lc[l] || 0) + 1));
+  const top = Object.entries(lc).sort((a, b) => b[1] - a[1]).slice(0, 15);
+  draw('chart-labels', { type: 'bar', data: { labels: top.map(t => t[0]), datasets: [{ label: 'clause types (CLAUSE-22 + Indian rules)',
+      data: top.map(t => t[1]), backgroundColor: '#7c3aed' }] }, options: { indexAxis: 'y' } });
+}
+function showPage() {
+  if (!docData) return;
+  const n = +$('page').value, p = docData.pages[n - 1] || {};
+  $('page-num').innerText = `page ${n} / ${docData.pages.length}`;
+  $('page-badge').innerText = p.ocr ? 'scanned → Tesseract OCR' : 'native text → pymupdf4llm';
+  $('page-badge').className = 'pill ' + (p.ocr ? 'pick' : 'x');
+  if (docData.name.toLowerCase().endsWith('.pdf')) $('page-img').src = `/api/docs/${encodeURIComponent($('doc').value)}/page/${n}`;
+}
+function jumpTo(id) {
+  const el = document.getElementById('cl-' + id);
+  if (el) { el.scrollIntoView({ block: 'center', behavior: 'smooth' }); el.style.outline = '2px solid #dc2626'; setTimeout(() => el.style.outline = '', 1500); }
+}
+
+let contract = null;
+async function loadContracts() {
+  const list = await j('/api/contracts');
+  const items = Array.isArray(list) ? list : (list.contracts || []);
+  $('contract').innerHTML = items.map(c => `<option value="${esc(c.id)}">${esc(c.title)}</option>`).join('');
+  const want = new URLSearchParams(location.search).get('contract');
+  if (want) $('contract').value = want;
+  await loadContract();
+}
+async function loadContract() {
+  contract = await j(`/api/contracts/${encodeURIComponent($('contract').value)}`);
+  $('clause').innerHTML = (contract.clauses || []).map(c =>
+    `<option value="${esc(c.id)}">${esc(c.clause_num)} — ${esc((c.title || c.text || '').slice(0, 70))}</option>`).join('');
+  $('finding').innerHTML = (contract.findings || []).map(f =>
+    `<option value="${esc(f.id)}">[${esc(f.severity)}] ${esc(f.relation_type)} — ${esc((f.description || '').slice(0, 80))}</option>`).join('');
+  const want = new URLSearchParams(location.search).get('finding');
+  if (want) { $('finding').value = want; document.querySelector('[data-tab=finding]').click(); }
+  await Promise.all([loadClause(), loadFinding()]);
+}
+
+async function loadClause() {
+  if (!$('clause').value) return;
+  $('clause-text').innerText = 'computing scores for every clause pair (first time per contract can take a few seconds)…';
+  let d;
+  try { d = await j(`/api/contracts/${encodeURIComponent($('contract').value)}/scores/${encodeURIComponent($('clause').value)}`); }
+  catch (e) { $('clause-text').innerText = 'Could not compute scores: ' + e.message; return; }
+  $('clause-meta').innerHTML = `Clause ${esc(d.clause.number)} · ` + d.clause.labels.map(l => `<span class="pill">${esc(l)}</span>`).join('');
+  $('clause-text').innerText = d.clause.text;
+  const n = d.neighbours.slice(0, 10);
+  const keys = ['bm25_norm', ...d.methods.filter(m => m.startsWith('cos_')), ...(n.some(x => 'gnn_prob' in x) ? ['gnn_prob'] : []), 'type_matrix_weight'];
+  draw('chart-neigh', { type: 'bar', data: {
+      labels: n.map(x => `cl ${x.number}${x.xref ? ' ⇄' : ''}`),
+      datasets: keys.map(k => ({ label: NAMES[k] || k, data: n.map(x => x[k] ?? 0), backgroundColor: COLORS[k] || '#94a3b8' })) },
+    options: { responsive: true, scales: { y: { beginAtZero: true, max: 1 } }, plugins: { legend: { position: 'bottom' } } } });
+  const cols = ['bm25', ...d.methods.filter(m => m.startsWith('cos_')), 'rrf_hybrid'];
+  $('neigh-table').innerHTML = `<tr><th>clause</th><th>types</th>${cols.map(c => `<th>${esc(c)}<br><span class="muted">score · rank</span></th>`).join('')}
+      <th>type matrix</th><th>GNN</th><th>xref</th></tr>` +
+    d.neighbours.map(x => `<tr><td><b>${esc(x.number)}</b><div class="muted">${esc(x.text.slice(0, 110))}…</div></td>
+      <td>${x.labels.map(l => `<span class="pill">${esc(l)}</span>`).join('')}</td>
+      ${cols.map(c => `<td class="num">${x[c]}<br><span class="muted">#${x[c + '_rank']}</span></td>`).join('')}
+      <td class="num">${x.type_matrix_weight}</td><td class="num">${x.gnn_prob ?? '—'}</td>
+      <td>${x.xref ? '<span class="pill x">cross-ref</span>' : ''}</td></tr>`).join('');
+}
+
+async function loadFinding() {
+  if (!$('finding').value) { $('finding-title').innerText = 'No findings for this contract'; return; }
+  const d = await j(`/api/findings/${encodeURIComponent($('finding').value)}/scores`);
+  const f = d.finding, det = d.details || {}, sc = det.scores || {};
+  $('finding-title').innerText = `${f.severity.toUpperCase()} · ${f.relation_type}`;
+  $('finding-desc').innerText = f.description;
+  $('finding-clauses').innerHTML = d.clauses.map(c => `<div><div class="muted">Clause ${esc(c.number)}</div><div class="clause">${esc(c.text)}</div></div>`).join('');
+  const judge = (det.surfaced_by || []).includes('kev') ? 'Kev decision model (local, one forward pass)'
+              : (det.surfaced_by || []).includes('gemini') ? 'Gemini (cloud)' : (det.surfaced_by || []).includes('statutory_rule') ? 'deterministic Indian-law rule' : 'deterministic rules';
+  $('judge-note').innerText = `Judge: ${judge} · surfaced by: ${(det.surfaced_by || []).join(', ')}`;
+  const rp = sc.relation_probs;
+  if (rp) {
+    const k = Object.keys(rp);
+    draw('chart-rel', { type: 'bar', data: { labels: k, datasets: [{ label: 'P(relation)', data: k.map(x => rp[x]),
+        backgroundColor: k.map(x => x === f.relation_type ? '#dc2626' : '#94a3b8') }] },
+      options: { indexAxis: 'y', scales: { x: { beginAtZero: true, max: 1 } }, plugins: { legend: { display: false } } } });
+  } else {
+    draw('chart-rel', { type: 'bar', data: { labels: ['confidence'], datasets: [{ label: 'rule / model confidence', data: [sc.analysis_confidence ?? det.risk_score ?? 0], backgroundColor: '#64748b' }] },
+      options: { indexAxis: 'y', scales: { x: { beginAtZero: true, max: 1 } } } });
+  }
+  const sp = sc.severity_probs;
+  draw('chart-sev', { type: 'bar', data: { labels: ['low', 'medium', 'high'], datasets: [{ label: 'P(severity)',
+      data: sp || ['low','medium','high'].map(s => s === f.severity ? 1 : 0), backgroundColor: ['#059669', '#d97706', '#dc2626'] }] },
+    options: { scales: { y: { beginAtZero: true, max: 1 } }, plugins: { legend: { display: false } } } });
+  const picked = new Set((det.refs || []).map(r => `${r.source}|${(r.section || '').replace('Section ', '')}`));
+  const st = d.statute_retrieval;
+  draw('chart-stat', { type: 'bar', data: { labels: st.map(s => `${s.act.replace('The ', '').replace(/,.*$/, '')} s.${s.section}`),
+      datasets: [{ label: 'BM25 contribution', data: st.map(s => s.rrf_bm25), backgroundColor: '#b26b3c' },
+                 { label: 'InLegal-SBERT contribution', data: st.map(s => s.rrf_dense), backgroundColor: '#7c3aed' },
+                 { label: 'Act prior', data: st.map(s => s.act_prior), backgroundColor: '#94a3b8' }] },
+    options: { scales: { x: { stacked: true }, y: { stacked: true } }, plugins: { legend: { position: 'bottom' } } } });
+  $('stat-table').innerHTML = `<tr><th>section</th><th>BM25 · rank</th><th>cosine · rank</th><th>fused</th><th></th></tr>` +
+    st.map(s => `<tr><td><b>${esc(s.act)}, s.${esc(s.section)}</b><div class="muted">${esc(s.heading)}</div></td>
+      <td class="num">${s.bm25} · #${s.bm25_rank}</td><td class="num">${s.dense_cosine} · #${s.dense_rank}</td><td class="num">${s.fused}</td>
+      <td>${picked.has(`${s.act}|${s.section}`) ? '<span class="pill pick">cited in finding</span>' : ''}
+          ${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">India Code ↗</a>` : ''}</td></tr>`).join('');
+}
+
+let resultsLoaded = false;
+async function loadResults() {
+  if (resultsLoaded) return; resultsLoaded = true;
+  const R = await j('/api/results');
+  // classifier
+  const cls = [];
+  if (R.eval_classifier) for (const [m, d] of Object.entries(R.eval_classifier)) cls.push([m, d.test?.micro_f1, d.test_ood?.micro_f1]);
+  for (const [k, v] of Object.entries(R)) if (k.startsWith('classifier_') && v.splits) cls.push([k.replace('classifier_', ''), v.splits.test?.micro_f1, v.splits.test_ood?.micro_f1]);
+  draw('r-cls', { type: 'bar', data: { labels: cls.map(c => c[0]), datasets: [
+      { label: 'test', data: cls.map(c => c[1]), backgroundColor: '#1e3a5f' }, { label: 'test_ood', data: cls.map(c => c[2]), backgroundColor: '#b26b3c' }] },
+    options: { scales: { y: { beginAtZero: true, max: 1 } } } });
+  // retrieval
+  const drawRet = () => {
+    const corpus = $('r-corpus').value, ret = R.eval_retrieval || {};
+    const ks = [1, 3, 5, 10], pal = ['#b26b3c', '#2563eb', '#7c3aed', '#0891b2', '#059669', '#dc2626', '#64748b', '#ca8a04'];
+    draw('r-ret', { type: 'line', data: { labels: ks.map(k => 'R@' + k), datasets: Object.entries(ret).filter(([, d]) => d[corpus]).map(([m, d], i) => ({
+        label: m, data: ks.map(k => d[corpus]['recall@' + k]), borderColor: pal[i % pal.length], backgroundColor: pal[i % pal.length], tension: .2 })) },
+      options: { scales: { y: { beginAtZero: true, max: 1 } }, plugins: { legend: { position: 'bottom' } } } });
+  };
+  $('r-corpus').onchange = drawRet; drawRet();
+  // judges
+  const J = R.eval_judge || {}, jn = Object.keys(J).filter(k => J[k] && J[k].accuracy !== undefined);
+  draw('r-judge', { type: 'bar', data: { labels: jn, datasets: [
+      { label: 'accuracy', data: jn.map(k => J[k].accuracy), backgroundColor: '#1e3a5f' },
+      { label: 'macro-F1', data: jn.map(k => J[k].macro_f1), backgroundColor: '#7c3aed' },
+      { label: 'risky F1', data: jn.map(k => J[k].risky_f1), backgroundColor: '#dc2626' }] },
+    options: { scales: { y: { beginAtZero: true, max: 1 } } } });
+  const C = R.eval_checklist || {}, cn = Object.keys(C).filter(k => C[k] && C[k].binary_accuracy !== undefined);
+  draw('r-check', { type: 'bar', data: { labels: cn, datasets: [
+      { label: 'binary accuracy', data: cn.map(k => C[k].binary_accuracy), backgroundColor: '#1e3a5f' },
+      { label: 'risky caught (bad pairs)', data: cn.map(k => C[k].risky_detected_on_bad ?? null), backgroundColor: '#dc2626' },
+      { label: 'clear on fixed pairs', data: cn.map(k => C[k].no_issue_on_fixed ?? null), backgroundColor: '#059669' }] },
+    options: { scales: { y: { beginAtZero: true, max: 1 } } } });
+  const G = R.gnn || {}, gn = ['gnn', 'no_graph', 'type_matrix', 'cosine'].filter(k => G[k]);
+  draw('r-gnn', { type: 'bar', data: { labels: gn, datasets: [
+      { label: 'ROC-AUC', data: gn.map(k => G[k].roc_auc), backgroundColor: '#1e3a5f' },
+      { label: 'avg precision', data: gn.map(k => G[k].avg_precision), backgroundColor: '#b26b3c' },
+      { label: 'P@5', data: gn.map(k => G[k].p_at_5), backgroundColor: '#059669' }] },
+    options: { scales: { y: { beginAtZero: true, max: 1 } } } });
+  const T = R.teacher_validation || {};
+  $('r-teacher').innerHTML = Object.entries(T).map(([k, v]) => `<div style="margin-bottom:6px"><b>${esc(k)}</b><br><span class="muted">${
+      Object.entries(v).filter(([kk]) => !['top_cited', 'misses'].includes(kk)).map(([kk, vv]) => `${esc(kk)}: ${typeof vv === 'number' ? (vv < 1.0001 && vv % 1 ? (vv * 100).toFixed(1) + '%' : vv) : esc(JSON.stringify(vv))}`).join(' · ')}</span></div>`).join('') || '<span class="muted">not computed yet</span>';
+}
+
+$('contract').onchange = loadContract;
+$('clause').onchange = loadClause;
+$('finding').onchange = loadFinding;
+loadContracts().catch(e => { document.querySelector('main').insertAdjacentHTML('afterbegin', `<div class="card">Could not load contracts: ${esc(e.message)}</div>`); });
+</script>
+</body>
+</html>

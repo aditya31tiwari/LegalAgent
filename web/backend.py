@@ -68,7 +68,9 @@ def startup_event():
     database_exists = DB_PATH.exists()
     init_db()
     if not database_exists:
-        seed_database()
+        # The old hand-written showcase (legalagent.db.seed_database) is no longer loaded:
+        # demo contracts must be real pipeline output. Populate with scripts/seed_demo.py.
+        print("[backend] empty database — run: venv/bin/python scripts/seed_demo.py")
 
 
 @app.get("/api/contracts/{contract_id}/embeddings")

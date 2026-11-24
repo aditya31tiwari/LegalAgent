@@ -29,9 +29,15 @@ DERIVED = ROOT / "data" / "derived"
 RES.mkdir(exist_ok=True)
 
 
-def save(name, obj):
-    (RES / f"{name}.json").write_text(json.dumps(obj, indent=2, default=str))
-    print("wrote", RES / f"{name}.json")
+def save(name, obj, merge=False):
+    """merge=True keeps entries from earlier runs that this run did not produce (e.g. the
+    base-Kev row measured while only the base server was up)."""
+    path = RES / f"{name}.json"
+    if merge and path.exists():
+        old = json.loads(path.read_text())
+        obj = {**old, **obj}
+    path.write_text(json.dumps(obj, indent=2, default=str))
+    print("wrote", path)
 
 
 def load(name):
@@ -174,11 +180,66 @@ def _clause(cid, text, labels):
     return Clause(id=cid, contract_id="e", number=cid.split("::")[-1], text=text, labels=[{"label": l} for l in labels])
 
 
-def eval_judge(args):
-    from sklearn.metrics import f1_score, precision_recall_fscore_support
+def _judge_predictions(rows, which):
+    """Relation predictions of each available judge on `rows` (pairs with a/b text).
+    Clause types come from the current CLAUSE-22 classifier, as at inference."""
     from legalagent.core.analysis import analyse_pair
     from legalagent.core import local_judge
     from legalagent.core.local_judge import pair_request, statute_options, _post
+    sys.path.insert(0, str(ROOT / "train"))
+    from export_kev_data import current_types
+    types = current_types(rows)
+    mk = lambda r, s: _clause(r[f"{s}_id"], r[f"{s}_text"], types[(r[f"{s}_id"], r[f"{s}_text"])])
+    preds, latency = {}, {}
+    t0 = time.time()
+    preds["rules"] = []
+    for r in rows:
+        f = analyse_pair(mk(r, "a"), mk(r, "b"), r["surfaced_by"])
+        preds["rules"].append(f.relation_type if f else "no_issue")
+    latency["rules"] = 1000 * (time.time() - t0) / max(1, len(rows))
+    for name, url in which:
+        local_judge.KEV_URL = url
+        if not local_judge.available():
+            print("skip", name, "(server not running at", url, ")")
+            continue
+        out, t0 = [], time.time()
+        for r in rows:
+            a, b = mk(r, "a"), mk(r, "b")
+            out.append(_post(pair_request(a, b, r["surfaced_by"], statute_options(a, b)))["answers"]["relation"]["choice"])
+        preds[name] = out
+        latency[name] = 1000 * (time.time() - t0) / max(1, len(rows))
+    return preds, latency
+
+
+KEV_SERVERS = (("kev_base_zero_shot", "http://127.0.0.1:8009/v1/systemone"), ("kev_finetuned", "http://127.0.0.1:8008/v1/systemone"))
+
+
+def eval_checklist(args):
+    """Known-answer minimal pairs: independent of any teacher label."""
+    rows = [json.loads(l) for l in (ROOT / "research/teacher_labels/checklist_pairs.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
+    preds, latency = _judge_predictions(rows, KEV_SERVERS)
+    out = {"pairs": len(rows)}
+    for name, p in preds.items():
+        risky = [x != "no_issue" for x in p]
+        exp = [r["expected_risky"] for r in rows]
+        bad = [i for i, e in enumerate(exp) if e]
+        fixed = [i for i, e in enumerate(exp) if not e]
+        out[name] = {"binary_accuracy": float(np.mean([a == b for a, b in zip(risky, exp)])),
+                     "risky_detected_on_bad": float(np.mean([risky[i] for i in bad])),
+                     "no_issue_on_fixed": float(np.mean([not risky[i] for i in fixed])),
+                     "ms_per_pair": round(latency[name], 1),
+                     "misses": [rows[i]["case"] for i in range(len(rows)) if risky[i] != exp[i]]}
+        print(name, out[name], flush=True)
+    for f in sorted((ROOT / "research/teacher_labels/labels").glob("checklist_agy_*.jsonl")):
+        labs = {json.loads(l)["pair_id"]: json.loads(l)["relation"] for l in f.read_text(encoding="utf-8").splitlines() if l.strip()}
+        got = [(labs[r["pair_id"]] != "no_issue", r["expected_risky"]) for r in rows if r["pair_id"] in labs]
+        if got:
+            out[f"teacher:{f.stem.replace('checklist_agy_', '')}"] = {"binary_accuracy": float(np.mean([a == b for a, b in got])), "pairs": len(got)}
+    save("eval_checklist", out, merge=True)
+
+
+def eval_judge(args):
+    from sklearn.metrics import f1_score, precision_recall_fscore_support
 
     gold_path = ROOT / "research" / "gold_set" / "gold.jsonl"
     rows = [json.loads(l) for l in (DERIVED / "judge_pairs.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
@@ -186,33 +247,24 @@ def eval_judge(args):
     if args.limit:
         rows = rows[: args.limit]
     references = {"teacher_gemini": [r["relation"] for r in rows]}
-    gold_note = None
+    gold_note, human = None, {}
     if gold_path.exists():
-        gold = {(g["a_id"], g["b_id"]): g["relation"] for g in map(json.loads, gold_path.read_text(encoding="utf-8").splitlines()) if g.get("relation")}
-        gold_note = f"{sum((r['a_id'], r['b_id']) in gold for r in rows)} pairs human-verified"
+        human = {g["pair_id"]: g["human_relation"] for g in map(json.loads, gold_path.read_text(encoding="utf-8").splitlines()) if g.get("human_relation")}
+        gold_note = f"{sum(r.get('pair_id') in human for r in rows)} held-out pairs human-verified"
 
-    preds, latency = {}, {}
-    preds["rules"] = []
-    t0 = time.time()
-    for r in rows:
-        f = analyse_pair(_clause(r["a_id"], r["a_text"], r["a_labels"]), _clause(r["b_id"], r["b_text"], r["b_labels"]), r["surfaced_by"])
-        preds["rules"].append(f.relation_type if f else "no_issue")
-    latency["rules"] = 1000 * (time.time() - t0) / len(rows)
+    preds, latency = _judge_predictions(rows, KEV_SERVERS)
 
-    for name, url in (("kev_base_zero_shot", "http://127.0.0.1:8009/v1/systemone"), ("kev_finetuned", "http://127.0.0.1:8008/v1/systemone")):
-        local_judge.KEV_URL = url
-        if not local_judge.available():
-            print("skip", name, "(server not running at", url, ")")
-            continue
-        out, t0 = [], time.time()
-        for r in rows:
-            a, b = _clause(r["a_id"], r["a_text"], r["a_labels"]), _clause(r["b_id"], r["b_text"], r["b_labels"])
-            resp = _post(pair_request(a, b, r["surfaced_by"], statute_options(a, b)))
-            out.append(resp["answers"]["relation"]["choice"])
-        preds[name] = out
-        latency[name] = 1000 * (time.time() - t0) / len(rows)
+    # Human gold on held-out pairs only (no leakage): judges and the teacher vs humans.
+    hg = [i for i, r in enumerate(rows) if r.get("pair_id") in human]
+    if hg:
+        hrel = [human[rows[i]["pair_id"]] for i in hg]
+        vs_human = {"pairs": len(hg)}
+        for name, p in {**preds, "teacher_gemini": references["teacher_gemini"]}.items():
+            vs_human[name] = {"accuracy": float(np.mean([p[i] == h for i, h in zip(hg, hrel)])),
+                              "risky_accuracy": float(np.mean([(p[i] != "no_issue") == (h != "no_issue") for i, h in zip(hg, hrel)]))}
+        save("eval_judge_vs_human", vs_human, merge=True)
 
-    res = {"n_pairs": len(rows), "reference": "teacher_gemini", "gold": gold_note, "label_dist": Counter(references["teacher_gemini"])}
+    res ={"n_pairs": len(rows), "reference": "teacher_gemini", "gold": gold_note, "label_dist": Counter(references["teacher_gemini"])}
     ref = references["teacher_gemini"]
     for name, p in preds.items():
         risky_ref = [x != "no_issue" for x in ref]
@@ -223,7 +275,7 @@ def eval_judge(args):
                      "risky_precision": float(pr), "risky_recall": float(rc), "risky_f1": float(f1),
                      "ms_per_pair": round(latency[name], 1), "data_leaves_machine": False}
         print(name, res[name], flush=True)
-    save("eval_judge", res)
+    save("eval_judge", res, merge=True)
 
 
 # ---------------------------------------------------------------- end to end
@@ -321,6 +373,38 @@ def tables(args):
             if isinstance(v, dict) and "accuracy" in v:
                 lines.append(f"| {k} | {fmt(v['accuracy'])} | {fmt(v['macro_f1'])} | {fmt(v['risky_precision'])} | {fmt(v['risky_recall'])} | {fmt(v['risky_f1'])} | {v['ms_per_pair']} | {'yes' if v['data_leaves_machine'] else 'no'} |")
         lines += ["| teacher_gemini (reference) | 1.000 | 1.000 | — | — | — | API | yes |", ""]
+    ck = load("eval_checklist")
+    if ck:
+        lines += [f"## Known-answer checklist ({ck['pairs']} minimal pairs: 12 risky/fixed twins + 4 planted injections) — independent of teacher labels", "",
+                  "| judge | binary accuracy | risky caught (bad pairs) | correctly clear (fixed pairs) | ms/pair | misses |", "|---|---|---|---|---|---|"]
+        for k, v in ck.items():
+            if isinstance(v, dict) and "risky_detected_on_bad" in v:
+                lines.append(f"| {k} | {fmt(v['binary_accuracy'])} | {fmt(v['risky_detected_on_bad'])} | {fmt(v['no_issue_on_fixed'])} | {v['ms_per_pair']} | {', '.join(v['misses'][:6])} |")
+            elif isinstance(v, dict) and k.startswith("teacher:"):
+                lines.append(f"| {k} | {fmt(v['binary_accuracy'])} | — | — | API | |")
+        lines.append("")
+    h = load("eval_judge_vs_human")
+    if h:
+        lines += [f"## Judges vs blind human labels ({h['pairs']} held-out pairs)", "", "| judge | relation accuracy | risky/not accuracy |", "|---|---|---|"]
+        for k, v in h.items():
+            if isinstance(v, dict):
+                lines.append(f"| {k} | {fmt(v['accuracy'])} | {fmt(v['risky_accuracy'])} |")
+        lines.append("")
+    tv = load("teacher_validation")
+    if tv:
+        lines += ["## Teacher validation (ground truth not produced by the teacher)", ""]
+        for k, v in tv.items():
+            lines.append(f"- **{k}**: " + ", ".join(f"{kk}={fmt(vv) if isinstance(vv, float) else vv}" for kk, vv in v.items() if kk not in ("top_cited", "misses")))
+        lines.append("")
+    kt = load("kev_train")
+    if kt:
+        lines += ["## Kev judge fine-tuning", "", f"- base `{kt.get('base')}`, LoRA delta, lr {kt.get('lr')}, epochs {kt.get('epochs')}, "
+                  f"grad-accum {kt.get('accum')}, {kt.get('train_records')} training pairs, {kt.get('train_seconds')} s on RTX 4050", ""]
+    for name in ("retriever_clauses", "retriever_statutes"):
+        rt = load(name)
+        if rt:
+            lines += [f"- **{name}**: base `{rt['base']}`, {rt['pairs']} positive pairs, {rt['loss']}, batch {rt['batch_size']}, {rt['train_seconds']} s"]
+    lines.append("")
     g = load("gnn")
     if g:
         lines += ["## Clause-graph GNN — ranking risky pairs on held-out contracts", "",
@@ -349,14 +433,14 @@ def tables(args):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("what", choices=["classifier", "retrieval", "statutes", "judge", "e2e", "tables"])
+    ap.add_argument("what", choices=["classifier", "retrieval", "statutes", "judge", "checklist", "e2e", "tables"])
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--contracts", type=int, default=120)
     ap.add_argument("--judges", default="rules,local")
     ap.add_argument("--max-candidates", type=int, default=60)
     args = ap.parse_args()
     {"classifier": eval_classifier, "retrieval": eval_retrieval, "statutes": eval_statutes,
-     "judge": eval_judge, "e2e": eval_e2e, "tables": tables}[args.what](args)
+     "judge": eval_judge, "checklist": eval_checklist, "e2e": eval_e2e, "tables": tables}[args.what](args)
 
 
 if __name__ == "__main__":

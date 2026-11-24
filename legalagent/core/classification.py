@@ -11,6 +11,7 @@ Clause classification into CLAUSE-22 types (clause20/labels.yaml, v2: 22 trained
 backend="auto" picks the strongest one present on disk.
 """
 import json
+import re
 from functools import lru_cache
 from pathlib import Path
 
@@ -151,8 +152,28 @@ def classify(clauses: list[Clause], use_model: bool = True, backend: str = "auto
         _apply_probs(clauses, labels, probs, THRESHOLD, "clause20")
     else:
         _classify_keywords(clauses)
+    if backend != "keyword":
+        apply_backstop(clauses)
     apply_known_gap_rules(clauses)
     return clauses
+
+
+# Safety-critical types whose miss hides the flagship clashes (cap x indemnity, restraint x
+# survival). Unambiguous operative phrases only; added when the model left the label out.
+# Tagged source="keyword_backstop" so it is visible in the UI and excluded from model metrics.
+BACKSTOP = {
+    "indemnification": re.compile(r"\b(?:shall|will|agrees? to)\s+(?:defend,?\s+)?indemnif|hold\s+harmless", re.I),
+    "limitation_of_liability": re.compile(r"aggregate liability|in no event shall .{0,40}liable|liability .{0,60}shall not exceed", re.I),
+    "exclusivity_and_restraint": re.compile(r"non-?compete|shall not (?:directly or indirectly )?(?:compete|engage in any (?:competing )?business)|restraint of trade", re.I),
+}
+
+
+def apply_backstop(clauses: list[Clause]) -> None:
+    for clause in clauses:
+        have = {l["label"] for l in clause.labels}
+        for label, rx in BACKSTOP.items():
+            if label not in have and rx.search(clause.text):
+                clause.labels.append({"label": label, "confidence": 0.5, "source": "keyword_backstop"})
 
 
 def apply_known_gap_rules(clauses: list[Clause]) -> None:

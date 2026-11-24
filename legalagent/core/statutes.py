@@ -218,6 +218,35 @@ def retrieve_sections(query: str, k: int = 3, method: str = "hybrid", model_name
     return [(lib[i], float(fused[i])) for i in top]
 
 
+def explain_sections(query: str, k: int = 5, model_name: str | None = None) -> list[dict]:
+    """
+    The same hybrid ranking as retrieve_sections(), with every intermediate score exposed:
+    BM25 score + rank, dense cosine + rank, reciprocal-rank-fusion contributions, Act prior.
+    Used by the dashboard's "under the hood" view.
+    """
+    import numpy as np
+    lib = load_library()
+    model_name = model_name or default_dense_model()
+    bm = _bm25().get_scores(_tok(query))
+    model, emb = _dense(model_name)
+    cos = emb @ model.encode([query], normalize_embeddings=True)[0]
+    bm_rank = np.empty(len(lib), int); bm_rank[np.argsort(-bm)] = np.arange(1, len(lib) + 1)
+    de_rank = np.empty(len(lib), int); de_rank[np.argsort(-cos)] = np.arange(1, len(lib) + 1)
+    rrf_bm = 1.0 / (60 + bm_rank)
+    rrf_de = 1.0 / (60 + de_rank)
+    prior = ACT_PRIOR * np.array([CORE_ACTS.get(s["act"], 0.0) for s in lib])
+    fused = rrf_bm + rrf_de + prior
+    top = np.argsort(-fused)[:k]
+    return [{
+        "act": lib[i]["act"], "section": lib[i]["section"], "heading": lib[i]["heading"], "url": lib[i].get("url", ""),
+        "bm25": round(float(bm[i]), 3), "bm25_rank": int(bm_rank[i]),
+        "dense_cosine": round(float(cos[i]), 4), "dense_rank": int(de_rank[i]),
+        "rrf_bm25": round(float(rrf_bm[i]), 5), "rrf_dense": round(float(rrf_de[i]), 5),
+        "act_prior": round(float(prior[i]), 5), "fused": round(float(fused[i]), 5),
+        "dense_model": Path(model_name).name,
+    } for i in top]
+
+
 _SEC_RE = re.compile(r"(?:section|sec\.?|s\.)\s*(\d+[A-Z]?)(?:\s*(?:-|to|–)\s*(\d+[A-Z]?))?", re.I)
 
 

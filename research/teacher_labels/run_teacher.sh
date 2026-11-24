@@ -13,9 +13,18 @@ cd "$(dirname "$0")/../.."
 TEACHER="gemini-4-hydrogen-high"       # primary teacher (from `agy models`)
 SECOND="claude-sonnet-5-5-medium"      # independent second opinion on a sample
 
-case "${1:-smoke}" in
+MODE="${1:-smoke}"
+mkdir -p logs
+LOG="logs/teacher_${MODE}.log"
+echo "logging to $LOG  (tail -f $PWD/$LOG)"
+case "$MODE" in
   smoke)  venv/bin/python -u scripts/label_with_agy.py --model "$TEACHER" --limit 20 --workers 1 --verbose ;;
-  full)   venv/bin/python -u scripts/label_with_agy.py --model "$TEACHER" --workers 5 ;;
+  full)   venv/bin/python -u scripts/label_with_agy.py --model "$TEACHER" --workers 5 --priority --max-total "${MAX_TOTAL:-1000}" ;;
   second) venv/bin/python -u scripts/label_with_agy.py --model "$SECOND" --limit 300 --workers 2 ;;
-  *) echo "usage: $0 smoke|full|second"; exit 1 ;;
-esac
+  types)  venv/bin/python -u scripts/label_with_agy.py --model "$TEACHER" --types --workers 3 ;;
+  check)  # known-answer validation of the teacher (and, with SECOND, of the second model)
+          venv/bin/python scripts/make_checklist.py
+          venv/bin/python -u scripts/label_with_agy.py --model "${CHECK_MODEL:-$TEACHER}" --pairs research/teacher_labels/checklist_pairs.jsonl \
+              --out-prefix checklist_ --batch 7 --workers 2 --verbose ;;
+  *) echo "usage: $0 smoke|full|second|types|check"; exit 1 ;;
+esac 2>&1 | tee -a "$LOG"

@@ -82,3 +82,4 @@ models/inlegal_sbert_*/
 models/kev_judge/
 data/statutes/*.npy
 results/*.log
+logs/

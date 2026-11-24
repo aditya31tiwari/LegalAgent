@@ -81,9 +81,19 @@ def _refs_text(refs: list[dict]) -> str:
     return "; ".join(p for p in parts if p)
 
 
+DETAILS_DDL = """CREATE TABLE IF NOT EXISTS finding_details (
+    finding_id TEXT PRIMARY KEY, contract_id TEXT, details TEXT)"""
+
+
 def persist(contract_id: str, title: str, jurisdiction: str, category: str, clauses, findings, run=None) -> None:
     conn = get_db_connection()
     cur = conn.cursor()
+    cur.execute(DETAILS_DDL)
+    for f in findings:  # everything the "under the hood" view needs, kept verbatim
+        cur.execute("INSERT OR REPLACE INTO finding_details VALUES (?,?,?)", (f.id, contract_id, json.dumps({
+            "surfaced_by": f.surfaced_by, "scores": f.scores, "refs": f.refs, "risk_score": f.risk_score,
+            "relation_type": f.relation_type, "severity": f.severity, "rationale": f.rationale,
+            "run": {"stats": run.stats, "config": run.config} if run is not None else None}, default=str)))
     desc = f"{len(clauses)} clauses, {len(findings)} findings"
     if run is not None:
         desc += f"; judge={run.stats.get('judge')}, classifier={run.config.get('classifier')}, retrieval={run.config.get('retrieval_method')}"
@@ -205,7 +215,10 @@ def _stream(text_source, title: str, config: dict, category: str):
                  f"{len(statutory)} statutory flag(s); {grounded}/{len(findings)} findings linked to verified India Code sections")
 
         # 7. Persist
-        persist(contract_id, title, config["jurisdiction"], category, clauses, findings)
+        from legalagent.core.types import Run
+        persist(contract_id, title, config["jurisdiction"], category, clauses, findings,
+                Run(id="live", contract_id=contract_id, config={**config, "classifier": backend},
+                    stats={"judge": used, "pairs": len(pairs), "clauses": len(clauses)}))
         yield ev("persisted", "Graph Saved", f"{len(clauses)} clause nodes + {len(findings)} finding edges")
 
         high = sum(1 for f in findings if f.severity == "high")
@@ -320,6 +333,258 @@ Return JSON: {{"explanation": "<3-5 plain-English sentences for a business reade
     return {"finding_id": finding_id, "explanation": out.get("explanation", ""), "legal_basis": basis,
             "suggested_redline": out.get("suggested_redline", ""), "confidence": out.get("confidence", ""),
             "sent_to_cloud": True, "retrieved_sections": [{"act": s["act"], "section": s["section"]} for s in sections]}
+
+
+# ---------------------------------------------------------------- under the hood
+
+_SCORE_CACHE: dict = {}
+
+
+def _contract_scores(contract_id: str):
+    """All pairwise retrieval signals for one contract, computed once and cached in memory."""
+    if contract_id in _SCORE_CACHE:
+        return _SCORE_CACHE[contract_id]
+    import numpy as np
+    from legalagent.core.types import Clause
+    from legalagent.core.classification import classify
+    from legalagent.core.extraction import XREF_RE
+    from legalagent.core.retrieval import index_text, _bm25_matrix, _dense_matrix, _rrf_matrix, DEFAULT_MODEL
+    from legalagent.core.candidate_selection import TYPE_MATRIX
+    from pathlib import Path as _P
+
+    conn = get_db_connection()
+    rows = [dict(r) for r in conn.execute("SELECT id, clause_num, title, text FROM clauses WHERE contract_id=? ORDER BY ordinal", (contract_id,))]
+    conn.close()
+    if len(rows) < 2:
+        raise HTTPException(404, "contract has fewer than two clauses")
+    clauses = classify([Clause(id=r["id"], contract_id=contract_id, number=r["clause_num"], text=r["text"]) for r in rows], backend="auto")
+    texts = [index_text(c) for c in clauses]
+    num_to_idx = {}
+    for i, c in enumerate(clauses):
+        num_to_idx.setdefault(c.number, i)
+    xref = np.zeros((len(rows), len(rows)), bool)
+    for i, c in enumerate(clauses):
+        for m in XREF_RE.finditer(c.text):
+            j = num_to_idx.get(m.group(1))
+            if j is not None and j != i:
+                xref[i, j] = xref[j, i] = True
+    models = {"minilm": DEFAULT_MODEL, "inlegal_sbert": "bhavyagiri/InLegal-Sbert"}
+    ft = _P(__file__).resolve().parents[1] / "models" / "inlegal_sbert_clauses"
+    if (ft / "config.json").exists():
+        models["inlegal_sbert_ft"] = str(ft)
+    mats = {"bm25": _bm25_matrix(texts)}
+    for name, m in models.items():
+        mats[f"cos_{name}"] = _dense_matrix(texts, m)
+    mats["rrf_hybrid"] = _rrf_matrix([mats["bm25"], mats["cos_minilm"]], len(rows))
+    labels = [[l["label"] for l in c.labels] for c in clauses]
+    gnn = None
+    try:
+        from legalagent.core.gnn import _load, build_graph, type_weight
+        import torch
+        model = _load()
+        if model is not None:
+            cl = [{"id": c.id, "text": c.text, "labels": labels[i], "xrefs": [clauses[j].id for j in np.where(xref[i])[0]]}
+                  for i, c in enumerate(clauses)]
+            x, ei, _ = build_graph(cl)
+            with torch.no_grad():
+                h = model.encode(torch.tensor(x), torch.tensor(ei))
+            gnn = (model, h, type_weight)
+    except Exception:
+        gnn = None
+    data = {"rows": rows, "clauses": clauses, "labels": labels, "mats": mats, "xref": xref, "gnn": gnn,
+            "type_matrix": TYPE_MATRIX, "models": models}
+    _SCORE_CACHE[contract_id] = data
+    return data
+
+
+@router.get("/api/contracts/{contract_id}/scores/{clause_id}")
+def clause_scores(contract_id: str, clause_id: str, k: int = 6):
+    """Every retrieval signal for one clause against its most related clauses (union of each method's top-k)."""
+    import numpy as np
+    d = _contract_scores(contract_id)
+    ids = [r["id"] for r in d["rows"]]
+    if clause_id not in ids:
+        raise HTTPException(404, "clause not found")
+    i = ids.index(clause_id)
+    cand = set(np.where(d["xref"][i])[0].tolist())
+    for name, m in d["mats"].items():
+        row = m[i].copy()
+        row[i] = -np.inf
+        cand |= set(np.argsort(-row)[:k].tolist())
+    cand.discard(i)
+
+    def rank(name, j):
+        row = d["mats"][name][i].copy()
+        row[i] = -np.inf
+        return int((row > row[j]).sum()) + 1
+
+    out = []
+    for j in cand:
+        tw = max([d["type_matrix"].get((a, b), d["type_matrix"].get((b, a), 0.0)) for a in d["labels"][i] for b in d["labels"][j]] or [0.0])
+        item = {"clause_id": ids[j], "number": d["rows"][j]["clause_num"], "text": d["rows"][j]["text"][:300],
+                "labels": d["labels"][j], "xref": bool(d["xref"][i, j]), "type_matrix_weight": tw}
+        for name in d["mats"]:
+            item[name] = round(float(d["mats"][name][i, j]), 4)
+            item[f"{name}_rank"] = rank(name, j)
+        if d["gnn"]:
+            import torch
+            model, h, _ = d["gnn"]
+            with torch.no_grad():
+                p = torch.sigmoid(model.score(h, torch.tensor([i]), torch.tensor([j]), torch.tensor([tw], dtype=torch.float32)))
+            item["gnn_prob"] = round(float(p[0]), 4)
+        out.append(item)
+    out.sort(key=lambda x: -x["rrf_hybrid"])
+    bm_max = max([x["bm25"] for x in out] or [1]) or 1
+    for x in out:
+        x["bm25_norm"] = round(x["bm25"] / bm_max, 4)
+    return {"clause": {"id": clause_id, "number": d["rows"][i]["clause_num"], "text": d["rows"][i]["text"][:600], "labels": d["labels"][i]},
+            "methods": list(d["mats"]), "dense_models": d["models"], "neighbours": out[:15]}
+
+
+@router.get("/api/findings/{finding_id}/scores")
+def finding_scores(finding_id: str):
+    """What the judge actually output for this finding + how its statutes were retrieved."""
+    from legalagent.core.statutes import explain_sections
+    conn = get_db_connection()
+    conn.execute(DETAILS_DDL)
+    f = conn.execute("SELECT * FROM findings WHERE id=?", (finding_id,)).fetchone()
+    det = conn.execute("SELECT details FROM finding_details WHERE finding_id=?", (finding_id,)).fetchone()
+    texts = []
+    if f:
+        for cid in (f["source_clause_ref"], f["target_clause_ref"]):
+            c = conn.execute("SELECT clause_num, text FROM clauses WHERE id=?", (cid,)).fetchone()
+            if c:
+                texts.append({"id": cid, "number": c["clause_num"], "text": c["text"][:600]})
+    conn.close()
+    if not f:
+        raise HTTPException(404, "finding not found")
+    details = json.loads(det["details"]) if det else {}
+    query = f"{f['description']} " + " ".join(t["text"] for t in texts)
+    return {"finding": dict(f), "clauses": texts, "details": details, "statute_retrieval": explain_sections(query, k=6)}
+
+
+@router.get("/api/results")
+def all_results():
+    """Every evaluation result file, for the charts on /scores."""
+    from pathlib import Path as _P
+    res = _P(__file__).resolve().parents[1] / "results"
+    out = {}
+    for p in sorted(res.glob("*.json")):
+        try:
+            out[p.stem] = json.loads(p.read_text())
+        except Exception:
+            pass
+    return out
+
+
+# ---------------------------------------------------------------- document -> clauses (visual)
+
+DEMO_DOCS = {
+    "pune_adversarial_pdf": "data/demo/india/adversarial/pune_metro_adversarial_15_changes.pdf",
+    "pune_signed_pdf": "data/demo/india/official/pune_metro_signed_concession.pdf",
+    "nhai_model_pdf": "data/demo/india/official/model_concession_4_laning.pdf",
+    "indian_msa_pdf": "data/demo/india/indian_tech_msa_demo.pdf",
+    "pune_adversarial_md": "data/demo/samples/02_pune_metro_adversarial_15_injections.md",
+    "indian_msa_md": "data/demo/samples/03_indian_tech_services_msa.md",
+    "employment_md": "data/demo/samples/04_executive_employment_agreement.md",
+}
+_DOC_CACHE: dict = {}
+
+
+def _doc_path(doc: str):
+    from pathlib import Path as _P
+    if doc not in DEMO_DOCS:
+        raise HTTPException(404, "unknown document")
+    return _P(__file__).resolve().parents[1] / DEMO_DOCS[doc]
+
+
+@router.get("/api/docs")
+def list_docs():
+    out = []
+    for key, rel in DEMO_DOCS.items():
+        p = _doc_path(key)
+        if p.exists():
+            out.append({"id": key, "name": p.name, "kind": p.suffix.lstrip(".")})
+    return out
+
+
+@router.get("/api/docs/{doc}/structure")
+def doc_structure(doc: str):
+    """Ingestion + extraction exactly as the pipeline runs it, with everything needed to draw it."""
+    if doc in _DOC_CACHE:
+        return _DOC_CACHE[doc]
+    from legalagent.core.ingestion import extract_raw, normalize, PAGE_BREAK, MIN_NATIVE_CHARS
+    from legalagent.core.extraction import extract
+    from legalagent.core.classification import classify
+    path = _doc_path(doc)
+    t0 = time.time()
+    raw, stats = extract_raw(str(path))
+    pages = raw.split(PAGE_BREAK) if path.suffix == ".pdf" else [raw]
+    page_info = [{"page": i + 1, "chars": len(p), "ocr": False} for i, p in enumerate(pages)]
+    if path.suffix == ".pdf":
+        import pymupdf
+        with pymupdf.open(path) as d:
+            for i, pg in enumerate(d):
+                page_info[i]["ocr"] = len(pg.get_text().strip()) < MIN_NATIVE_CHARS
+    text = normalize(raw)
+    clauses = classify(extract(text, doc), backend="auto")
+    out = {
+        "doc": doc, "name": path.name, "stats": stats, "pages": page_info, "text": text,
+        "seconds": round(time.time() - t0, 2),
+        "clauses": [{"id": c.id, "number": c.number, "part": c.part, "parent_id": c.parent_id, "heading": c.heading,
+                     "start": c.char_start, "end": c.char_end, "labels": [l["label"] for l in c.labels],
+                     "xrefs": [x["clause_id"] for x in c.xrefs if x["resolved"]]} for c in clauses],
+    }
+    _DOC_CACHE[doc] = out
+    return out
+
+
+@router.get("/api/docs/{doc}/page/{n}")
+def doc_page(doc: str, n: int, dpi: int = 70):
+    from fastapi.responses import Response
+    path = _doc_path(doc)
+    if path.suffix != ".pdf":
+        raise HTTPException(400, "not a PDF")
+    import pymupdf
+    with pymupdf.open(path) as d:
+        if not 1 <= n <= len(d):
+            raise HTTPException(404, "page out of range")
+        png = d[n - 1].get_pixmap(dpi=max(40, min(dpi, 120))).tobytes("png")
+    return Response(png, media_type="image/png", headers={"Cache-Control": "max-age=3600"})
+
+
+class PlaygroundRequest(BaseModel):
+    a: str
+    b: str
+    use_gemini: Optional[bool] = False
+
+
+@router.post("/api/playground")
+def playground(req: PlaygroundRequest):
+    """Every method on one clause pair (local by default; Gemini only if use_gemini)."""
+    if not req.a.strip() or not req.b.strip():
+        raise HTTPException(400, "both clauses are required")
+    from legalagent.core.playground import compare_pair
+    return compare_pair(req.a[:4000], req.b[:4000], use_gemini=bool(req.use_gemini))
+
+
+@router.get("/scores")
+def scores_page():
+    from fastapi.responses import FileResponse
+    from pathlib import Path as _P
+    return FileResponse(_P(__file__).parent / "scores.html")
+
+
+@router.get("/vendor/{name}")
+def vendor_file(name: str):
+    """Locally vendored front-end libraries (works without internet in the viva room)."""
+    from fastapi.responses import FileResponse
+    from pathlib import Path as _P
+    base = (_P(__file__).parent / "vendor").resolve()
+    p = (base / name).resolve()
+    if base not in p.parents or not p.exists():
+        raise HTTPException(404, "not found")
+    return FileResponse(p)
 
 
 @router.get("/api/system/status")
