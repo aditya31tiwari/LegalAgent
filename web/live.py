@@ -77,6 +77,8 @@ def _refs_text(refs: list[dict]) -> str:
     parts = []
     for r in refs:
         mark = "" if r.get("verified", True) else " [unverified]"
+        if r.get("confidence"):
+            mark += f" [{r['confidence']} confidence]"
         parts.append(f"{r.get('source', '')}, {r.get('section', '')}{(' — ' + r['heading']) if r.get('heading') else ''}{mark}".strip(", "))
     return "; ".join(p for p in parts if p)
 

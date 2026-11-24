@@ -9,10 +9,43 @@
       "checklist_accuracy": 0.7142857142857143,
       "checklist_bad_caught": 0.6875,
       "checklist_fixed_cleared": 0.75,
-      "cuad_recall": null,
+      "cuad_recall": 0.7464285714285714,
       "teacher_risky_f1": 0.4631578947368421,
       "run": "jaredpalmer/kev-0.8b",
       "threshold_file": "models/kev_base_threshold.json",
+      "tau": false
+    },
+    {
+      "judge": "kev_base_zero_shot_tau",
+      "checklist_accuracy": 0.5357142857142857,
+      "checklist_bad_caught": 0.5625,
+      "checklist_fixed_cleared": 0.5,
+      "cuad_recall": 0.775,
+      "teacher_risky_f1": 0.44680851063829785,
+      "run": "jaredpalmer/kev-0.8b",
+      "threshold_file": "models/kev_base_threshold.json",
+      "tau": true
+    },
+    {
+      "judge": "kev_finetuned_tau",
+      "checklist_accuracy": 0.5357142857142857,
+      "checklist_bad_caught": 0.3125,
+      "checklist_fixed_cleared": 0.8333333333333334,
+      "cuad_recall": 0.3107142857142857,
+      "teacher_risky_f1": 0.6153846153846154,
+      "run": "models/kev_judge",
+      "threshold_file": "models/kev_judge/threshold.json",
+      "tau": true
+    },
+    {
+      "judge": "kev_finetuned",
+      "checklist_accuracy": 0.5357142857142857,
+      "checklist_bad_caught": 0.3125,
+      "checklist_fixed_cleared": 0.8333333333333334,
+      "cuad_recall": 0.21428571428571427,
+      "teacher_risky_f1": 0.5684210526315789,
+      "run": "models/kev_judge",
+      "threshold_file": "models/kev_judge/threshold.json",
       "tau": false
     },
     {

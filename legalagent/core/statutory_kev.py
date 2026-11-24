@@ -62,28 +62,40 @@ def flag(probs: dict, tau: float = 0.5) -> str:
     return max((k for k in probs if k != "none"), key=lambda k: float(probs[k]))
 
 
-def kev_statutory_findings(clauses: list[Clause], tau: float = 0.5) -> list[Finding]:
-    """Pipeline hook: Kev-based statutory findings for risk-typed clauses (local server must be up)."""
+def confidence_label(p: float) -> str:
+    return "high" if p >= 0.7 else "medium" if p >= 0.45 else "low"
+
+
+def kev_statutory_findings(clauses: list[Clause], show_from: float = 0.3, max_clauses: int = 150) -> list[Finding]:
+    """
+    Pipeline hook: Kev-based clause-vs-Indian-law findings for risk-typed clauses.
+    Weak signals are SHOWN with a confidence label rather than hidden: any clause whose
+    P(some risk) >= show_from becomes a finding marked high / medium / low confidence.
+    (Evaluation: 6/9 struck-down Supreme Court clauses caught at P>=0.5, but it also flags
+    clauses the court upheld — hence confidence labels and a reviewer, not a verdict.)
+    """
     from legalagent.core import local_judge
     if not local_judge.available():
         return []
     out = []
-    for c in clauses:
-        labels = {l["label"] for l in c.labels} or {"other"}
-        if not labels & RISK_TYPES:
-            continue
+    cands = [c for c in clauses if ({l["label"] for l in c.labels} or {"other"}) & RISK_TYPES][:max_clauses]
+    for c in cands:
         r = assess(c.text)
-        cat = flag(r["probabilities"], tau)
-        if cat == "none":
+        probs = r["probabilities"]
+        risk = round(1.0 - float(probs.get("none", 0.0)), 3)
+        if risk < show_from:
             continue
+        cat = max((k for k in probs if k != "none"), key=lambda k: float(probs[k]))
         desc, act, sec = CATEGORIES[cat]
-        risk = round(1.0 - float(r["probabilities"].get("none", 0.0)), 3)
+        conf = confidence_label(risk)
         out.append(Finding(
             id=f"finding_{uuid.uuid4().hex[:8]}", target_clause_id=c.id, related_clause_ids=[],
-            relation_type="statutory_violation", severity="high" if risk >= 0.7 else "medium", risk_score=risk,
-            rationale=f"Kev reads this clause as one that {desc} — a court would test it under {act}, {sec}.",
+            relation_type="statutory_violation",
+            severity={"high": "high", "medium": "medium", "low": "low"}[conf], risk_score=risk,
+            rationale=(f"[{conf} confidence, p={risk:.2f}] Kev reads this clause as one that {desc}. "
+                       f"A court would test it under {act}, {sec}."),
             surfaced_by=["kev_statutory"], evidence=[{"clause_id": c.id, "start": 0, "end": len(c.text)}],
             refs=[{"source": act, "section": sec, "snippet": desc}],
-            scores={"analysis_confidence": risk, "risk_probs": r["probabilities"]},
+            scores={"analysis_confidence": risk, "confidence_label": conf, "risk_probs": probs},
         ))
     return out

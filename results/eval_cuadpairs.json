@@ -38,5 +38,31 @@
       "Exclusivity x Non-Compete": 0.2,
       "Liquidated Damages x Cap On Liability": 0.4
     }
+  },
+  "kev_base_zero_shot": {
+    "recall": 0.7464285714285714,
+    "ms_per_pair": 455.1,
+    "by_case": {
+      "Cap On Liability x Uncapped Liability": 0.875,
+      "Anti-Assignment x Change Of Control": 0.9,
+      "License Grant x Ip Ownership Assignment": 0.55,
+      "Termination For Convenience x Post-Termination Services": 0.825,
+      "Non-Compete x Post-Termination Services": 0.825,
+      "Exclusivity x Non-Compete": 0.5,
+      "Liquidated Damages x Cap On Liability": 0.75
+    }
+  },
+  "kev_base_zero_shot_tau": {
+    "recall": 0.775,
+    "ms_per_pair": 455.1,
+    "by_case": {
+      "Cap On Liability x Uncapped Liability": 0.925,
+      "Anti-Assignment x Change Of Control": 0.875,
+      "License Grant x Ip Ownership Assignment": 0.525,
+      "Termination For Convenience x Post-Termination Services": 0.95,
+      "Non-Compete x Post-Termination Services": 0.85,
+      "Exclusivity x Non-Compete": 0.45,
+      "Liquidated Damages x Cap On Liability": 0.85
+    }
   }
 }

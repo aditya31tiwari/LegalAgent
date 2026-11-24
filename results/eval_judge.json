@@ -24,7 +24,7 @@
     "risky_precision": 0.3188405797101449,
     "risky_recall": 0.8461538461538461,
     "risky_f1": 0.4631578947368421,
-    "ms_per_pair": 624.0,
+    "ms_per_pair": 268.1,
     "data_leaves_machine": false
   },
   "kev_finetuned": {
@@ -43,6 +43,15 @@
     "risky_recall": 0.6153846153846154,
     "risky_f1": 0.6153846153846154,
     "ms_per_pair": 841.7,
+    "data_leaves_machine": false
+  },
+  "kev_base_zero_shot_tau": {
+    "accuracy": 0.19767441860465115,
+    "macro_f1": 0.11599751011515717,
+    "risky_precision": 0.3088235294117647,
+    "risky_recall": 0.8076923076923077,
+    "risky_f1": 0.44680851063829785,
+    "ms_per_pair": 268.1,
     "data_leaves_machine": false
   }
 }

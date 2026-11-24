@@ -159,8 +159,26 @@ def eval_statutes(args):
     ft = ROOT / "models" / "inlegal_sbert_statutes"
     if (ft / "config.json").exists():
         configs["hybrid_ft+act_prior"] = dict(method="hybrid", act_prior=True, model_name=str(ft))
-    # Gold #2 (independent): the statute each Supreme Court judgment actually applied.
+        configs["hybrid_ft+act_prior+rerank"] = dict(method="hybrid", act_prior=True, model_name=str(ft), rerank_top=30)
+    from legalagent.core.statutes import NYAYA_EMBED
+    configs["dense_nyaya"] = dict(method="dense", act_prior=False, model_name=NYAYA_EMBED)
+    configs["hybrid_nyaya+act_prior"] = dict(method="hybrid", act_prior=True, model_name=NYAYA_EMBED)
+    configs["hybrid_nyaya+act_prior+rerank"] = dict(method="hybrid", act_prior=True, model_name=NYAYA_EMBED, rerank_top=30)
+    configs["bm25+rerank"] = dict(method="bm25", act_prior=False, rerank_top=30)
+    # Gold #2 (independent): the statute each Supreme Court judgment actually applied,
+    # plus the planted Pune Metro irregularities whose governing section is unambiguous.
     lit = []
+    inj = {i["number"]: i["text"] for i in json.loads((ROOT / "data/demo/india/adversarial/INJECTIONS.json").read_text())["injections"]}
+    INJ_GOLD = {"91.2": "Indian Contract Act, 1872, Section 124", "91.3": "Indian Contract Act, 1872, Section 27",
+                "91.5": "Indian Contract Act, 1872, Section 74", "91.7": "Digital Personal Data Protection Act, 2023, Section 6",
+                "91.8": "Commercial Courts Act, 2015, Section 12A", "91.9": "Bharatiya Nyaya Sanhita, 2023, Section 318",
+                "91.13": "Indian Stamp Act, 1899, Section 35"}
+    for n, cit in INJ_GOLD.items():
+        g = verify_citation(cit)
+        if g:
+            lit.append((inj[n], {(g["act"], g["section"])}))
+        else:
+            print("injection gold not in library:", n, cit)
     lp = ROOT / "research/litigated_clauses/cases.jsonl"
     if lp.exists():
         for c in map(json.loads, lp.read_text(encoding="utf-8").splitlines()):

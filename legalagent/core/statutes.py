@@ -70,6 +70,8 @@ ALIASES = {
     "mediation": "The Mediation Act, 2023", "negotiable instruments": "The Negotiable Instruments Act, 1881",
     "fema": "The Foreign Exchange Management Act, 1999", "foreign exchange": "The Foreign Exchange Management Act, 1999",
     "partnership": "The Indian Partnership Act, 1932",
+    "constitution": "The Constitution of India",
+    "code on wages": "The Code on Wages, 2019", "negotiable": "The Negotiable Instruments Act, 1881",
 }
 
 
@@ -111,7 +113,7 @@ def build_library(parquet: Path = RAW_PARQUET, out: Path = LIBRARY) -> int:
             "in_force": bool(r.in_force),
         })
         txt = _clean(r.text)
-        m = re.match(r"Chapter [^|]*\|\s*Section [^:]*:\s*(.*?)\s*\.\s*â€”\s*(.*)", txt)
+        m = re.match(r"Chapter [^|]*\|\s*Section [^:]*:\s*(.*?)\s*\.\s*—\s*(.*)", txt)
         if m and not entry["heading"]:
             entry["heading"] = m.group(1).strip()
             txt = m.group(2)
@@ -131,6 +133,7 @@ def build_library(parquet: Path = RAW_PARQUET, out: Path = LIBRARY) -> int:
                              "heading": e.get("heading", ""), "text": re.sub(r"\s+", " ", e.get("text", "")).strip(),
                              "url": e.get("url", ""), "pdf": e.get("pdf", ""), "in_force": e.get("in_force", True),
                              "source": extra.name}
+    merge_nyaya(rows)
     out.parent.mkdir(parents=True, exist_ok=True)
     with out.open("w", encoding="utf-8") as f:
         for e in rows.values():
@@ -138,6 +141,55 @@ def build_library(parquet: Path = RAW_PARQUET, out: Path = LIBRARY) -> int:
     for stale in out.parent.glob(out.stem + ".*.npy"):
         stale.unlink()  # embedding caches are per library version
     return len(rows)
+
+
+# nyaya-statute-db (NyayaLabs98, India Code text, MIT tooling): section-level JSONL for 28 Acts.
+# Only Acts relevant to commercial / employment contracts are merged; family and criminal-procedure
+# law would only add noise for contract review. Its Contract Act is more complete than our parse.
+NYAYA_DIR = ROOT / "dataset" / "nyaya"
+NYAYA_FILES = {
+    "constitution_1950.jsonl": "The Constitution of India",
+    "contract_act_1872.jsonl": "The Indian Contract Act, 1872",
+    "cpa_2019.jsonl": "The Consumer Protection Act, 2019",
+    "it_act_2000.jsonl": "The Information Technology Act, 2000",
+    "limitation_1963.jsonl": "The Limitation Act, 1963",
+    "ni_act_1881.jsonl": "The Negotiable Instruments Act, 1881",
+    "tpa_1882.jsonl": "The Transfer of Property Act, 1882",
+    "wages_code_2019.jsonl": "The Code on Wages, 2019",
+    "posh_2013.jsonl": "The Sexual Harassment of Women at Workplace (Prevention, Prohibition and Redressal) Act, 2013",
+    "bns_2023.jsonl": None, "bnss_2023.jsonl": None, "bsa_2023.jsonl": None,   # keep the act names they ship
+}
+
+
+def merge_nyaya(rows: dict) -> None:
+    """Union nyaya sections into `rows` (keyed by (act, section)); on overlap keep the fuller text."""
+    if not NYAYA_DIR.exists():
+        return
+    acts_by_low = {a.lower().replace("the ", "", 1): a for a, _ in rows}
+    added = replaced = 0
+    for fname, canon in NYAYA_FILES.items():
+        p = NYAYA_DIR / fname
+        if not p.exists():
+            continue
+        for line in p.read_text(encoding="utf-8").splitlines():
+            if not line.strip():
+                continue
+            r = json.loads(line)
+            name = canon or acts_by_low.get(r["act_name"].lower().replace("the ", "", 1), r["act_name"])
+            key = (name, str(r["section"]))
+            text = re.sub(r"\s+", " ", r.get("text") or "").strip()
+            if not text:
+                continue
+            entry = {"id": f"nyaya:{r['act_id']}:s{r['section']}", "act": name, "section": str(r["section"]),
+                     "heading": r.get("title") or "", "text": text, "url": r.get("source_url") or "", "pdf": "",
+                     "in_force": True, "source": "nyaya-statute-db"}
+            if key not in rows:
+                rows[key] = entry
+                added += 1
+            elif len(text) > 1.3 * len(rows[key]["text"]):
+                rows[key] = {**rows[key], "text": text, "heading": rows[key]["heading"] or entry["heading"], "source": "nyaya-statute-db"}
+                replaced += 1
+    print(f"nyaya-statute-db: +{added} sections, {replaced} replaced with fuller text")
 
 
 @lru_cache(maxsize=1)
@@ -202,8 +254,30 @@ def safe_encode(model, texts, **kw):
     return _se(model, texts, **kw)
 
 
+RERANKER = "BAAI/bge-reranker-v2-m3"     # Apache-2.0 multilingual cross-encoder
+NYAYA_EMBED = "NyayaLabs98/nyaya-embed-v1"  # trained to map queries to Indian statute sections
+
+
+@lru_cache(maxsize=1)
+def _reranker():
+    from sentence_transformers import CrossEncoder
+    from legalagent.core.device import pick_device
+    return CrossEncoder(RERANKER, max_length=512, device=pick_device(1.2))
+
+
+def rerank(query: str, cands: list[tuple[dict, float]], k: int) -> list[tuple[dict, float]]:
+    """Cross-encoder re-scoring of (clause, section text) pairs; reads both texts jointly."""
+    if not cands:
+        return cands
+    scores = _reranker().predict([(query[:1500], _doc_text(s)[:1500]) for s, _ in cands], batch_size=16)
+    order = sorted(range(len(cands)), key=lambda i: -float(scores[i]))
+    return [(cands[i][0], float(scores[i])) for i in order[:k]]
+
+
 def retrieve_sections(query: str, k: int = 3, method: str = "hybrid", model_name: str | None = None,
-                      act_prior: bool = True) -> list[tuple[dict, float]]:
+                      act_prior: bool = True, rerank_top: int = 0) -> list[tuple[dict, float]]:
+    if rerank_top:
+        return rerank(query, retrieve_sections(query, rerank_top, method, model_name, act_prior, 0), k)
     import numpy as np
     lib = load_library()
     model_name = model_name or default_dense_model()
@@ -252,7 +326,7 @@ def explain_sections(query: str, k: int = 5, model_name: str | None = None) -> l
     } for i in top]
 
 
-_SEC_RE = re.compile(r"(?:section|sec\.?|s\.)\s*(\d+[A-Z]?)(?:\s*(?:-|to|â€“)\s*(\d+[A-Z]?))?", re.I)
+_SEC_RE = re.compile(r"(?:section|sec\.?|s\.|article|art\.)\s*(\d+[A-Z]?)(?:\s*(?:-|to|–)\s*(\d+[A-Z]?))?", re.I)
 
 
 def verify_citation(citation: str) -> dict | None:
@@ -302,12 +376,28 @@ def attach_statute_refs(findings, clauses_by_id: dict, k: int = 2) -> None:
         texts = [clauses_by_id[cid].text[:600] for cid in [f.target_clause_id, *f.related_clause_ids] if cid in clauses_by_id]
         query = f"{f.rationale} {' '.join(texts)}"
         have = {(r["source"], r["section"]) for r in new_refs}
-        for section, _score in retrieve_sections(query, k=k):
+        for rank, (section, score) in enumerate(retrieve_sections(query, k=k, **RETRIEVAL_DEFAULT)):
             key = (section["act"], f"Section {section['section']}")
             if key not in have:
-                new_refs.append(_ref(section, "retrieved", True))
+                ref = _ref(section, "retrieved", True)
+                # Retrieved law is a lead, not a verdict: always shown, with how sure the retriever is.
+                ref["confidence"] = retrieval_confidence(rank, score)
+                ref["retrieval_score"] = round(float(score), 4)
+                new_refs.append(ref)
                 have.add(key)
         f.refs = new_refs
+
+
+# Chosen from scripts/eval_all.py statutes (independent gold: statutes applied by the Supreme
+# Court + planted irregularities). Updated after evaluation; see results/eval_statutes.json.
+RETRIEVAL_DEFAULT: dict = {}
+
+
+def retrieval_confidence(rank: int, score: float) -> str:
+    """Reranker scores are relevance logits/probabilities; fused RRF scores are rank-based."""
+    if RETRIEVAL_DEFAULT.get("rerank_top"):
+        return "high" if score > 0.5 else "medium" if score > 0.1 else "low"
+    return "medium" if rank == 0 else "low"
 
 
 if __name__ == "__main__":

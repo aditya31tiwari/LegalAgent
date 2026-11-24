@@ -90,8 +90,17 @@ def analyse_clauses(clauses: list[Clause], config: dict, contract_id: str = "loc
     timings["judge_s"] = round(time.perf_counter() - t, 3)
 
     findings = list(pair_findings)
-    # Statutory checks: deterministic rules + (if built) grounded statute retrieval.
+    # Clause vs Indian law: deterministic rules + Kev's single-clause check (shown with confidence
+    # labels, never silently dropped) + grounded statute retrieval for every finding.
     findings.extend(analyse_statutory(clauses, config.get("jurisdiction", "India")))
+    if config.get("kev_statutory", True) and judge_used == "local":
+        t = time.perf_counter()
+        try:
+            from legalagent.core.statutory_kev import kev_statutory_findings
+            findings.extend(kev_statutory_findings(clauses))
+        except Exception as exc:
+            logger.warning("Kev statutory check skipped: %s", exc)
+        timings["kev_statutory_s"] = round(time.perf_counter() - t, 3)
     if config.get("ground_statutes", True):
         try:
             from legalagent.core.statutes import attach_statute_refs
