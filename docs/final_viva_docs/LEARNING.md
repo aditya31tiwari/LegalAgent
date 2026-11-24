@@ -45,6 +45,10 @@ lines with page numbers is a TOC, not clauses), and a parser for reference phras
 
 ## 3. Classification: what kind of clause is this?
 
+> **Labels in one line:** CLAUSE-22 = 22 trained types + `other`, plus 7 rule-based Indian labels (force majeure,
+> liquidated damages, data protection, stamp duty, performance security, change in law, step-in rights).
+> The full list with meanings, the 40 clash pairs and why it changed from CLAUSE-20 are in **FACTS_REFERENCE.md §1**.
+
 **What.** Multi-label tags from **CLAUSE-22** (termination, limitation_of_liability, arbitration, …).
 **How.** **InLegalBERT** (BERT pre-trained on Indian legal text by IIT Kharagpur) fine-tuned on 74,374 labelled
 clauses (CUAD + LEDGAR + our mapping). Sigmoid output per label, threshold 0.5. Plus a keyword backstop, a

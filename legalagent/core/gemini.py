@@ -117,7 +117,7 @@ def generate_json(prompt: str, model: str | None = None) -> dict:
     fresh = [m for m in chain if now - _BUSY.get(m, 0) > BUSY_SKIP_S] or chain   # skip models that just failed
     for m in fresh:
         try:
-            return _generate_with(prompt, m, max_retries=1)
+            return _generate_with(prompt, m, max_retries=1, timeout=15)
         except GeminiConfigurationError as exc:
             last = exc
             if not any(code in str(exc) for code in ("503", "429", "404", "500", "502", "504", "timed out")):
@@ -130,7 +130,7 @@ _BUSY: dict[str, float] = {}   # model -> time it last failed with overload / no
 BUSY_SKIP_S = 600
 
 
-def _generate_with(prompt: str, selected_model: str, max_retries: int | None = None) -> dict:
+def _generate_with(prompt: str, selected_model: str, max_retries: int | None = None, timeout: float = REQUEST_TIMEOUT) -> dict:
     body = {
         "contents": [{"parts": [{"text": prompt}]}],
         "generationConfig": {"responseMimeType": "application/json", "temperature": 0.1},
@@ -145,7 +145,7 @@ def _generate_with(prompt: str, selected_model: str, max_retries: int | None = N
             method="POST",
         )
         try:
-            with urlopen(request, timeout=REQUEST_TIMEOUT) as response:
+            with urlopen(request, timeout=timeout) as response:
                 payload = json.loads(response.read().decode("utf-8"))
             break
         except HTTPError as exc:

@@ -185,7 +185,7 @@ def main():
             tb.add_column(c, overflow="fold")
         for i, (s, sc) in enumerate(retrieve_sections(q, k=5), 1):
             tb.add_row(str(i), s["act"].replace("The ", ""), str(s["section"]), short(s["heading"], 50), f"{sc:.4f}",
-                       retrieval_confidence(i, sc))
+                       retrieval_confidence(i - 1, sc))
         con.print(tb)
 
     # 8 ── summary
