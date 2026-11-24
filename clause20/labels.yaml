@@ -1,22 +1,27 @@
-# CLAUSE-20 — contract clause types for conflict detection.
+# CLAUSE-22 — proposed contract clause taxonomy for cross-clause conflict detection
+# (Indian commercial & PPP contracts).
 #
-# Derived from LEDGAR (LexGLUE, 100 labels) and CUAD (41 categories).
-# Neither source taxonomy was built for conflict detection, so neither is used
-# as-is. This file is the target taxonomy; label_map.yaml is the translation.
+# Drop-in replacement for clause20/labels.yaml (same schema: version, min_support,
+# labels, known_gaps, conflict_pairs).
 #
-# SELECTION CRITERION (a label exists only if both hold):
+# Derived from LEDGAR (LexGLUE, 100 labels) and CUAD v1 (41 categories).
+#
+# SELECTION CRITERION (a trained label exists only if both hold):
 #   1. it can plausibly clash with, or depend on, at least one other label
 #      -- i.e. it appears in conflict_pairs below;
 #   2. >= MIN_SUPPORT examples survive de-duplication in the merged corpus.
-# Criterion 1 removes boilerplate a conflict detector cannot use (Headings,
-# Counterparts, Severability). Criterion 2 removes the long tail. Both are
-# mechanical, so the taxonomy is reproducible rather than a matter of taste.
 #
-# Labels demoted to `other` by criterion 2 are recorded in the dataset card at
-# build time -- the taxonomy is an output of the build, not only an input.
+# Key changes from CLAUSE-20 (v1 -> v2):
+#   - Added `arbitration` (split from dispute_resolution; A&C Act 1996 seat/venue/forum clashes)
+#   - Added `remedies` (split from dispute_resolution; SRA 1963 & ICA s.28/s.74 clashes)
+#   - Cleaned `limitation_of_liability` (removed CUAD Liquidated Damages -> remedies + payment_and_fees)
+#   - Cleaned `compliance_and_law` (demoted 11 M&A/credit boilerplate labels -> other; moved
+#     LEDGAR Applicable Laws [89.9% choice-of-law] -> governing_law)
+#   - Documented 7 rule-based Indian/PPP known_gaps (handled by deterministic rules in
+#     legalagent/core/classification.py + TYPE_MATRIX pairs in candidate_selection.py)
 
-version: 1
-min_support: 300          # criterion 2 threshold, per label, in the train split
+version: 2
+min_support: 300          # criterion 2 threshold, per label, post-dedup
 
 labels:
   - indemnification
@@ -34,6 +39,8 @@ labels:
   - tax
   - governing_law
   - dispute_resolution
+  - arbitration
+  - remedies
   - audit_and_records
   - insurance
   - notices
@@ -41,33 +48,64 @@ labels:
   - compliance_and_law
   - other                 # sink; never counts toward criterion 2
 
-# Known taxonomy gap, stated rather than hidden: force_majeure is a clause type
-# this project cares about, and NEITHER source dataset carries a label for it.
-# It cannot be trained from CLAUSE-20 and stays on the keyword rule in
-# legalagent/core/classification.py. Any evaluation must exclude it.
+# Known taxonomy gaps, stated rather than hidden: these clause types matter for
+# Indian commercial and PPP/concession contracts, but have 0 or <300 examples in
+# CUAD + LexGLUE LEDGAR. They are NOT trained in the supervised classifier and
+# MUST be excluded from classifier macro-F1. Each is detected by a deterministic
+# keyword/regex rule in legalagent/core/classification.py and wired into
+# TYPE_MATRIX in legalagent/core/candidate_selection.py (see 08_MIGRATION.md):
+#   - force_majeure        : existing keyword rule (ICA s.56; PPP MCA Art. 34)
+#   - liquidated_damages   : keyword rule ("liquidated damages", "pre-estimated damages",
+#                            "delay damages", "penalty for delay"); 69 CUAD rows < 300 (ICA s.74)
+#   - data_protection      : keyword rule ("personal data", "data protection", "dpdp",
+#                            "data fiduciary", "data principal", "gdpr", "privacy policy") (DPDP Act 2023)
+#   - stamp_duty           : keyword rule ("stamp duty", "unstamped", "e-stamp",
+#                            "impounding", "stamp paper") (Indian Stamp Act 1899 s.35)
+#   - performance_security : keyword rule ("performance security", "bank guarantee",
+#                            "performance bond", "encashment") (Indian PPP/EPC MCAs)
+#   - change_in_law        : keyword rule ("change in law", "statutory change",
+#                            "economic equilibrium") (Indian PPP MCAs)
+#   - step_in_rights       : keyword rule ("step-in", "step in right", "substitution agreement",
+#                            "nominated company", "senior lenders") (Indian PPP MCAs)
 known_gaps:
   - force_majeure
+  - liquidated_damages
+  - data_protection
+  - stamp_duty
+  - performance_security
+  - change_in_law
+  - step_in_rights
 
-# Criterion 1 evidence, and the upgrade for TYPE_MATRIX in
-# legalagent/core/candidate_selection.py. Weight = how much a hit here is worth
-# as a candidate-pair signal, not a probability.
-# Key is the two labels joined by '+', unordered: YAML cannot use a list as a
-# key. Split on '+' to read it back.
+# Criterion 1 evidence, and the source for TYPE_MATRIX in
+# legalagent/core/candidate_selection.py. Weight = candidate-pair risk signal (0-1).
+# Key is two trained labels joined by '+', unordered. Every non-`other` label in
+# `labels` above appears in at least one pair. (Pairs involving `known_gaps` are
+# appended in candidate_selection.py so test_build.py stays green.)
 conflict_pairs:
-  limitation_of_liability+indemnification: 0.9
-  limitation_of_liability+warranty: 0.7
-  limitation_of_liability+insurance: 0.5
-  termination+survival: 0.6
-  termination+term_and_renewal: 0.7
-  termination+payment_and_fees: 0.5
-  survival+confidentiality: 0.6
-  assignment_change_of_control+confidentiality: 0.5
-  assignment_change_of_control+license_grant: 0.6
-  exclusivity_and_restraint+assignment_change_of_control: 0.6
-  exclusivity_and_restraint+license_grant: 0.7
-  ip_ownership+license_grant: 0.8
-  payment_and_fees+tax: 0.6
-  payment_and_fees+audit_and_records: 0.5
-  governing_law+dispute_resolution: 0.7
-  amendment_and_integration+notices: 0.4
-  compliance_and_law+warranty: 0.5
+  limitation_of_liability+indemnification: 0.90     # conflict: uncapped indemnity vs liability cap (ICA ss.73, 124-125)
+  limitation_of_liability+remedies: 0.85            # conflict: exclusive remedy / LD vs aggregate cap (ICA ss.73-74, 28)
+  arbitration+dispute_resolution: 0.85              # conflict: mandatory arbitration vs exclusive court forum (A&C Act 1996 ss.5, 8)
+  ip_ownership+license_grant: 0.80                  # conflict: IP assignment vs broad/perpetual license (Copyright Act s.19)
+  governing_law+arbitration: 0.80                   # conflict/dependency: substantive law vs arbitration seat/foreign-seat override (A&C Act ss.20, 28)
+  warranty+remedies: 0.75                           # conflict: absolute warranty disclaimer + waiver of statutory remedies (ICA s.28, SRA 1963)
+  exclusivity_and_restraint+survival: 0.75          # conflict: post-termination survival of non-compete (void under ICA s.27)
+  limitation_of_liability+warranty: 0.70            # conflict: broad warranties vs liability caps/disclaimers (ICA s.73, SoGA)
+  termination+term_and_renewal: 0.70                # conflict/dependency: lock-in or auto-renewal vs termination for convenience (ICA s.39)
+  exclusivity_and_restraint+license_grant: 0.70     # conflict: exclusive grant vs non-exclusive / affiliate licensing
+  governing_law+dispute_resolution: 0.70            # conflict/dependency: governing law vs exclusive court jurisdiction / foreign forum (CPC s.20, ICA s.28)
+  confidentiality+compliance_and_law: 0.70          # conflict: perpetual gag vs mandatory regulatory/statutory disclosure (ICA s.23, DPDP 2023)
+  indemnification+remedies: 0.65                    # overlap/conflict: indemnity as sole remedy vs cumulative equitable relief (ICA ss.124-125, SRA)
+  termination+survival: 0.60                        # dependency: post-termination survival of obligations (ICA ss.62, 65)
+  survival+confidentiality: 0.60                    # dependency: post-termination NDA duration & return/destruction
+  assignment_change_of_control+license_grant: 0.60  # conflict: anti-assignment / non-transferable license vs M&A / affiliate rights
+  exclusivity_and_restraint+assignment_change_of_control: 0.60  # conflict: exclusivity / ROFR triggered by change of control
+  payment_and_fees+tax: 0.60                        # dependency: GST / TDS withholding gross-up vs contract price (CGST Act, ITA s.194J)
+  payment_and_fees+remedies: 0.60                   # conflict/dependency: LD / forfeiture / set-off against fees payable (ICA s.74)
+  amendment_and_integration+payment_and_fees: 0.60  # conflict: unilateral fee/commercial amendment without mutual consent (ICA s.62)
+  limitation_of_liability+insurance: 0.50           # dependency: insurance minimum limits mismatched with liability cap
+  termination+payment_and_fees: 0.50                # dependency: termination compensation / refund of prepaid fees (ICA s.65)
+  assignment_change_of_control+confidentiality: 0.50 # dependency: disclosure of confidential info to acquirer/assignee
+  payment_and_fees+audit_and_records: 0.50          # dependency: audit rights verifying revenue share, royalties, or pass-through costs
+  compliance_and_law+warranty: 0.50                 # overlap/dependency: statutory compliance covenants vs legality warranties (ICA s.23)
+  amendment_and_integration+warranty: 0.50          # conflict: entire-agreement / non-reliance clause vs pre-contractual reps (ICA ss.18-19)
+  amendment_and_integration+notices: 0.45           # dependency: written-notice formalities for valid amendments/waivers

@@ -50,6 +50,11 @@ app.add_middleware(
 
 STATIC_DIR = Path(__file__).parent
 
+# Local-first live analysis + upload + opt-in Gemini expand (web/live.py).
+sys.path.insert(0, str(STATIC_DIR))
+from live import router as live_router  # noqa: E402
+app.include_router(live_router)
+
 
 class AnalyzeRequest(BaseModel):
     title: str
@@ -190,7 +195,7 @@ def get_contract_details(contract_id: str):
     return data
 
 
-@app.post("/api/contracts/analyze")
+@app.post("/api/legacy/contracts/analyze")
 def analyze_custom_contract(req: AnalyzeRequest):
     """
     Parses and analyses user-submitted contract text. Runs through core.pipeline
@@ -376,7 +381,7 @@ def analyze_custom_contract(req: AnalyzeRequest):
             "engine": "core.pipeline" if pipeline_ok else "heuristic"}
 
 
-@app.post("/api/contracts/analyze/stream")
+@app.post("/api/legacy/contracts/analyze/stream")
 async def analyze_contract_stream(req: AnalyzeRequest):
     """
     SSE streaming version of contract analysis.

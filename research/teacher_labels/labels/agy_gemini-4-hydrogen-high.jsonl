@@ -1,0 +1,20 @@
+{"citation": "", "pair_id": "p00000", "rationale": "", "relation": "no_issue", "risk": 0, "severity": "low"}
+{"citation": "", "pair_id": "p00001", "rationale": "Section 2.4 expressly conditions the identification, decision rights, terms, and additional cost approvals for a Marketer on action by the JPT \"or otherwise in accordance with Section 2.1,\" while Section 2.1 assigns Marketer selection under Section 2.4 to the JPT without completing the JPT's decision-making rules in the excerpt.", "relation": "dependency", "risk": 0.25, "severity": "low"}
+{"citation": "", "pair_id": "p00002", "rationale": "", "relation": "no_issue", "risk": 0, "severity": "low"}
+{"citation": "", "pair_id": "p00003", "rationale": "", "relation": "no_issue", "risk": 0, "severity": "low"}
+{"citation": "", "pair_id": "p00004", "rationale": "", "relation": "no_issue", "risk": 0, "severity": "low"}
+{"citation": "", "pair_id": "p00005", "rationale": "", "relation": "no_issue", "risk": 0, "severity": "low"}
+{"citation": "", "pair_id": "p00006", "rationale": "Section 1.8 defines \"Development Plan\" solely by reference to Section 2.1, under which the Development Plan is a future written Exhibit A that CARDAX and CAPSUGEL \"will agree upon\" and administer through the JPT.", "relation": "dependency", "risk": 0.2, "severity": "low"}
+{"citation": "", "pair_id": "p00007", "rationale": "Section 3.8 requires CARDAX to use \"Commercially Reasonable Efforts\" for freedom-to-operate assessments, which through Section 1.7's definition allows CARDAX to weigh profitability, marketplace competitiveness, and proprietary position rather than imposing an absolute clearance duty.", "relation": "dependency", "risk": 0.4, "severity": "medium"}
+{"citation": "", "pair_id": "p00008", "rationale": "", "relation": "no_issue", "risk": 0, "severity": "low"}
+{"citation": "", "pair_id": "p00009", "rationale": "", "relation": "no_issue", "risk": 0, "severity": "low"}
+{"citation": "", "pair_id": "p00010", "rationale": "", "relation": "no_issue", "risk": 0, "severity": "low"}
+{"citation": "", "pair_id": "p00011", "rationale": "", "relation": "no_issue", "risk": 0, "severity": "low"}
+{"citation": "", "pair_id": "p00012", "rationale": "unreadable", "relation": "no_issue", "risk": 0, "severity": "low"}
+{"citation": "", "pair_id": "p00013", "rationale": "", "relation": "no_issue", "risk": 0, "severity": "low"}
+{"citation": "", "pair_id": "p00014", "rationale": "", "relation": "no_issue", "risk": 0, "severity": "low"}
+{"citation": "", "pair_id": "p00015", "rationale": "", "relation": "no_issue", "risk": 0, "severity": "low"}
+{"citation": "", "pair_id": "p00016", "rationale": "", "relation": "no_issue", "risk": 0, "severity": "low"}
+{"citation": "", "pair_id": "p00017", "rationale": "unreadable", "relation": "no_issue", "risk": 0, "severity": "low"}
+{"citation": "", "pair_id": "p00018", "rationale": "Section 3(c) limits post-termination survival to \"representations, warranties and indemnities,\" omitting Section 4 and leaving unclear whether invoices due 30 days after receipt under Section 4(a), taxes arising out of the Agreement under Section 4(b), and late-payment interest under Section 4(c) survive expiration or termination.", "relation": "ambiguity", "risk": 0.5, "severity": "medium"}
+{"citation": "", "pair_id": "p00019", "rationale": "Section 3(c) restricts survival after expiration or termination to \"representations, warranties and indemnities,\" omitting Section 6 and creating a material gap over whether obligations protecting Confidential Information and Trade Secrets disclosed \"during the term hereof\" under Section 6(a)-(b) cease upon termination.", "relation": "ambiguity", "risk": 0.75, "severity": "high"}

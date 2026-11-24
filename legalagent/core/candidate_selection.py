@@ -1,15 +1,48 @@
+from pathlib import Path
+
 from legalagent.core.types import Clause
 from legalagent.core.retrieval import retrieve, DEFAULT_MODEL
 
-# Type matrix: CLAUSE-20 label pairs that commonly clash, weighted by risk.
-# Only pairs worth surfacing are listed — omit a pair rather than marking it False.
-TYPE_MATRIX = {
-    ("limitation_of_liability", "indemnification"): 0.9,
-    ("termination", "survival"): 0.6,
-    ("assignment_change_of_control", "confidentiality"): 0.5,
-    ("exclusivity_and_restraint", "assignment_change_of_control"): 0.6,
-    ("warranty", "limitation_of_liability"): 0.7,
+_LABELS_YAML = Path(__file__).resolve().parents[2] / "clause20" / "labels.yaml"
+
+# Clash pairs for the rule-based known_gaps labels (research/clause_taxonomy/08_MIGRATION.md).
+KNOWN_GAP_PAIRS = {
+    ("force_majeure", "termination"): 0.60,
+    ("force_majeure", "payment_and_fees"): 0.55,
+    ("liquidated_damages", "limitation_of_liability"): 0.85,
+    ("liquidated_damages", "payment_and_fees"): 0.70,
+    ("data_protection", "limitation_of_liability"): 0.85,
+    ("data_protection", "confidentiality"): 0.70,
+    ("stamp_duty", "arbitration"): 0.80,
+    ("performance_security", "termination"): 0.70,
+    ("performance_security", "liquidated_damages"): 0.65,
+    ("change_in_law", "payment_and_fees"): 0.70,
+    ("change_in_law", "tax"): 0.65,
+    ("step_in_rights", "termination"): 0.75,
+    ("step_in_rights", "assignment_change_of_control"): 0.70,
 }
+
+
+def _load_type_matrix() -> dict[tuple[str, str], float]:
+    """CLAUSE-20 label pairs that commonly clash, weighted by risk (clause20/labels.yaml,
+    `conflict_pairs`, 17 pairs). Falls back to the core five if the file is absent."""
+    try:
+        import yaml
+        spec = yaml.safe_load(_LABELS_YAML.read_text(encoding="utf-8"))
+        matrix = {tuple(k.split("+")): float(v) for k, v in spec["conflict_pairs"].items()}
+        matrix.update(KNOWN_GAP_PAIRS)
+        return matrix
+    except Exception:
+        return {
+            ("limitation_of_liability", "indemnification"): 0.9,
+            ("termination", "survival"): 0.6,
+            ("assignment_change_of_control", "confidentiality"): 0.5,
+            ("exclusivity_and_restraint", "assignment_change_of_control"): 0.6,
+            ("warranty", "limitation_of_liability"): 0.7,
+        }
+
+
+TYPE_MATRIX = _load_type_matrix()
 
 MAX_CANDIDATES = 30
 

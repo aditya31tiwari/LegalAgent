@@ -74,3 +74,11 @@ data/raw/CUAD_v1.json
 dataset/
 clause20/data/
 models/*/checkpoint-*
+# large / regenerable artefacts
+data/cache/
+data/derived/cache/
+models/clause20_inlegalbert*/
+models/inlegal_sbert_*/
+models/kev_judge/
+data/statutes/*.npy
+results/*.log

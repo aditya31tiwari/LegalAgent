@@ -14,6 +14,7 @@ class Clause:
     ordinal: int = 0                 # document order
     labels: list[dict] = field(default_factory=list)  # [{"label": "...", "confidence": 0.9}]
     xrefs: list[dict] = field(default_factory=list)   # [{"raw": "Section 8.2", "clause_id": "...", "resolved": True}]
+    part: str | None = None          # enclosing "ARTICLE 12 TERMINATION" / "SCHEDULE B" heading
 
 
 @dataclass

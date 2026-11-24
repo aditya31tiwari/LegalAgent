@@ -347,6 +347,7 @@ RECOVERY_ANCHORS = {
     "confidentiality": r"confidential|non-?disclosure",
     "tax": r"\btax(es|ation)?\b|withholding",
     "amendment_and_integration": r"entire agreement|amendment|no waiver",
+    "arbitration": r"\barbitrat",
 }
 RECOVERY_HEAD_WORDS = 12
 

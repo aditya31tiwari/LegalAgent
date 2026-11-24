@@ -1,5 +1,6 @@
 """
-Clause classification into CLAUSE-20 types. Three interchangeable backends:
+Clause classification into CLAUSE-22 types (clause20/labels.yaml, v2: 22 trained labels
++ 7 rule-based Indian known_gaps). Three interchangeable backends:
 
   keyword     substring rules (fallback, no model needed)
   minilm_lr   frozen sentence encoder + one-vs-rest logistic regression
@@ -39,6 +40,20 @@ KEYWORDS = {
     "warranty": ["warranty", "warranties", "represent and warrant"],
     "payment_and_fees": ["payment", "invoice", "compensation", "fee"],
     "ip_ownership": ["intellectual property", "patent", "trademark", "copyright"],
+    "arbitration": ["arbitration", "arbitral tribunal", "arbitrator", "seat of arbitration", "a&c act"],
+    "remedies": ["specific performance", "injunctive relief", "sole and exclusive remedy", "waives any remedy", "liquidated damages"],
+}
+
+# CLAUSE-22 `known_gaps` (clause20/labels.yaml): Indian / PPP clause types with no or too
+# few gold rows in CUAD + LEDGAR. Detected by auditable rules on top of any backend.
+KNOWN_GAP_KEYWORDS = {
+    "force_majeure": ("force majeure", "act of god", "acts of god", "beyond the reasonable control"),
+    "liquidated_damages": ("liquidated damages", "pre-estimated damages", "genuine pre-estimate", "delay damages", "penalty for delay"),
+    "data_protection": ("personal data", "data protection", "dpdp", "data fiduciary", "data principal", "gdpr", "sensitive personal data"),
+    "stamp_duty": ("stamp duty", "unstamped", "e-stamp", "impounding", "stamp paper", "stamp act"),
+    "performance_security": ("performance security", "bank guarantee", "performance bond", "encashment of security"),
+    "change_in_law": ("change in law", "statutory change", "economic equilibrium"),
+    "step_in_rights": ("step-in", "step in right", "substitution agreement", "nominated company", "lenders' representative"),
 }
 
 
@@ -136,4 +151,24 @@ def classify(clauses: list[Clause], use_model: bool = True, backend: str = "auto
         _apply_probs(clauses, labels, probs, THRESHOLD, "clause20")
     else:
         _classify_keywords(clauses)
+    apply_known_gap_rules(clauses)
     return clauses
+
+
+def apply_known_gap_rules(clauses: list[Clause]) -> None:
+    """
+    Rule labels for the known gaps. Long clauses are matched on their first 30 words
+    only, and definition clauses ("X means ...") are skipped, so a passing mention in a
+    600-clause concession agreement doesn't tag the clause (cuts false positives
+    60-75% in the taxonomy audit while keeping recall on the planted injections).
+    """
+    for clause in clauses:
+        low = clause.text.lower()
+        if "means " in low[:120]:
+            continue
+        words = low.split()
+        window = " ".join(words[:30]) if len(words) > 60 else low
+        existing = {l["label"] for l in clause.labels}
+        for gap_label, kws in KNOWN_GAP_KEYWORDS.items():
+            if gap_label not in existing and any(k in window for k in kws):
+                clause.labels.append({"label": gap_label, "confidence": 1.0, "source": "rule"})
