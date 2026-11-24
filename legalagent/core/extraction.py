@@ -1,9 +1,12 @@
 import re
 from legalagent.core.types import Clause
 
-# Decimal numbering only (e.g., "5.2", "1.2.3"). Matches the number wherever it
-# starts a line — heading-on-its-own-line AND inline "1.1 The Supplier shall..."
-CLAUSE_RE = re.compile(r'^\s*(\d+(?:\.\d+)*)\.?\s+', re.M)
+# Decimal numbering (e.g., "5.2", "1.2.3"). Supports optional markdown '#' headings,
+# bold markers, and 'Section'/'Clause'/'Article' prefixes.
+CLAUSE_RE = re.compile(
+    r'^\s*(?:#{1,6}\s*)?(?:\*\*|__)?(?:Section|Clause|Article)?\s*(\d+(?:\.\d+)+)\.?\s*',
+    re.M | re.I,
+)
 
 # Cross-reference regex: "Section 5.2", "Clause 1.2", etc.
 XREF_RE = re.compile(r'(?:Section|Clause|Article|clause|§)\s+(\d+(?:\.\d+)*)', re.I)

@@ -257,6 +257,14 @@
     .remedy-label { font-size: 10px; font-weight: 700; color: var(--safe); margin-bottom: 4px; }
     .remedy-text { font-family: var(--font-serif); font-size: 12px; color: var(--text-primary); line-height: 1.55; }
 
+    /* Edge & Cross-Reference Inspector */
+    .edge-inspector-card { padding: 14px 16px; margin-bottom: 12px; background: #f8fafc; border: 2px solid var(--edge-xref); border-radius: 6px; animation: fadeIn 0.25s var(--ease) both; box-shadow: 0 4px 12px rgba(43,108,176,0.12); }
+    .sev-xref { background: #eff6ff; color: #1e40af; border: 1px solid #bfdbfe; }
+    .sev-semantic { background: #f0fdf4; color: #166534; border: 1px solid #bbf7d0; }
+    .xref-tag { display: inline-flex; align-items: center; gap: 3px; font-size: 10px; font-weight: 600; color: #1e40af; background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 3px; padding: 2px 6px; cursor: pointer; margin-top: 5px; margin-right: 4px; transition: background 0.15s ease; }
+    .xref-tag:hover { background: #dbeafe; color: #1d4ed8; }
+    .clause-card.xref-active { box-shadow: 0 0 0 2px var(--edge-xref); background: #f0f7ff; }
+
     /* ─── PIPELINE EXPLAINER ─── */
     .pipeline-modal { max-width: 1120px; max-height: 92vh; }
     .pipeline-body { padding: 20px; overflow-y: auto; max-height: calc(92vh - 122px); background: var(--bg-primary); }
@@ -365,6 +373,54 @@
     .result-stat .rs-num { font-size: 22px; font-weight: 700; color: var(--navy); line-height: 1; }
     .result-stat .rs-lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-top: 2px; }
     .result-stat .rs-num.critical { color: #ef4444; }
+
+    /* Candidate Shortlisting Expansion Card */
+    .candidates-breakdown-card {
+      margin-top: 8px;
+      padding: 10px 12px;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 11px;
+      box-shadow: 0 2px 6px rgba(26,35,50,0.04);
+    }
+    .candidates-bar-container {
+      display: flex;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      background: #e2e8f0;
+      margin: 8px 0 6px;
+    }
+    .cbar-segment {
+      height: 100%;
+      transition: width 0.4s ease;
+    }
+    .cbar-xref { background: #2563eb; }
+    .cbar-typematrix { background: #7c3aed; }
+    .cbar-bm25 { background: #059669; }
+    .cbar-pruned { background: #cbd5e1; }
+    .candidates-pills-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-top: 6px;
+    }
+    .cand-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+    }
+    .cand-pill.pill-xref { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
+    .cand-pill.pill-tm { background: #f5f3ff; color: #6d28d9; border: 1px solid #ddd6fe; }
+    .cand-pill.pill-bm25 { background: #ecfdf5; color: #047857; border: 1px solid #a7f3d0; }
+    .cand-pill.pill-saved { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+
     .upload-dropzone {
       border: 1.5px dashed var(--border); border-radius: 6px;
       padding: 18px; text-align: center; cursor: pointer; margin-bottom: 14px;
@@ -556,6 +612,10 @@
         <option value="lorem_ipsum_demo">Lorem Ipsum Synthetic Instrument</option>
       </select>
 
+      <a href="/findings" target="_blank" class="header-btn header-btn-outline" style="text-decoration:none;" title="Gemini 5-Contract Benchmark Review">
+        Findings Review
+      </a>
+
       <a href="/injections" target="_blank" class="header-btn header-btn-outline" style="text-decoration:none;" title="Adversarial Injection Benchmark Dossier">
         Injections
       </a>
@@ -703,31 +763,43 @@
           <!-- File drag-and-drop -->
           <div class="upload-dropzone" id="upload-dropzone"
                ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)">
-            <input type="file" id="file-upload-input" accept=".txt,.pdf,.docx"
+            <input type="file" id="file-upload-input" accept=".txt,.pdf,.docx,.md"
                    onchange="handleFileSelect(event)" style="z-index:2;">
             <div class="dropzone-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--copper);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
             </div>
-            <div class="dropzone-text">Drag & drop a .txt, .pdf, or .docx file — or click to browse</div>
+            <div class="dropzone-text">Drag & drop a .txt, .md, .pdf, or .docx file — or click to browse</div>
             <div class="dropzone-filename" id="dropzone-filename"></div>
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center; margin:-2px 0 6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin:-2px 0 6px; flex-wrap:wrap; gap:6px;">
             <span style="color:var(--text-muted); font-size:11px;">Contract clause text:</span>
-            <button type="button" onclick="loadSampleContractText()" class="btn btn-secondary" style="padding:3px 10px; font-size:11px; color:var(--copper); border-color:var(--copper-light);">
-              Insert Sample Contract with Planted Traps
-            </button>
+            <div style="display:flex; gap:6px;">
+              <button type="button" onclick="loadPuneMetroAdversarialText()" class="btn btn-secondary" style="padding:3px 10px; font-size:11px; color:#9b2c2c; border-color:#feb2b2; background:#fff5f5;">
+                Load Pune Metro (15 Traps)
+              </button>
+              <button type="button" onclick="loadSampleContractText()" class="btn btn-secondary" style="padding:3px 10px; font-size:11px; color:var(--copper); border-color:var(--copper-light);">
+                Load Cloud MSA (5 Traps)
+              </button>
+            </div>
           </div>
           <div class="form-group" style="margin:0;">
             <textarea id="custom-contract-text" class="form-input" rows="7"
               placeholder="Paste numbered clauses here. Sections like '8.1 Limitation of Liability...' work best."></textarea>
+          </div>
+          <div style="margin-top:8px; display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px;">
+            <label style="display:flex; align-items:center; gap:8px; font-size:11.5px; font-weight:500; color:var(--text-primary); cursor:pointer;">
+              <input type="checkbox" id="unset-candidate-limit" checked style="cursor:pointer; accent-color:var(--navy);">
+              Exhaustive Analysis (Unset 30-Candidate Limit)
+            </label>
+            <span style="font-size:10px; color:var(--text-muted);">Audits all candidate pairs across agreement</span>
           </div>
         </div>
 
         <!-- ─ Live analysis progress (shown during and after streaming) ─ -->
         <div id="analysis-progress-section" style="display:none;">
           <div class="analysis-progress-bar"><div class="analysis-progress-fill" id="analysis-progress-fill"></div></div>
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
             <span style="font-size:10px;color:var(--text-muted);font-family:var(--font-mono);" id="analysis-overall-elapsed">0.00s</span>
             <span style="font-size:10px;color:var(--text-secondary);" id="analysis-current-stage-label">Initialising…</span>
           </div>
@@ -811,6 +883,16 @@
     let embeddingNetwork = null;
     let pipelineNetwork = null;
 
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     /* ── Panel Resizing ── */
     function setupResizers() {
       const container = document.getElementById('workspace-container');
@@ -891,6 +973,28 @@
       filtered.forEach((c, idx) => {
         const tagClass = getTagClass(c.tag);
         const excerptId = `excerpt-${c.id}`;
+
+        // Find any xref edges linking this clause
+        const xrefs = (contractData.edges || []).filter(e => 
+          (e.relation_type || e.type) === 'xref' && 
+          ((e.source_clause_id || e.from) === c.id || (e.target_clause_id || e.to) === c.id)
+        );
+
+        let xrefsHtml = '';
+        if (xrefs.length > 0) {
+          xrefsHtml = '<div style="margin-top:6px; display:flex; flex-wrap:wrap; gap:4px;">';
+          xrefs.forEach(xe => {
+            const isSrc = (xe.source_clause_id || xe.from) === c.id;
+            const otherId = isSrc ? (xe.target_clause_id || xe.to) : (xe.source_clause_id || xe.from);
+            const otherClause = (contractData.clauses || []).find(cl => cl.id === otherId);
+            const otherNum = otherClause ? (otherClause.clause_num || otherClause.num || otherClause.id) : otherId;
+            const prefix = isSrc ? 'Xref &rarr; Sec ' : '&larr; Cited by Sec ';
+            const edgeKey = xe.id !== undefined && xe.id !== null ? String(xe.id) : `edge_${xe.source_clause_id || xe.from}_${xe.target_clause_id || xe.to}`;
+            xrefsHtml += `<span class="xref-tag" onclick="event.stopPropagation(); inspectEdgeById('${edgeKey}')" title="Inspect cross-reference link">${prefix}${otherNum}</span>`;
+          });
+          xrefsHtml += '</div>';
+        }
+
         const card = document.createElement('div');
         card.className = 'clause-card';
         card.id = `clause-item-${c.id}`;
@@ -904,6 +1008,7 @@
           <div class="clause-title">${c.title}</div>
           <div class="clause-excerpt clamped" id="${excerptId}">${c.text}</div>
           <button class="clause-expand-btn" onclick="event.stopPropagation(); toggleClauseExpand('${excerptId}', this)">Read more</button>
+          ${xrefsHtml}
         `;
         container.appendChild(card);
       });
@@ -916,13 +1021,86 @@
       return "tag-default";
     }
 
-    /* ── Findings List ── */
+    /* ── Findings List & Filtered View ── */
     function renderFindingsList() {
       const container = document.getElementById('findings-container');
       container.innerHTML = "";
-      if (!contractData.findings || contractData.findings.length === 0) { container.innerHTML = '<div class="empty-state">No critical conflicts or statutory flags detected.</div>'; return; }
+      const pill = document.getElementById('findings-total-pill');
 
-      contractData.findings.forEach((f, idx) => {
+      // ── Filter: Cross-References ──
+      if (currentGraphFilter === 'xref') {
+        const xrefEdges = (contractData.edges || []).filter(e => (e.relation_type || e.type) === 'xref');
+        if (pill) pill.innerText = `${xrefEdges.length} CROSS-REF${xrefEdges.length !== 1 ? 'S' : ''}`;
+
+        if (xrefEdges.length === 0) {
+          container.innerHTML = '<div class="empty-state">No explicit cross-reference links found for this contract.</div>';
+          return;
+        }
+
+        xrefEdges.forEach((e, idx) => {
+          const fromId = e.source_clause_id || e.from;
+          const toId = e.target_clause_id || e.to;
+          const fromClause = (contractData.clauses || []).find(c => c.id === fromId);
+          const toClause = (contractData.clauses || []).find(c => c.id === toId);
+
+          const fromNum = fromClause ? (fromClause.clause_num || fromClause.num || fromClause.id) : fromId;
+          const toNum = toClause ? (toClause.clause_num || toClause.num || toClause.id) : toId;
+          const fromTitle = fromClause ? fromClause.title : 'Source Provision';
+          const toTitle = toClause ? toClause.title : 'Target Provision';
+          const edgeKey = e.id !== undefined && e.id !== null ? String(e.id) : `edge_${fromId}_${toId}`;
+
+          const card = document.createElement('div');
+          card.className = 'finding-card';
+          card.id = `xref-card-${edgeKey}`;
+          card.style.borderLeft = '3px solid var(--edge-xref)';
+          card.style.animationDelay = `${idx * 40}ms`;
+          card.style.cursor = 'pointer';
+          card.onclick = () => inspectEdgeById(edgeKey);
+          card.innerHTML = `
+            <div class="finding-top">
+              <span class="severity-badge sev-xref">CROSS-REFERENCE</span>
+              <span class="finding-relation">Section ${fromNum} &rarr; Section ${toNum}</span>
+            </div>
+            <div class="finding-title">${escapeHtml(e.label || 'Cross-Clause Reference')}</div>
+            <div class="finding-desc">Explicit inter-clause reference connecting Section ${fromNum} to Section ${toNum}.</div>
+            <div class="provision-box" onclick="event.stopPropagation(); focusClause('${fromId}')" style="cursor:pointer; margin-bottom:6px;" title="Focus in left panel">
+              <div class="provision-label" style="display:flex; justify-content:space-between;">
+                <span>Source: Section ${fromNum} (${escapeHtml(fromTitle)})</span>
+                <span style="color:var(--copper); font-size:9px;">Focus &rarr;</span>
+              </div>
+              <div class="provision-text" style="max-height:48px; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${escapeHtml(fromClause ? fromClause.text : '')}</div>
+            </div>
+            <div class="provision-box" onclick="event.stopPropagation(); focusClause('${toId}')" style="cursor:pointer;" title="Focus in left panel">
+              <div class="provision-label" style="display:flex; justify-content:space-between;">
+                <span>Target: Section ${toNum} (${escapeHtml(toTitle)})</span>
+                <span style="color:var(--copper); font-size:9px;">Focus &rarr;</span>
+              </div>
+              <div class="provision-text" style="max-height:48px; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">${escapeHtml(toClause ? toClause.text : '')}</div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+        return;
+      }
+
+      // ── Standard Findings (All / Conflicts / Statutory) ──
+      let findingsList = contractData.findings || [];
+      if (currentGraphFilter === 'conflict') {
+        findingsList = findingsList.filter(f => (f.relation_type || '').includes('conflict'));
+      } else if (currentGraphFilter === 'statutory') {
+        findingsList = findingsList.filter(f => (f.relation_type || '').includes('statutory') || f.severity === 'statutory');
+      }
+
+      if (pill) {
+        pill.innerText = `${findingsList.length} ISSUE${findingsList.length !== 1 ? 'S' : ''} SURFACED`;
+      }
+
+      if (findingsList.length === 0) {
+        container.innerHTML = '<div class="empty-state">No critical conflicts or statutory flags match this filter.</div>';
+        return;
+      }
+
+      findingsList.forEach((f, idx) => {
         let cardClass = '', sevClass = 'sev-high';
         if (f.severity === 'statutory') { cardClass = 'statutory'; sevClass = 'sev-statutory'; }
         else if (f.severity === 'medium') { cardClass = 'medium'; sevClass = 'sev-medium'; }
@@ -936,7 +1114,7 @@
         card.style.animationDelay = `${idx * 50}ms`;
         card.innerHTML = `
           <div class="finding-top">
-            <span class="severity-badge ${sevClass}">${f.severity.toUpperCase()}</span>
+            <span class="severity-badge ${sevClass}">${(f.severity || 'high').toUpperCase()}</span>
             <span class="finding-relation">${f.relation_type}</span>
           </div>
           <div class="finding-title">${f.title}</div>
@@ -982,16 +1160,18 @@
         };
       }));
 
-      let edgeList = contractData.edges;
+      let edgeList = contractData.edges || [];
       if (currentGraphFilter !== 'all') edgeList = edgeList.filter(e => (e.relation_type || e.type) === currentGraphFilter);
-      const edges = new vis.DataSet(edgeList.map(e => {
+      const edges = new vis.DataSet(edgeList.map((e, idx) => {
         let color = '#64748b';
         const rtype = e.relation_type || e.type;
         if (rtype === 'conflict') color = '#9b2c2c';
         else if (rtype === 'statutory') color = '#7b3060';
         else if (rtype === 'xref') color = '#2b6cb0';
         else if (rtype === 'semantic') color = '#276749';
+        const edgeId = (e.id !== undefined && e.id !== null) ? String(e.id) : `edge_${e.source_clause_id || e.from}_${e.target_clause_id || e.to}_${idx}`;
         return {
+          id: edgeId,
           from: e.source_clause_id || e.from,
           to: e.target_clause_id || e.to,
           label: e.label,
@@ -1000,7 +1180,8 @@
           dashes: !!e.dashes,
           font: { color: '#334155', size: 11, align: 'horizontal', background: '#fafaf8', strokeWidth: 0 },
           arrows: { to: { enabled: true, scaleFactor: 0.7 } },
-          smooth: { enabled: true, type: 'curvedCW', roundness: 0.18 }
+          smooth: { enabled: true, type: 'curvedCW', roundness: 0.18 },
+          rawEdge: e
         };
       }));
 
@@ -1047,27 +1228,151 @@
       });
     }
 
-    /* ── Highlight Finding from Edge Click ── */
+    /* ── Highlight Finding from Edge Click & Show Inspector ── */
     function highlightFindingForEdge(edgeId) {
+      if (!networkInstance) return;
       const edgeData = networkInstance.body.data.edges.get(edgeId);
       if (!edgeData) return;
       const fromId = edgeData.from, toId = edgeData.to;
-      const fromClause = contractData.clauses.find(c => c.id === fromId);
-      const toClause = contractData.clauses.find(c => c.id === toId);
+      const fromClause = (contractData.clauses || []).find(c => c.id === fromId);
+      const toClause = (contractData.clauses || []).find(c => c.id === toId);
 
+      // Highlight in clauses list (left panel)
+      document.querySelectorAll('.clause-card').forEach(el => el.classList.remove('active', 'xref-active'));
+      const fromEl = document.getElementById(`clause-item-${fromId}`);
+      const toEl = document.getElementById(`clause-item-${toId}`);
+      if (fromEl) fromEl.classList.add('active');
+      if (toEl) toEl.classList.add('xref-active');
+      if (fromEl) fromEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Highlight matching finding card if one exists
       document.querySelectorAll('.finding-card.highlighted').forEach(el => el.classList.remove('highlighted'));
-
-      let matched = false;
+      let matchedCard = null;
       document.querySelectorAll('.finding-card').forEach(card => {
         const src = card.dataset.source || '', tgt = card.dataset.target || '';
         const matchesFrom = fromId && (src.includes(fromId) || (fromClause && src.includes(fromClause.clause_num || fromClause.num)));
         const matchesTo = toId && (tgt.includes(toId) || (toClause && tgt.includes(toClause.clause_num || toClause.num)));
         if (matchesFrom || matchesTo) {
           card.classList.add('highlighted');
-          if (!matched) { card.scrollIntoView({ behavior: 'smooth', block: 'center' }); matched = true; }
-          setTimeout(() => card.classList.remove('highlighted'), 3000);
+          if (!matchedCard) {
+            matchedCard = card;
+            card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+          setTimeout(() => card.classList.remove('highlighted'), 3500);
         }
       });
+
+      // Always show Edge Inspector card on right panel
+      showEdgeInspector(edgeData.rawEdge || edgeData, fromClause, toClause, matchedCard);
+    }
+
+    /* ── Edge & Relationship Inspector ── */
+    function showEdgeInspector(edge, fromClause, toClause, matchedCard) {
+      const container = document.getElementById('findings-container');
+      if (!container) return;
+
+      clearEdgeInspector();
+
+      const rtype = (edge.relation_type || edge.type || 'xref').toLowerCase();
+      let badgeClass = 'sev-xref', badgeLabel = 'CROSS-REFERENCE';
+      if (rtype === 'conflict') { badgeClass = 'sev-high'; badgeLabel = 'CONFLICT'; }
+      else if (rtype === 'statutory') { badgeClass = 'sev-statutory'; badgeLabel = 'STATUTORY VIOLATION'; }
+      else if (rtype === 'semantic') { badgeClass = 'sev-semantic'; badgeLabel = 'SEMANTIC RELATION'; }
+
+      const fromNum = fromClause ? (fromClause.clause_num || fromClause.num || fromClause.id) : (edge.source_clause_id || edge.from);
+      const toNum = toClause ? (toClause.clause_num || toClause.num || toClause.id) : (edge.target_clause_id || edge.to);
+      const fromTitle = fromClause ? fromClause.title : 'Source Clause';
+      const toTitle = toClause ? toClause.title : 'Target Clause';
+
+      let relExplanation = '';
+      if (rtype === 'conflict') {
+        relExplanation = 'These two clauses impose mutually inconsistent contractual covenants or contradict liability bounds.';
+      } else if (rtype === 'statutory') {
+        relExplanation = 'This relationship indicates a direct clash between the contractual term and mandatory statutory law or public policy.';
+      } else if (rtype === 'xref') {
+        relExplanation = `Section ${fromNum} contains an explicit legal cross-reference or dependency on Section ${toNum}. Review both clauses together to ensure alignment.`;
+      } else {
+        relExplanation = 'Semantic relationship identified across related subject areas in the agreement.';
+      }
+
+      const inspCard = document.createElement('div');
+      inspCard.id = 'active-edge-inspector';
+      inspCard.className = 'edge-inspector-card';
+      inspCard.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span class="severity-badge ${badgeClass}">${badgeLabel}</span>
+            <span style="font-family:var(--font-mono); font-size:11px; font-weight:600; color:var(--text-secondary);">Section ${fromNum} &rarr; Section ${toNum}</span>
+          </div>
+          <button onclick="clearEdgeInspector()" style="background:none; border:none; color:var(--text-muted); cursor:pointer; font-size:16px; line-height:1; padding:2px 6px;" title="Close Inspector">&times;</button>
+        </div>
+        <div style="font-family:var(--font-serif); font-size:14px; font-weight:600; color:var(--navy); margin-bottom:6px;">
+          ${escapeHtml(edge.label || 'Clause Relationship')}
+        </div>
+        <div style="font-size:11.5px; color:var(--text-secondary); line-height:1.5; margin-bottom:12px;">
+          ${relExplanation}
+        </div>
+        <div class="provision-box" onclick="focusClause('${edge.source_clause_id || edge.from}')" style="cursor:pointer; margin-bottom:8px;" title="Click to focus in left list">
+          <div class="provision-label" style="display:flex; justify-content:space-between;">
+            <span>Source: Section ${fromNum} (${escapeHtml(fromTitle)})</span>
+            <span style="color:var(--copper); font-size:9.5px;">Focus &rarr;</span>
+          </div>
+          <div class="provision-text" style="max-height:55px; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">
+            ${escapeHtml(fromClause ? fromClause.text : '')}
+          </div>
+        </div>
+        <div class="provision-box" onclick="focusClause('${edge.target_clause_id || edge.to}')" style="cursor:pointer;" title="Click to focus in left list">
+          <div class="provision-label" style="display:flex; justify-content:space-between;">
+            <span>Target: Section ${toNum} (${escapeHtml(toTitle)})</span>
+            <span style="color:var(--copper); font-size:9.5px;">Focus &rarr;</span>
+          </div>
+          <div class="provision-text" style="max-height:55px; overflow:hidden; text-overflow:ellipsis; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical;">
+            ${escapeHtml(toClause ? toClause.text : '')}
+          </div>
+        </div>
+      `;
+
+      container.insertBefore(inspCard, container.firstChild);
+      inspCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function clearEdgeInspector() {
+      const existing = document.getElementById('active-edge-inspector');
+      if (existing) existing.remove();
+    }
+
+    /* ── Inspect Edge by Key / Id (e.g. from xref tag) ── */
+    function inspectEdgeById(edgeKey) {
+      if (!contractData || !contractData.edges) return;
+      const edge = contractData.edges.find(e => {
+        if (e.id !== undefined && String(e.id) === String(edgeKey)) return true;
+        const generatedKey = `edge_${e.source_clause_id || e.from}_${e.target_clause_id || e.to}`;
+        return generatedKey === String(edgeKey);
+      });
+      if (!edge) return;
+
+      const fromId = edge.source_clause_id || edge.from;
+      const toId = edge.target_clause_id || edge.to;
+      const fromClause = (contractData.clauses || []).find(c => c.id === fromId);
+      const toClause = (contractData.clauses || []).find(c => c.id === toId);
+
+      // Highlight in graph if networkInstance exists
+      if (networkInstance) {
+        try {
+          networkInstance.selectEdges([edgeKey]);
+        } catch(e) {}
+      }
+
+      // Highlight in clauses list (left panel)
+      document.querySelectorAll('.clause-card').forEach(el => el.classList.remove('active', 'xref-active'));
+      const fromEl = document.getElementById(`clause-item-${fromId}`);
+      const toEl = document.getElementById(`clause-item-${toId}`);
+      if (fromEl) fromEl.classList.add('active');
+      if (toEl) toEl.classList.add('xref-active');
+      if (fromEl) fromEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      // Show edge inspector
+      showEdgeInspector(edge, fromClause, toClause, null);
     }
 
     /* ── Clause Focus ── */
@@ -1084,6 +1389,7 @@
       document.querySelectorAll('.filter-chip').forEach(el => el.classList.remove('active'));
       if (btn) btn.classList.add('active');
       renderNetworkGraph();
+      renderFindingsList();
     }
     function fitGraphView() { if (networkInstance) networkInstance.fit({ animation: { duration: 350 }, padding: 35 }); }
     function handleClauseSearch() { searchQuery = document.getElementById('clause-search').value; renderClauseList(); }
@@ -1418,6 +1724,22 @@ For a period of 24 months following termination of this Agreement for any reason
 This Agreement is governed by the laws of India. Any dispute arising out of or in connection with this Agreement shall be referred to and finally resolved by arbitration seated in Bengaluru under the Arbitration and Conciliation Act, 1996. Pre-litigation mediation is hereby excluded.`;
     }
 
+    async function loadPuneMetroAdversarialText() {
+      try {
+        const res = await fetch('/api/samples/pune_adversarial');
+        if (res.ok) {
+          const data = await res.json();
+          document.getElementById('custom-contract-title').value = "Concession Agreement for Pune Metro Line III (Adversarial Robustness Test)";
+          document.getElementById('custom-contract-jurisdiction').value = "India (Maharashtra)";
+          document.getElementById('dropzone-filename').innerText = "Loaded: 02_pune_metro_adversarial_15_injections.md (26 Clauses · 15 Injections)";
+          document.getElementById('custom-contract-text').value = data.text;
+          return;
+        }
+      } catch (e) {
+        console.warn("Failed to fetch sample:", e);
+      }
+    }
+
     /* ── File Drag-and-Drop / Selection ── */
     function handleDragOver(e) {
       e.preventDefault();
@@ -1553,13 +1875,18 @@ You may also paste specific clauses directly below if desired.`;
         complete: 100
       };
 
+      console.log(`%c[0.00s] [INITIALIZE] Analysis started for "${title}"`, 'color:#38bdf8;font-weight:bold;');
+
       let newlyCreatedContractId = null;
+
+      const unsetLimit = document.getElementById('unset-candidate-limit') ? document.getElementById('unset-candidate-limit').checked : true;
+      const max_candidates = unsetLimit ? null : 30;
 
       try {
         const response = await fetch('/api/contracts/analyze/stream', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, text, jurisdiction })
+          body: JSON.stringify({ title, text, jurisdiction, max_candidates })
         });
 
         if (!response.ok) {
@@ -1585,6 +1912,26 @@ You may also paste specific clauses directly below if desired.`;
             try {
               const eventData = JSON.parse(trimmed.slice(5).trim());
               const st = eventData.stage;
+              const timeStr = `[${eventData.elapsed || '0.00'}s]`;
+
+              // ── Handle Gemini Prompt Event ──
+              if (st === 'gemini_call') {
+                console.groupCollapsed(`%c✦ ${timeStr} GEMINI PROMPT (Batch ${eventData.batch}/${eventData.total_batches} · ${eventData.model})`, 'color:#f59e0b;font-weight:bold;');
+                console.log(eventData.prompt);
+                console.groupEnd();
+                continue;
+              }
+
+              // ── Handle Gemini Response Event ──
+              if (st === 'gemini_response') {
+                console.groupCollapsed(`%c✦ ${timeStr} GEMINI RESPONSE (Batch ${eventData.batch})`, 'color:#10b981;font-weight:bold;');
+                console.log(eventData.response);
+                console.groupEnd();
+                continue;
+              }
+
+              // ── Generic Log / Stage Event ──
+              console.log(`%c${timeStr} [${eventData.label || st}] %c${eventData.detail || ''}`, 'color:#38bdf8;font-weight:bold;', 'color:#e2e8f0;');
 
               // Update progress bar & labels
               if (PROGRESS_MAP[st]) {
@@ -1599,7 +1946,47 @@ You may also paste specific clauses directly below if desired.`;
                   stageElements[k].classList.remove('done');
                   stageElements[k].classList.add('active');
                   const det = document.getElementById(`stage-detail-${k}`);
-                  if (det) det.innerText = eventData.detail || "Processing...";
+                  if (det) {
+                    if (k === 'candidates' && eventData.meta) {
+                      const m = eventData.meta;
+                      const pruned = Math.max(0, m.total_possible - m.shortlisted);
+                      const xrefPct = m.total_possible > 0 ? (m.xref_count / m.total_possible * 100).toFixed(1) : 0;
+                      const tmPct = m.total_possible > 0 ? (m.type_matrix_count / m.total_possible * 100).toFixed(1) : 0;
+                      const bm25Pct = m.total_possible > 0 ? (m.bm25_count / m.total_possible * 100).toFixed(1) : 0;
+                      const prunedPct = m.total_possible > 0 ? (pruned / m.total_possible * 100).toFixed(1) : 0;
+
+                      det.innerHTML = `
+                        <div>${escapeHtml(eventData.detail || '')}</div>
+                        <div class="candidates-breakdown-card">
+                          <div style="display:flex; justify-content:space-between; align-items:center; font-size:10.5px; font-weight:600; color:var(--navy);">
+                            <span>Combinatorial Funnel: ${m.shortlisted} shortlisted / ${m.total_possible} all-pairs</span>
+                            <span style="color:#047857; background:#ecfdf5; padding:1px 6px; border-radius:10px; border:1px solid #a7f3d0;">
+                              ${m.reduction_pct}% Search Space Pruned
+                            </span>
+                          </div>
+                          
+                          <!-- Segmented Visual Bar -->
+                          <div class="candidates-bar-container" title="Xrefs: ${m.xref_count} | Type Matrix: ${m.type_matrix_count} | BM25: ${m.bm25_count} | Pruned: ${pruned}">
+                            <div class="cbar-segment cbar-xref" style="width:${xrefPct}%;" title="Xrefs (${m.xref_count})"></div>
+                            <div class="cbar-segment cbar-typematrix" style="width:${tmPct}%;" title="Type Matrix (${m.type_matrix_count})"></div>
+                            <div class="cbar-segment cbar-bm25" style="width:${bm25Pct}%;" title="BM25 Lexical (${m.bm25_count})"></div>
+                            <div class="cbar-segment cbar-pruned" style="width:${prunedPct}%;" title="Pruned / Filtered Out (${pruned})"></div>
+                          </div>
+
+                          <!-- Signal Breakdown Badges -->
+                          <div class="candidates-pills-row">
+                            <span class="cand-pill pill-xref">● ${m.xref_count} Xrefs</span>
+                            <span class="cand-pill pill-tm">● ${m.type_matrix_count} Type Matrix</span>
+                            <span class="cand-pill pill-bm25">● ${m.bm25_count} BM25</span>
+                            <span class="cand-pill pill-saved">✕ ${pruned} Combinations Pruned</span>
+                            <span style="font-size:9.5px; color:var(--text-muted); margin-left:auto;">${escapeHtml(m.limit_mode || '')}</span>
+                          </div>
+                        </div>
+                      `;
+                    } else {
+                      det.innerText = eventData.detail || "Processing...";
+                    }
+                  }
                   const elp = document.getElementById(`stage-elapsed-${k}`);
                   if (elp) elp.innerText = `${eventData.elapsed}s`;
                 } else if (stageElements[k].classList.contains('active')) {

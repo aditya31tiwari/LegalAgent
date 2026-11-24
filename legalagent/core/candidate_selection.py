@@ -65,3 +65,4 @@ def select_candidates(clauses: list[Clause], config: dict) -> list[tuple[str, st
     kept.update(dict(list(retrieval_only.items())[:remaining_slots]))
 
     return [(a, b, sorted(hows)) for (a, b), hows in kept.items()]
+

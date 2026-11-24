@@ -13,11 +13,13 @@ load_dotenv(os.path.join(PROJECT_ROOT, ".env"))
 
 API_ROOT = "https://generativelanguage.googleapis.com/v1beta"
 PREFERRED_MODELS = (
-    "gemini-3-flash-preview",
-    "gemini-3.5-flash",
+    "gemini-3.1-flash-lite",
+    "gemini-3.1-flash-lite-preview",
+    "gemini-flash-lite-latest",
     "gemini-2.5-flash",
-    "gemini-flash-latest",
     "gemini-2.5-flash-lite",
+    "gemini-flash-latest",
+    "gemini-3-flash-preview",
 )
 
 
@@ -65,6 +67,8 @@ def choose_model(available: list[str] | None = None) -> str:
     raise GeminiConfigurationError("No Gemini model supports generateContent for this key")
 
 
+import time
+
 def generate_json(prompt: str, model: str | None = None) -> dict:
     """Generate a JSON object for the future cross-clause explanation adapter."""
     selected_model = model or choose_model()
@@ -79,11 +83,23 @@ def generate_json(prompt: str, model: str | None = None) -> dict:
         headers={"Content-Type": "application/json", "Accept": "application/json"},
         method="POST",
     )
-    try:
-        with urlopen(request, timeout=60) as response:
-            payload = json.loads(response.read().decode("utf-8"))
-    except (HTTPError, URLError) as exc:
-        raise GeminiConfigurationError(f"Gemini request failed for {selected_model}: {exc}") from exc
+    max_retries = 3
+    for attempt in range(max_retries):
+        try:
+            with urlopen(request, timeout=60) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+            break
+        except HTTPError as exc:
+            if exc.code in (429, 500, 502, 503, 504) and attempt < max_retries - 1:
+                wait_time = 2.0 * (attempt + 1)
+                time.sleep(wait_time)
+                continue
+            raise GeminiConfigurationError(f"Gemini request failed for {selected_model}: {exc}") from exc
+        except (URLError, Exception) as exc:
+            if attempt < max_retries - 1:
+                time.sleep(2.0 * (attempt + 1))
+                continue
+            raise GeminiConfigurationError(f"Gemini request failed for {selected_model}: {exc}") from exc
 
     text = payload["candidates"][0]["content"]["parts"][0]["text"]
     return json.loads(text)

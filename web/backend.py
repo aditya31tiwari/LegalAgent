@@ -55,6 +55,7 @@ class AnalyzeRequest(BaseModel):
     title: str
     text: str
     jurisdiction: Optional[str] = "India"
+    max_candidates: Optional[int] = None
 
 
 @app.on_event("startup")
@@ -153,6 +154,25 @@ def get_contracts():
     return enriched
 
 
+@app.get("/api/samples/{name}")
+def get_sample_contract(name: str):
+    """Returns sample contract markdown text."""
+    samples_dir = PROJECT_ROOT / "data" / "demo" / "samples"
+    mapping = {
+        "pune_adversarial": "02_pune_metro_adversarial_15_injections.md",
+        "pune_baseline": "01_pune_metro_concession_baseline.md",
+        "tech_msa": "03_indian_tech_services_msa.md",
+        "employment": "04_executive_employment_agreement.md",
+        "vendor": "05_commercial_vendor_supply_agreement.md",
+        "highway": "06_nhai_highway_concession_agreement.md",
+    }
+    filename = mapping.get(name, f"{name}.md")
+    path = samples_dir / filename
+    if not path.exists():
+        raise HTTPException(status_code=404, detail="Sample not found")
+    return {"name": name, "filename": filename, "text": path.read_text(encoding="utf-8")}
+
+
 @app.get("/api/contracts/{contract_id}")
 def get_contract_details(contract_id: str):
     """Fetches full graph topology, clauses, and findings for a contract."""
@@ -201,7 +221,13 @@ def analyze_custom_contract(req: AnalyzeRequest):
             tmp.write(req.text)
             tmp_path = tmp.name
 
-        config = {"retrieval_method": "bm25", "top_k": 10, "jurisdiction": jurisdiction}
+        config = {
+            "retrieval_method": "bm25",
+            "top_k": 10,
+            "jurisdiction": jurisdiction,
+            "use_gemini": True,
+            "max_candidates": req.max_candidates,
+        }
         run, pipeline_clauses, pipeline_findings = pipeline_analyse(
             tmp_path, config, contract_id=contract_id
         )
@@ -442,33 +468,150 @@ async def analyze_contract_stream(req: AnalyzeRequest):
         # ── Stage 5: Candidate Selection ─────────────────────────────────────
         try:
             from legalagent.core.candidate_selection import select_candidates
-            config = {"retrieval_method": "bm25", "top_k": 10, "jurisdiction": jurisdiction}
+            config = {
+                "retrieval_method": "bm25",
+                "top_k": 10,
+                "jurisdiction": jurisdiction,
+                "max_candidates": req.max_candidates,
+            }
             pairs = select_candidates(clauses, config)
             methods_used = set()
             for _, _, surfaced in pairs:
                 methods_used.update(surfaced)
-            yield _sse({"stage": "candidates", "label": "Candidate Pairs Selected",
-                        "detail": f"{len(pairs)} clause pair{'s' if len(pairs) != 1 else ''} shortlisted via {', '.join(sorted(methods_used)) or 'BM25'}",
-                        "elapsed": elapsed(), "done": False})
+
+            n_clauses = len(clauses)
+            total_possible = n_clauses * (n_clauses - 1) // 2 if n_clauses > 1 else 0
+            xref_count = sum(1 for _, _, surfaced in pairs if "xref" in surfaced)
+            type_matrix_count = sum(1 for _, _, surfaced in pairs if "type_matrix" in surfaced)
+            bm25_count = sum(1 for _, _, surfaced in pairs if "bm25" in surfaced)
+            dense_count = sum(1 for _, _, surfaced in pairs if "dense" in surfaced)
+            reduction_pct = round((1 - (len(pairs) / total_possible)) * 100, 1) if total_possible > 0 else 0.0
+
+            yield _sse({
+                "stage": "candidates",
+                "label": "Candidate Pair Shortlisting",
+                "detail": f"{len(pairs)} candidate pairs shortlisted from {total_possible} possible combinations ({reduction_pct}% reduction)",
+                "meta": {
+                    "total_clauses": n_clauses,
+                    "total_possible": total_possible,
+                    "shortlisted": len(pairs),
+                    "reduction_pct": reduction_pct,
+                    "xref_count": xref_count,
+                    "type_matrix_count": type_matrix_count,
+                    "bm25_count": bm25_count,
+                    "dense_count": dense_count,
+                    "methods": sorted(list(methods_used)),
+                    "limit_mode": "Unset (Exhaustive)" if req.max_candidates is None else f"Budget Capped ({req.max_candidates})"
+                },
+                "elapsed": elapsed(),
+                "done": False
+            })
         except Exception as e:
             yield _sse({"stage": "error", "label": "Candidate Selection Failed",
                         "detail": str(e), "elapsed": elapsed(), "done": True})
             return
 
-        # ── Stage 6: Cross-Clause Analysis ───────────────────────────────────
+        # ── Stage 6: Cross-Clause Analysis (Gemini-Powered) ─────────────────
         try:
             from legalagent.core.analysis import analyse_pair, analyse_statutory, validate_findings
+            from legalagent.core.gemini import choose_model, generate_json, GeminiConfigurationError
+            from legalagent.core.gemini_analysis import _build_prompt, _parse_finding, MAX_PAIRS_PER_PROMPT
+
+            clauses_by_id = {c.id: c for c in clauses}
+            pair_objects = [
+                (clauses_by_id[a_id], clauses_by_id[b_id], surfaced_by)
+                for a_id, b_id, surfaced_by in pairs
+            ]
+
             findings = []
-            for clause_a_id, clause_b_id, surfaced_by in pairs:
-                clause_a = next(c for c in clauses if c.id == clause_a_id)
-                clause_b = next(c for c in clauses if c.id == clause_b_id)
-                f = analyse_pair(clause_a, clause_b, surfaced_by)
-                if f:
-                    findings.append(f)
+            use_gemini = True
+            selected_model = None
+
+            try:
+                selected_model = choose_model()
+            except Exception as exc:
+                use_gemini = False
+                yield _sse({
+                    "stage": "log",
+                    "label": "Gemini Bypass",
+                    "detail": f"Gemini discovery skipped ({exc}) — falling back to deterministic",
+                    "elapsed": elapsed(),
+                    "done": False,
+                })
+
+            if use_gemini and pair_objects:
+                total_chunks = (len(pair_objects) + MAX_PAIRS_PER_PROMPT - 1) // MAX_PAIRS_PER_PROMPT
+                for chunk_idx, chunk_start in enumerate(range(0, len(pair_objects), MAX_PAIRS_PER_PROMPT), start=1):
+                    chunk = pair_objects[chunk_start : chunk_start + MAX_PAIRS_PER_PROMPT]
+                    prompt = _build_prompt(chunk)
+
+                    # Stream prompt event so dashboard terminal can show it
+                    yield _sse({
+                        "stage": "gemini_call",
+                        "label": f"Gemini Prompt Dispatched (Batch {chunk_idx}/{total_chunks})",
+                        "detail": f"Dispatched {len(chunk)} pair(s) to {selected_model}",
+                        "batch": chunk_idx,
+                        "total_batches": total_chunks,
+                        "pairs_count": len(chunk),
+                        "model": selected_model,
+                        "prompt": prompt,
+                        "elapsed": elapsed(),
+                        "done": False,
+                    })
+
+                    try:
+                        raw = generate_json(prompt, model=selected_model)
+                        raw_findings = raw.get("findings", [])
+
+                        # Stream response event so dashboard terminal can show it
+                        yield _sse({
+                            "stage": "gemini_response",
+                            "label": f"Gemini Response Received (Batch {chunk_idx}/{total_chunks})",
+                            "detail": f"Received {len(raw_findings)} assessment(s) from {selected_model}",
+                            "batch": chunk_idx,
+                            "response": raw,
+                            "elapsed": elapsed(),
+                            "done": False,
+                        })
+
+                        while len(raw_findings) < len(chunk):
+                            raw_findings.append({
+                                "relation_type": "no_issue", "severity": "low", "risk_score": 0.0,
+                                "rationale": "No issue identified.", "statute_citation": ""
+                            })
+                        raw_findings = raw_findings[: len(chunk)]
+
+                        for (clause_a, clause_b, surfaced_by), item in zip(chunk, raw_findings):
+                            f = _parse_finding(clause_a, clause_b, surfaced_by, item)
+                            if f:
+                                findings.append(f)
+
+                    except Exception as gemini_err:
+                        yield _sse({
+                            "stage": "log",
+                            "label": "Gemini Fallback",
+                            "detail": f"Gemini call failed in batch {chunk_idx} ({gemini_err}) — falling back to deterministic",
+                            "elapsed": elapsed(),
+                            "done": False,
+                        })
+                        for clause_a, clause_b, surfaced_by in chunk:
+                            f = analyse_pair(clause_a, clause_b, surfaced_by)
+                            if f:
+                                findings.append(f)
+            else:
+                for clause_a, clause_b, surfaced_by in pair_objects:
+                    f = analyse_pair(clause_a, clause_b, surfaced_by)
+                    if f:
+                        findings.append(f)
+
             conflicts = len(findings)
-            yield _sse({"stage": "analysis", "label": "Cross-Clause Analysis",
-                        "detail": f"Analysed {len(pairs)} pairs — {conflicts} contractual conflict{'s' if conflicts != 1 else ''} detected",
-                        "elapsed": elapsed(), "done": False})
+            yield _sse({
+                "stage": "analysis",
+                "label": "Cross-Clause Conflict Analysis",
+                "detail": f"Analysed {len(pairs)} pairs via {'Gemini (' + selected_model + ')' if (use_gemini and selected_model) else 'deterministic rules'} — {conflicts} conflict(s) surfaced",
+                "elapsed": elapsed(),
+                "done": False,
+            })
         except Exception as e:
             yield _sse({"stage": "error", "label": "Analysis Failed",
                         "detail": str(e), "elapsed": elapsed(), "done": True})
@@ -628,6 +771,12 @@ def serve_app():
 @app.get("/injections")
 def serve_injections():
     return FileResponse(STATIC_DIR / "injections.html")
+
+
+@app.get("/findings")
+def serve_findings():
+    """Internal Gemini findings review page — not linked from the public UI."""
+    return FileResponse(STATIC_DIR / "findings_review.html")
 
 
 if __name__ == "__main__":

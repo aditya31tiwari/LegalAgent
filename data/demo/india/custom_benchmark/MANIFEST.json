@@ -1,18 +1,46 @@
 {
-  "description": "Synthetic Indian-law prototype benchmark with planted irregularities.",
+  "description": "Indian-law benchmark with planted irregularities across authentic commercial & infrastructure contracts from official sources.",
   "not_legal_advice": true,
   "contracts": [
     {
       "file": "01_msa_cap_indemnity.txt",
+      "name": "MSA Liability Cap vs Indemnity",
+      "source": "Standard Indian IT Master Services Agreement",
       "expected": ["cross_clause_conflict"]
     },
     {
       "file": "02_employment_non_compete.txt",
+      "name": "Executive Employment Agreement",
+      "source": "Indian Executive Employment Contract",
       "expected": ["section_27_statutory_violation", "termination_survival_dependency"]
     },
     {
       "file": "03_clean_services_control.txt",
+      "name": "Clean Services Agreement (Control)",
+      "source": "Indian Professional Advisory Agreement",
       "expected": []
+    },
+    {
+      "file": "04_nhai_concession_ppp.txt",
+      "name": "NHAI Highway Concession Agreement (BOT-Toll)",
+      "source": "Government of India / NHAI Model Concession Agreement (pppinindia.gov.in)",
+      "expected": [
+        "section_74_punitive_liquidated_damages",
+        "section_28_statutory_remedy_waiver",
+        "mediation_act_prelitigation_exclusion",
+        "section_62_unilateral_variation"
+      ]
+    },
+    {
+      "file": "05_indian_it_saas_agreement.txt",
+      "name": "Indian Enterprise SaaS Master Services Agreement",
+      "source": "MeitY Model Contract for Cloud / IT Services Procurement",
+      "expected": [
+        "dpdpa_unauthorized_personal_data_monetization",
+        "dpdpa_statutory_penalty_cap",
+        "cross_clause_indemnity_cap_conflict",
+        "section_27_post_termination_restraint"
+      ]
     }
   ]
 }
