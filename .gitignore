@@ -86,3 +86,6 @@ logs/
 # evaluation outputs are part of the deliverable
 !results/
 results/*.log
+
+# Local notes, not shared
+PROJECT_STATUS.txt
