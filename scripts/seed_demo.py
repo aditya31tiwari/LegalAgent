@@ -9,13 +9,59 @@ Every contract on the dashboard is then exactly what `python -m legalagent analy
 the judge actually used is recorded in each contract's description.
 """
 import argparse
+import json
+import os
 import sys
+
+# Kev owns the GPU during seeding; the small encoders run on CPU (see legalagent/core/device.py).
+os.environ.setdefault("LEGALAGENT_DEVICE", "cpu")
 import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 sys.path.insert(0, str(ROOT / "web"))
+
+GEN = ROOT / "data" / "demo" / "generated"
+
+
+def make_casebook() -> Path:
+    """18 real clauses from Supreme Court of India judgments, one ARTICLE per case (court outcome in the heading)."""
+    cases = [json.loads(l) for l in (ROOT / "research/litigated_clauses/cases.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
+    lines = ["SUPREME COURT CASEBOOK — real contract clauses quoted in judgments (court outcome = ground truth)", ""]
+    for n, c in enumerate(cases, 1):
+        lines += [f"ARTICLE {n} {c['case_name']} ({c['year']}) — court held: {c['outcome'].upper()}", ""]
+        lines += [f"{n}.1 {c['clause_a']['text'].strip()}", ""]
+        if c.get("clause_b") and c["clause_b"].get("text"):
+            lines += [f"{n}.2 {c['clause_b']['text'].strip()} (read with Clause {n}.1)", ""]
+    GEN.mkdir(parents=True, exist_ok=True)
+    p = GEN / "supreme_court_casebook.md"
+    p.write_text("\n".join(lines), encoding="utf-8")
+    return p
+
+
+def make_cuad_example() -> Path | None:
+    """One real CUAD contract where lawyers annotated both a liability cap and an uncapped-liability carve-out."""
+    import csv
+    pairs = [json.loads(l) for l in (ROOT / "research/teacher_labels/cuad_interaction_pairs.jsonl").read_text(encoding="utf-8").splitlines() if l.strip()]
+    pick = next((p for p in pairs if p["case"].startswith("Cap On Liability x Uncapped")), None)
+    if not pick:
+        return None
+    doc_id = pick["contract"].split(":", 1)[1]
+    csv.field_size_limit(10**9)
+    rows = [r for r in csv.DictReader(open(ROOT / "clause20/data/interim/cuad.csv", encoding="utf-8")) if r["doc_id"] == doc_id]
+    if not rows:
+        return None
+    lines = []
+    for r in rows:
+        num = r["uid"].split("::")[-1]
+        txt = r["text"].strip()
+        lines += [txt if txt.startswith(num) else f"{num} {txt}", ""]
+    GEN.mkdir(parents=True, exist_ok=True)
+    p = GEN / "cuad_cap_vs_uncapped.md"
+    p.write_text("\n".join(lines), encoding="utf-8")
+    return p
+
 
 DOCS = [
     ("Pune Metro Line-3 Concession — 15 planted irregularities (excerpt)", "Indian Infrastructure (PPP) · Adversarial test",
@@ -42,6 +88,14 @@ def main():
     from legalagent.db import get_db_connection, init_db
     from legalagent.core.pipeline import analyse
     from live import persist
+
+    casebook = make_casebook()
+    DOCS.insert(1, ("Supreme Court casebook — 18 real clauses from judgments (court outcome in each heading)",
+                    "Real cases · Supreme Court of India", str(casebook.relative_to(ROOT))))
+    cuad = make_cuad_example()
+    if cuad:
+        DOCS.insert(2, ("Real US contract (CUAD, SEC filing) — lawyer-annotated liability cap vs uncapped carve-out",
+                        "Real contract · CUAD", str(cuad.relative_to(ROOT))))
 
     init_db()
     conn = get_db_connection()

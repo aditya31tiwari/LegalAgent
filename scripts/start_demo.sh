@@ -32,6 +32,9 @@ fi
 curl -sf http://127.0.0.1:8008/v1/models >/dev/null && echo "Kev judge: up" || echo "Kev judge: DOWN (pipeline will fall back to rules)"
 
 pkill -f "web/server.py" 2>/dev/null; sleep 1
+# The GPU belongs to Kev (peaks ~3.8 GB of 6 GB on long inputs). The small encoders (InLegalBERT,
+# InLegal-SBERT) run on CPU in the demo so they can never push Kev out of memory.
+export LEGALAGENT_DEVICE="${LEGALAGENT_DEVICE:-cpu}"
 setsid nohup venv/bin/python web/server.py > logs/web.log 2>&1 < /dev/null &
 for _ in $(seq 1 30); do curl -sf http://127.0.0.1:8080/api/system/status >/dev/null && break; sleep 1; done
 echo "dashboard: http://$(hostname -I | awk '{print $1}'):8080/app   (status: $(curl -s http://127.0.0.1:8080/api/system/status))"
