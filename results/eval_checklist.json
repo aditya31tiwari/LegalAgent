@@ -27,7 +27,7 @@
     "binary_accuracy": 0.7142857142857143,
     "risky_detected_on_bad": 0.6875,
     "no_issue_on_fixed": 0.75,
-    "ms_per_pair": 1722.3,
+    "ms_per_pair": 332.5,
     "misses": [
       "noncompete_survival_bad",
       "payment_tax_grossup_bad",
@@ -65,6 +65,69 @@
       "inj_91.2_91.4",
       "inj_91.3_91.4",
       "inj_91.6_91.7"
+    ]
+  },
+  "kev_finetuned": {
+    "binary_accuracy": 0.5357142857142857,
+    "risky_detected_on_bad": 0.3125,
+    "no_issue_on_fixed": 0.8333333333333334,
+    "ms_per_pair": 325.4,
+    "misses": [
+      "survival_confidentiality_bad",
+      "notice_periods_bad",
+      "arbitration_vs_courts_bad",
+      "ld_vs_cap_bad",
+      "assignment_change_of_control_bad",
+      "payment_tax_grossup_bad",
+      "warranty_disclaimer_bad",
+      "ip_assignment_vs_license_bad",
+      "force_majeure_payment_bad",
+      "confidentiality_vs_regulator_bad",
+      "inj_91.6_91.7",
+      "cap_indemnity_fixed",
+      "noncompete_survival_fixed"
+    ]
+  },
+  "kev_finetuned_tau": {
+    "binary_accuracy": 0.5357142857142857,
+    "risky_detected_on_bad": 0.3125,
+    "no_issue_on_fixed": 0.8333333333333334,
+    "ms_per_pair": 325.4,
+    "misses": [
+      "survival_confidentiality_bad",
+      "notice_periods_bad",
+      "arbitration_vs_courts_bad",
+      "ld_vs_cap_bad",
+      "assignment_change_of_control_bad",
+      "payment_tax_grossup_bad",
+      "warranty_disclaimer_bad",
+      "ip_assignment_vs_license_bad",
+      "force_majeure_payment_bad",
+      "confidentiality_vs_regulator_bad",
+      "inj_91.6_91.7",
+      "cap_indemnity_fixed",
+      "noncompete_survival_fixed"
+    ]
+  },
+  "kev_base_zero_shot_tau": {
+    "binary_accuracy": 0.5357142857142857,
+    "risky_detected_on_bad": 0.5625,
+    "no_issue_on_fixed": 0.5,
+    "ms_per_pair": 332.5,
+    "misses": [
+      "noncompete_survival_bad",
+      "payment_tax_grossup_bad",
+      "ip_assignment_vs_license_bad",
+      "force_majeure_payment_bad",
+      "confidentiality_vs_regulator_bad",
+      "inj_91.2_91.4",
+      "inj_91.3_91.4",
+      "cap_indemnity_fixed",
+      "survival_confidentiality_fixed",
+      "ld_vs_cap_fixed",
+      "payment_tax_grossup_fixed",
+      "force_majeure_payment_fixed",
+      "confidentiality_vs_regulator_fixed"
     ]
   }
 }

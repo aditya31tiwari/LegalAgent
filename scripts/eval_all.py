@@ -339,6 +339,118 @@ def eval_litigated(args):
     save("eval_litigated", out, merge=True)
 
 
+def eval_india_variants(args):
+    """
+    Indian clause classification: model vs ensemble vs + heading prior. Clauses are re-extracted
+    from the (OCR-cached) concessions so each has its ARTICLE title and heading. Two answer keys:
+    silver (Gemini Flash-Lite, all 220) and Gemini-4 types where available (stronger teacher).
+    """
+    from sklearn.metrics import f1_score
+    from legalagent.core.ingestion import ingest
+    from legalagent.core.extraction import extract
+    from legalagent.core.classification import classify, available_backend
+    docs = {"model_concession_4_laning": "data/demo/india/official/model_concession_4_laning.pdf",
+            "pune_metro_signed_concession": "data/demo/india/official/pune_metro_signed_concession.pdf"}
+    by_id = {}
+    for stem, path in docs.items():
+        for c in extract(ingest(str(ROOT / path)), stem):
+            by_id[c.id] = c
+    silver = {r["id"]: set(r["labels"]) for r in map(json.loads, (DERIVED / "india_clause_eval.jsonl").read_text(encoding="utf-8").splitlines())}
+    g4 = {}
+    tp = ROOT / "research/teacher_labels/labels/types_agy_gemini-4-hydrogen-high.jsonl"
+    if tp.exists():
+        for r in map(json.loads, tp.read_text(encoding="utf-8").splitlines()):
+            g4[r["clause_id"]] = set(r["types"])
+    ids = [i for i in silver if i in by_id]
+    print(f"{len(ids)} Indian clauses matched ({sum(i in g4 for i in ids)} with Gemini-4 types)", flush=True)
+    import copy
+    variants = {"inlegalbert": ("inlegalbert", False), "ensemble": ("ensemble", False),
+                "inlegalbert+headings": ("inlegalbert", True), "ensemble+headings": ("ensemble", True),
+                "headings_only": ("keyword", True)}
+    out = {"n": len(ids), "n_gemini4": sum(i in g4 for i in ids)}
+    for name, (backend, heads) in variants.items():
+        cl = [copy.deepcopy(by_id[i]) for i in ids]
+        for c in cl:
+            c.labels = []
+        if backend == "keyword":
+            from legalagent.core.classification import apply_heading_prior
+            apply_heading_prior(cl)
+        else:
+            classify(cl, backend=backend, use_headings=heads)
+        pred = {i: {l["label"] for l in c.labels} - {"other"} for i, c in zip(ids, cl)}
+        res = {}
+        for key, gold in (("silver", silver), ("gemini4", g4)):
+            sel = [i for i in ids if i in gold]
+            if not sel:
+                continue
+            labs = sorted({l for i in sel for l in gold[i] | pred[i]} - {"other"})
+            Y = np.array([[l in gold[i] for l in labs] for i in sel], dtype=int)
+            P = np.array([[l in pred[i] for l in labs] for i in sel], dtype=int)
+            res[key] = {"n": len(sel), "micro_f1": float(f1_score(Y, P, average="micro", zero_division=0)),
+                        "macro_f1": float(f1_score(Y, P, average="macro", zero_division=0))}
+        out[name] = res
+        print(name, res, flush=True)
+    save("eval_india_variants", out)
+
+
+def eval_statutory(args):
+    """
+    Single-clause Indian-law risk: regex rules vs Kev (zero-shot typed question) on
+    - 18 Supreme Court clauses (13 struck down/penalty/void, 5 upheld = negatives)
+    - the planted Pune Metro single-clause irregularities (91.3, 91.5, 91.6, 91.7, 91.13, 91.9)
+    - 30 ordinary CUAD clauses (governing law, notices, insurance, audit…) as negatives
+    """
+    import csv
+    from legalagent.core.types import Clause
+    from legalagent.core.analysis import analyse_statutory
+    from legalagent.core.classification import classify
+    from legalagent.core import local_judge
+    from legalagent.core.statutory_kev import assess, flag
+    items = []
+    for c in map(json.loads, (ROOT / "research/litigated_clauses/cases.jsonl").read_text(encoding="utf-8").splitlines()):
+        if c["kind"] == "single_clause":
+            items.append({"source": "supreme_court", "id": c["case_id"], "text": c["clause_a"]["text"], "risky": c["expected_flag"]})
+    inj = {i["number"]: i["text"] for i in json.loads((ROOT / "data/demo/india/adversarial/INJECTIONS.json").read_text())["injections"]}
+    for n in ("91.3", "91.5", "91.6", "91.7", "91.13", "91.9"):
+        items.append({"source": "pune_injection", "id": n, "text": f"{n} {inj[n]}", "risky": True})
+    csv.field_size_limit(10**9)
+    benign_labels = {"Governing Law", "Notice Period To Terminate Renewal", "Insurance", "Audit Rights", "Renewal Term", "Expiration Date"}
+    rnd = random.Random(5)
+    rows = [r for r in csv.DictReader(open(ROOT / "clause20/data/interim/cuad.csv", encoding="utf-8"))
+            if set(r["src_labels"].split("|")) <= benign_labels and 15 < int(r["n_words"]) < 150]
+    for r in rnd.sample(rows, min(30, len(rows))):
+        items.append({"source": "cuad_ordinary", "id": r["uid"], "text": r["text"], "risky": False})
+    kev_up = local_judge.available()
+    out = {"items": [], "kev_url": local_judge.KEV_URL if kev_up else None}
+    for it in items:
+        cl = classify([Clause(id="s::1", contract_id="s", number="1", text=it["text"])])
+        regex = bool(analyse_statutory(cl, "India"))
+        row = {**{k: it[k] for k in ("source", "id", "risky")}, "regex": regex}
+        if kev_up:
+            r = assess(it["text"])
+            row["kev_probs"] = r["probabilities"]
+            for tau in (0.5, 0.7):
+                row[f"kev_tau{tau}"] = flag(r["probabilities"], tau)
+        out["items"].append(row)
+    summ = {}
+    for name in ["regex", "kev_tau0.5", "kev_tau0.7"]:
+        rs = [r for r in out["items"] if name in r]
+        if not rs:
+            continue
+        f = (lambda v: bool(v)) if name == "regex" else (lambda v: v != "none")
+        tp = sum(f(r[name]) and r["risky"] for r in rs); fp = sum(f(r[name]) and not r["risky"] for r in rs)
+        fn = sum(not f(r[name]) and r["risky"] for r in rs); tn = sum(not f(r[name]) and not r["risky"] for r in rs)
+        by_src = {}
+        for s in sorted({r["source"] for r in rs}):
+            rr = [r for r in rs if r["source"] == s]
+            by_src[s] = {"caught": sum(f(r[name]) and r["risky"] for r in rr), "risky": sum(r["risky"] for r in rr),
+                         "false_alarms": sum(f(r[name]) and not r["risky"] for r in rr), "safe": sum(not r["risky"] for r in rr)}
+        summ[name] = {"caught": tp, "missed": fn, "false_alarms": fp, "correctly_quiet": tn, "by_source": by_src}
+        print(name, summ[name], flush=True)
+    out["summary"] = summ
+    save("eval_statutory", out)
+
+
 def eval_judge(args):
     from sklearn.metrics import f1_score, precision_recall_fscore_support
 
@@ -563,7 +675,7 @@ def tables(args):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("what", choices=["classifier", "retrieval", "statutes", "judge", "checklist", "cuadpairs", "litigated", "e2e", "tables"])
+    ap.add_argument("what", choices=["classifier", "retrieval", "statutes", "statutory", "india", "judge", "checklist", "cuadpairs", "litigated", "e2e", "tables"])
     ap.add_argument("--limit", type=int, default=0)
     ap.add_argument("--contracts", type=int, default=120)
     ap.add_argument("--judges", default="rules,local")
@@ -571,6 +683,7 @@ def main():
     args = ap.parse_args()
     {"classifier": eval_classifier, "retrieval": eval_retrieval, "statutes": eval_statutes,
      "judge": eval_judge, "checklist": eval_checklist, "cuadpairs": eval_cuadpairs, "litigated": eval_litigated,
+     "statutory": eval_statutory, "india": eval_india_variants,
      "e2e": eval_e2e, "tables": tables}[args.what](args)
 
 

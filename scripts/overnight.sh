@@ -57,6 +57,8 @@ else
   bash scripts/start_demo.sh --no-gui
 fi
 
+log "retrieval eval with fine-tuned rows (GPU)"
+"$PY" scripts/eval_all.py retrieval | tail -n 3
 log "regenerate report tables"
 "$PY" scripts/validate_teacher.py > /dev/null 2>&1
 "$PY" scripts/eval_all.py tables

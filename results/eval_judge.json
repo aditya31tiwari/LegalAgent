@@ -26,5 +26,23 @@
     "risky_f1": 0.4631578947368421,
     "ms_per_pair": 624.0,
     "data_leaves_machine": false
+  },
+  "kev_finetuned": {
+    "accuracy": 0.6802325581395349,
+    "macro_f1": 0.27669790272199907,
+    "risky_precision": 0.627906976744186,
+    "risky_recall": 0.5192307692307693,
+    "risky_f1": 0.5684210526315789,
+    "ms_per_pair": 841.7,
+    "data_leaves_machine": false
+  },
+  "kev_finetuned_tau": {
+    "accuracy": 0.6744186046511628,
+    "macro_f1": 0.33923351158645276,
+    "risky_precision": 0.6153846153846154,
+    "risky_recall": 0.6153846153846154,
+    "risky_f1": 0.6153846153846154,
+    "ms_per_pair": 841.7,
+    "data_leaves_machine": false
   }
 }

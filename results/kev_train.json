@@ -1,1 +1,1 @@
-{"base": "jaredpalmer/kev-0.8b", "lr": 1e-4, "epochs": 2, "accum": 8, "exit": 0, "train_seconds": 2556, "train_records": 828}
+{"base": "jaredpalmer/kev-0.8b", "lr": "2e-4", "epochs": 2, "accum": 8, "data": "train_balanced.jsonl", "extra": "--focal_gamma 2", "exit": 0, "train_seconds": 3467, "train_records": 440}

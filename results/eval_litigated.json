@@ -144,6 +144,8 @@
       "statute": "Arbitration and Conciliation Act, 1996, Section 12(5) read with the Seventh Schedule (as amended in 2015)",
       "expected_flag": true,
       "rules": "no_issue",
+      "kev_finetuned": "dependency",
+      "kev_finetuned_tau": "dependency",
       "statutory_rule": "no_flag",
       "clause_types": [
         "arbitration"
@@ -157,6 +159,8 @@
       "statute": "Arbitration and Conciliation Act, 1996, Part I (Sections 2(2), 20, 45)",
       "expected_flag": true,
       "rules": "no_issue",
+      "kev_finetuned": "dependency",
+      "kev_finetuned_tau": "dependency",
       "statutory_rule": "no_flag",
       "clause_types": [
         "arbitration"
@@ -170,6 +174,8 @@
       "statute": "Arbitration and Conciliation Act, 1996, Sections 2(2), 20, 34; UNCITRAL Model Law Article 20",
       "expected_flag": true,
       "rules": "no_issue",
+      "kev_finetuned": "dependency",
+      "kev_finetuned_tau": "dependency",
       "statutory_rule": "no_flag",
       "clause_types": [
         "arbitration"
@@ -195,6 +201,8 @@
       "statute": "Arbitration and Conciliation Act, 1996, Sections 2(2), 11",
       "expected_flag": true,
       "rules": "no_issue",
+      "kev_finetuned": "dependency",
+      "kev_finetuned_tau": "dependency",
       "statutory_rule": "no_flag",
       "clause_types": [
         "arbitration"
@@ -208,6 +216,8 @@
       "statute": "Indian Contract Act, 1872, Section 28; Arbitration and Conciliation Act, 1996, Sections 2(1)(e), 11",
       "expected_flag": false,
       "rules": "no_issue",
+      "kev_finetuned": "dependency",
+      "kev_finetuned_tau": "dependency",
       "statutory_rule": "no_flag",
       "clause_types": [
         "dispute_resolution"
@@ -228,6 +238,20 @@
       "missed": 4,
       "false_alarms": 0,
       "correctly_quiet": 1
+    },
+    "kev_finetuned": {
+      "cases": 5,
+      "caught": 4,
+      "missed": 0,
+      "false_alarms": 1,
+      "correctly_quiet": 0
+    },
+    "kev_finetuned_tau": {
+      "cases": 5,
+      "caught": 4,
+      "missed": 0,
+      "false_alarms": 1,
+      "correctly_quiet": 0
     }
   }
 }

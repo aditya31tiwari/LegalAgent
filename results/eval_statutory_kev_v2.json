@@ -1,0 +1,967 @@
+{
+  "items": [
+    {
+      "source": "supreme_court",
+      "id": "percept_dmark_2006",
+      "risky": true,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.1975,
+        "penalty_or_forfeiture": 0.0519,
+        "restricts_legal_remedies": 0.2694,
+        "one_sided_arbitrator": 0.002,
+        "termination_at_will": 0.0632,
+        "unstamped_or_invalid_form": 0.0113,
+        "personal_data_without_consent": 0.0012,
+        "none": 0.4035
+      },
+      "kev_tau0.5": "restricts_legal_remedies",
+      "kev_tau0.7": "restricts_legal_remedies"
+    },
+    {
+      "source": "supreme_court",
+      "id": "superintendence_murgai_1980",
+      "risky": true,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.6917,
+        "penalty_or_forfeiture": 0.0412,
+        "restricts_legal_remedies": 0.069,
+        "one_sided_arbitrator": 0.001,
+        "termination_at_will": 0.0246,
+        "unstamped_or_invalid_form": 0.006,
+        "personal_data_without_consent": 0.0006,
+        "none": 0.1659
+      },
+      "kev_tau0.5": "restraint_of_trade",
+      "kev_tau0.7": "restraint_of_trade"
+    },
+    {
+      "source": "supreme_court",
+      "id": "golikari_century_spinning_1967",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.2561,
+        "penalty_or_forfeiture": 0.1406,
+        "restricts_legal_remedies": 0.2662,
+        "one_sided_arbitrator": 0.0013,
+        "termination_at_will": 0.1106,
+        "unstamped_or_invalid_form": 0.0055,
+        "personal_data_without_consent": 0.0006,
+        "none": 0.2191
+      },
+      "kev_tau0.5": "restricts_legal_remedies",
+      "kev_tau0.7": "restricts_legal_remedies"
+    },
+    {
+      "source": "supreme_court",
+      "id": "gujarat_bottling_coca_cola_1995",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.1899,
+        "penalty_or_forfeiture": 0.0478,
+        "restricts_legal_remedies": 0.1934,
+        "one_sided_arbitrator": 0.0023,
+        "termination_at_will": 0.0989,
+        "unstamped_or_invalid_form": 0.0098,
+        "personal_data_without_consent": 0.0011,
+        "none": 0.4568
+      },
+      "kev_tau0.5": "restricts_legal_remedies",
+      "kev_tau0.7": "restricts_legal_remedies"
+    },
+    {
+      "source": "supreme_court",
+      "id": "kailash_nath_dda_2015",
+      "risky": true,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0028,
+        "penalty_or_forfeiture": 0.7475,
+        "restricts_legal_remedies": 0.0146,
+        "one_sided_arbitrator": 0.001,
+        "termination_at_will": 0.0067,
+        "unstamped_or_invalid_form": 0.0037,
+        "personal_data_without_consent": 0.0005,
+        "none": 0.2234
+      },
+      "kev_tau0.5": "penalty_or_forfeiture",
+      "kev_tau0.7": "penalty_or_forfeiture"
+    },
+    {
+      "source": "supreme_court",
+      "id": "maula_bux_1969",
+      "risky": true,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0067,
+        "penalty_or_forfeiture": 0.4321,
+        "restricts_legal_remedies": 0.0969,
+        "one_sided_arbitrator": 0.0018,
+        "termination_at_will": 0.1622,
+        "unstamped_or_invalid_form": 0.0126,
+        "personal_data_without_consent": 0.0008,
+        "none": 0.287
+      },
+      "kev_tau0.5": "penalty_or_forfeiture",
+      "kev_tau0.7": "penalty_or_forfeiture"
+    },
+    {
+      "source": "supreme_court",
+      "id": "ongc_saw_pipes_2003",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0057,
+        "penalty_or_forfeiture": 0.3371,
+        "restricts_legal_remedies": 0.2033,
+        "one_sided_arbitrator": 0.0014,
+        "termination_at_will": 0.0588,
+        "unstamped_or_invalid_form": 0.0073,
+        "personal_data_without_consent": 0.0007,
+        "none": 0.3857
+      },
+      "kev_tau0.5": "penalty_or_forfeiture",
+      "kev_tau0.7": "penalty_or_forfeiture"
+    },
+    {
+      "source": "supreme_court",
+      "id": "central_inland_brojo_nath_1986",
+      "risky": true,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0084,
+        "penalty_or_forfeiture": 0.04,
+        "restricts_legal_remedies": 0.0886,
+        "one_sided_arbitrator": 0.0015,
+        "termination_at_will": 0.4507,
+        "unstamped_or_invalid_form": 0.0136,
+        "personal_data_without_consent": 0.0012,
+        "none": 0.3959
+      },
+      "kev_tau0.5": "termination_at_will",
+      "kev_tau0.7": "termination_at_will"
+    },
+    {
+      "source": "supreme_court",
+      "id": "indusind_bank_2016",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0017,
+        "penalty_or_forfeiture": 0.0623,
+        "restricts_legal_remedies": 0.7961,
+        "one_sided_arbitrator": 0.0005,
+        "termination_at_will": 0.0422,
+        "unstamped_or_invalid_form": 0.0025,
+        "personal_data_without_consent": 0.0003,
+        "none": 0.0944
+      },
+      "kev_tau0.5": "restricts_legal_remedies",
+      "kev_tau0.7": "restricts_legal_remedies"
+    },
+    {
+      "source": "supreme_court",
+      "id": "jagdish_chander_2007",
+      "risky": true,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0165,
+        "penalty_or_forfeiture": 0.0369,
+        "restricts_legal_remedies": 0.0837,
+        "one_sided_arbitrator": 0.0727,
+        "termination_at_will": 0.0242,
+        "unstamped_or_invalid_form": 0.0145,
+        "personal_data_without_consent": 0.0017,
+        "none": 0.7498
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "supreme_court",
+      "id": "nn_global_mercantile_2021_2023",
+      "risky": true,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0195,
+        "penalty_or_forfeiture": 0.0171,
+        "restricts_legal_remedies": 0.0595,
+        "one_sided_arbitrator": 0.0462,
+        "termination_at_will": 0.0107,
+        "unstamped_or_invalid_form": 0.0115,
+        "personal_data_without_consent": 0.0016,
+        "none": 0.8341
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "supreme_court",
+      "id": "perkins_eastman_hscc_2019",
+      "risky": true,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0075,
+        "penalty_or_forfeiture": 0.0065,
+        "restricts_legal_remedies": 0.2859,
+        "one_sided_arbitrator": 0.4055,
+        "termination_at_will": 0.0117,
+        "unstamped_or_invalid_form": 0.0059,
+        "personal_data_without_consent": 0.0008,
+        "none": 0.2762
+      },
+      "kev_tau0.5": "one_sided_arbitrator",
+      "kev_tau0.7": "one_sided_arbitrator"
+    },
+    {
+      "source": "supreme_court",
+      "id": "bgs_sgs_soma_nhpc_2019",
+      "risky": true,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0289,
+        "penalty_or_forfeiture": 0.0319,
+        "restricts_legal_remedies": 0.0653,
+        "one_sided_arbitrator": 0.0438,
+        "termination_at_will": 0.021,
+        "unstamped_or_invalid_form": 0.0184,
+        "personal_data_without_consent": 0.0031,
+        "none": 0.7876
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "pune_injection",
+      "id": "91.3",
+      "risky": true,
+      "regex": true,
+      "kev_probs": {
+        "restraint_of_trade": 0.7414,
+        "penalty_or_forfeiture": 0.0253,
+        "restricts_legal_remedies": 0.0569,
+        "one_sided_arbitrator": 0.0008,
+        "termination_at_will": 0.0265,
+        "unstamped_or_invalid_form": 0.0049,
+        "personal_data_without_consent": 0.0005,
+        "none": 0.1437
+      },
+      "kev_tau0.5": "restraint_of_trade",
+      "kev_tau0.7": "restraint_of_trade"
+    },
+    {
+      "source": "pune_injection",
+      "id": "91.5",
+      "risky": true,
+      "regex": true,
+      "kev_probs": {
+        "restraint_of_trade": 0.0078,
+        "penalty_or_forfeiture": 0.4892,
+        "restricts_legal_remedies": 0.0215,
+        "one_sided_arbitrator": 0.0024,
+        "termination_at_will": 0.012,
+        "unstamped_or_invalid_form": 0.0064,
+        "personal_data_without_consent": 0.001,
+        "none": 0.4597
+      },
+      "kev_tau0.5": "penalty_or_forfeiture",
+      "kev_tau0.7": "penalty_or_forfeiture"
+    },
+    {
+      "source": "pune_injection",
+      "id": "91.6",
+      "risky": true,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0093,
+        "penalty_or_forfeiture": 0.544,
+        "restricts_legal_remedies": 0.0559,
+        "one_sided_arbitrator": 0.003,
+        "termination_at_will": 0.0184,
+        "unstamped_or_invalid_form": 0.0077,
+        "personal_data_without_consent": 0.0059,
+        "none": 0.3557
+      },
+      "kev_tau0.5": "penalty_or_forfeiture",
+      "kev_tau0.7": "penalty_or_forfeiture"
+    },
+    {
+      "source": "pune_injection",
+      "id": "91.7",
+      "risky": true,
+      "regex": true,
+      "kev_probs": {
+        "restraint_of_trade": 0.0042,
+        "penalty_or_forfeiture": 0.0073,
+        "restricts_legal_remedies": 0.0052,
+        "one_sided_arbitrator": 0.0007,
+        "termination_at_will": 0.0054,
+        "unstamped_or_invalid_form": 0.0044,
+        "personal_data_without_consent": 0.7803,
+        "none": 0.1925
+      },
+      "kev_tau0.5": "personal_data_without_consent",
+      "kev_tau0.7": "personal_data_without_consent"
+    },
+    {
+      "source": "pune_injection",
+      "id": "91.13",
+      "risky": true,
+      "regex": true,
+      "kev_probs": {
+        "restraint_of_trade": 0.0038,
+        "penalty_or_forfeiture": 0.0093,
+        "restricts_legal_remedies": 0.0064,
+        "one_sided_arbitrator": 0.0013,
+        "termination_at_will": 0.0036,
+        "unstamped_or_invalid_form": 0.7463,
+        "personal_data_without_consent": 0.0007,
+        "none": 0.2288
+      },
+      "kev_tau0.5": "unstamped_or_invalid_form",
+      "kev_tau0.7": "unstamped_or_invalid_form"
+    },
+    {
+      "source": "pune_injection",
+      "id": "91.9",
+      "risky": true,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.032,
+        "penalty_or_forfeiture": 0.0856,
+        "restricts_legal_remedies": 0.0612,
+        "one_sided_arbitrator": 0.0051,
+        "termination_at_will": 0.066,
+        "unstamped_or_invalid_form": 0.0125,
+        "personal_data_without_consent": 0.0024,
+        "none": 0.7352
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0334::2.01",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0212,
+        "penalty_or_forfeiture": 0.0352,
+        "restricts_legal_remedies": 0.2423,
+        "one_sided_arbitrator": 0.0032,
+        "termination_at_will": 0.1992,
+        "unstamped_or_invalid_form": 0.0156,
+        "personal_data_without_consent": 0.0018,
+        "none": 0.4814
+      },
+      "kev_tau0.5": "restricts_legal_remedies",
+      "kev_tau0.7": "restricts_legal_remedies"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0118::14.4",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0126,
+        "penalty_or_forfeiture": 0.0253,
+        "restricts_legal_remedies": 0.0257,
+        "one_sided_arbitrator": 0.0048,
+        "termination_at_will": 0.0138,
+        "unstamped_or_invalid_form": 0.0178,
+        "personal_data_without_consent": 0.0038,
+        "none": 0.8962
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0400::10.4",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0156,
+        "penalty_or_forfeiture": 0.0344,
+        "restricts_legal_remedies": 0.0692,
+        "one_sided_arbitrator": 0.0105,
+        "termination_at_will": 0.0279,
+        "unstamped_or_invalid_form": 0.01,
+        "personal_data_without_consent": 0.0022,
+        "none": 0.8301
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0162::24.1",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0225,
+        "penalty_or_forfeiture": 0.0549,
+        "restricts_legal_remedies": 0.0819,
+        "one_sided_arbitrator": 0.0137,
+        "termination_at_will": 0.0403,
+        "unstamped_or_invalid_form": 0.014,
+        "personal_data_without_consent": 0.0026,
+        "none": 0.7701
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0441::11.5",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0281,
+        "penalty_or_forfeiture": 0.0405,
+        "restricts_legal_remedies": 0.0604,
+        "one_sided_arbitrator": 0.0035,
+        "termination_at_will": 0.0324,
+        "unstamped_or_invalid_form": 0.0158,
+        "personal_data_without_consent": 0.0038,
+        "none": 0.8154
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0358::15.9",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0171,
+        "penalty_or_forfeiture": 0.0363,
+        "restricts_legal_remedies": 0.0332,
+        "one_sided_arbitrator": 0.0071,
+        "termination_at_will": 0.0345,
+        "unstamped_or_invalid_form": 0.0136,
+        "personal_data_without_consent": 0.0028,
+        "none": 0.8554
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0464::5.3",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.011,
+        "penalty_or_forfeiture": 0.0194,
+        "restricts_legal_remedies": 0.0147,
+        "one_sided_arbitrator": 0.0028,
+        "termination_at_will": 0.0123,
+        "unstamped_or_invalid_form": 0.0184,
+        "personal_data_without_consent": 0.002,
+        "none": 0.9193
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0400::6.1",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0127,
+        "penalty_or_forfeiture": 0.0214,
+        "restricts_legal_remedies": 0.2377,
+        "one_sided_arbitrator": 0.0022,
+        "termination_at_will": 0.3517,
+        "unstamped_or_invalid_form": 0.0139,
+        "personal_data_without_consent": 0.0013,
+        "none": 0.3591
+      },
+      "kev_tau0.5": "termination_at_will",
+      "kev_tau0.7": "termination_at_will"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0346::3.6::2",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0384,
+        "penalty_or_forfeiture": 0.0544,
+        "restricts_legal_remedies": 0.0177,
+        "one_sided_arbitrator": 0.0046,
+        "termination_at_will": 0.0224,
+        "unstamped_or_invalid_form": 0.0145,
+        "personal_data_without_consent": 0.0035,
+        "none": 0.8446
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0286::5.17",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0209,
+        "penalty_or_forfeiture": 0.0279,
+        "restricts_legal_remedies": 0.0947,
+        "one_sided_arbitrator": 0.0042,
+        "termination_at_will": 0.0367,
+        "unstamped_or_invalid_form": 0.0272,
+        "personal_data_without_consent": 0.0062,
+        "none": 0.7822
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0012::18.07",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0208,
+        "penalty_or_forfeiture": 0.0355,
+        "restricts_legal_remedies": 0.0288,
+        "one_sided_arbitrator": 0.0077,
+        "termination_at_will": 0.0345,
+        "unstamped_or_invalid_form": 0.0257,
+        "personal_data_without_consent": 0.0029,
+        "none": 0.844
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0242::7",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0139,
+        "penalty_or_forfeiture": 0.0172,
+        "restricts_legal_remedies": 0.0856,
+        "one_sided_arbitrator": 0.0019,
+        "termination_at_will": 0.4024,
+        "unstamped_or_invalid_form": 0.0199,
+        "personal_data_without_consent": 0.0014,
+        "none": 0.4577
+      },
+      "kev_tau0.5": "termination_at_will",
+      "kev_tau0.7": "termination_at_will"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0417::25.0",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0151,
+        "penalty_or_forfeiture": 0.0441,
+        "restricts_legal_remedies": 0.018,
+        "one_sided_arbitrator": 0.0041,
+        "termination_at_will": 0.0177,
+        "unstamped_or_invalid_form": 0.0169,
+        "personal_data_without_consent": 0.0023,
+        "none": 0.8819
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0118::9.2",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0165,
+        "penalty_or_forfeiture": 0.0264,
+        "restricts_legal_remedies": 0.1462,
+        "one_sided_arbitrator": 0.0027,
+        "termination_at_will": 0.1491,
+        "unstamped_or_invalid_form": 0.0188,
+        "personal_data_without_consent": 0.0022,
+        "none": 0.6382
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "termination_at_will"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0346::2.1::2",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0346,
+        "penalty_or_forfeiture": 0.0318,
+        "restricts_legal_remedies": 0.2072,
+        "one_sided_arbitrator": 0.0032,
+        "termination_at_will": 0.1633,
+        "unstamped_or_invalid_form": 0.0129,
+        "personal_data_without_consent": 0.0017,
+        "none": 0.5454
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "restricts_legal_remedies"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0020::9.4",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.016,
+        "penalty_or_forfeiture": 0.0378,
+        "restricts_legal_remedies": 0.0366,
+        "one_sided_arbitrator": 0.0061,
+        "termination_at_will": 0.028,
+        "unstamped_or_invalid_form": 0.0099,
+        "personal_data_without_consent": 0.0021,
+        "none": 0.8634
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0498::5.1",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0157,
+        "penalty_or_forfeiture": 0.0312,
+        "restricts_legal_remedies": 0.1238,
+        "one_sided_arbitrator": 0.0031,
+        "termination_at_will": 0.3058,
+        "unstamped_or_invalid_form": 0.0139,
+        "personal_data_without_consent": 0.0018,
+        "none": 0.5047
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "termination_at_will"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0077::9.6",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0153,
+        "penalty_or_forfeiture": 0.0168,
+        "restricts_legal_remedies": 0.1381,
+        "one_sided_arbitrator": 0.0121,
+        "termination_at_will": 0.0188,
+        "unstamped_or_invalid_form": 0.0302,
+        "personal_data_without_consent": 0.0023,
+        "none": 0.7664
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0050::7.4",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0135,
+        "penalty_or_forfeiture": 0.0461,
+        "restricts_legal_remedies": 0.0163,
+        "one_sided_arbitrator": 0.0039,
+        "termination_at_will": 0.0167,
+        "unstamped_or_invalid_form": 0.0266,
+        "personal_data_without_consent": 0.0024,
+        "none": 0.8746
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0183::1",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0225,
+        "penalty_or_forfeiture": 0.0241,
+        "restricts_legal_remedies": 0.3396,
+        "one_sided_arbitrator": 0.0027,
+        "termination_at_will": 0.2401,
+        "unstamped_or_invalid_form": 0.0136,
+        "personal_data_without_consent": 0.0016,
+        "none": 0.3557
+      },
+      "kev_tau0.5": "restricts_legal_remedies",
+      "kev_tau0.7": "restricts_legal_remedies"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0247::7",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0148,
+        "penalty_or_forfeiture": 0.0185,
+        "restricts_legal_remedies": 0.1245,
+        "one_sided_arbitrator": 0.0025,
+        "termination_at_will": 0.3416,
+        "unstamped_or_invalid_form": 0.0103,
+        "personal_data_without_consent": 0.0016,
+        "none": 0.4862
+      },
+      "kev_tau0.5": "termination_at_will",
+      "kev_tau0.7": "termination_at_will"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0470::2",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0252,
+        "penalty_or_forfeiture": 0.0225,
+        "restricts_legal_remedies": 0.1398,
+        "one_sided_arbitrator": 0.0034,
+        "termination_at_will": 0.1002,
+        "unstamped_or_invalid_form": 0.0168,
+        "personal_data_without_consent": 0.002,
+        "none": 0.6901
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "restricts_legal_remedies"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0118::9.1",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0116,
+        "penalty_or_forfeiture": 0.0283,
+        "restricts_legal_remedies": 0.0127,
+        "one_sided_arbitrator": 0.0042,
+        "termination_at_will": 0.0133,
+        "unstamped_or_invalid_form": 0.0182,
+        "personal_data_without_consent": 0.0025,
+        "none": 0.9092
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0191::17.2",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.02,
+        "penalty_or_forfeiture": 0.0239,
+        "restricts_legal_remedies": 0.1064,
+        "one_sided_arbitrator": 0.0037,
+        "termination_at_will": 0.0622,
+        "unstamped_or_invalid_form": 0.0173,
+        "personal_data_without_consent": 0.0026,
+        "none": 0.7638
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0290::6.5::2",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0162,
+        "penalty_or_forfeiture": 0.0447,
+        "restricts_legal_remedies": 0.0328,
+        "one_sided_arbitrator": 0.005,
+        "termination_at_will": 0.0245,
+        "unstamped_or_invalid_form": 0.0209,
+        "personal_data_without_consent": 0.004,
+        "none": 0.852
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0048::19",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.024,
+        "penalty_or_forfeiture": 0.0445,
+        "restricts_legal_remedies": 0.0558,
+        "one_sided_arbitrator": 0.0088,
+        "termination_at_will": 0.0366,
+        "unstamped_or_invalid_form": 0.0182,
+        "personal_data_without_consent": 0.0028,
+        "none": 0.8092
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0307::16.1",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0231,
+        "penalty_or_forfeiture": 0.0283,
+        "restricts_legal_remedies": 0.15,
+        "one_sided_arbitrator": 0.0037,
+        "termination_at_will": 0.1852,
+        "unstamped_or_invalid_form": 0.0192,
+        "personal_data_without_consent": 0.0022,
+        "none": 0.5882
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "termination_at_will"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0006::5.1",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0235,
+        "penalty_or_forfeiture": 0.0314,
+        "restricts_legal_remedies": 0.1316,
+        "one_sided_arbitrator": 0.0043,
+        "termination_at_will": 0.1675,
+        "unstamped_or_invalid_form": 0.0182,
+        "personal_data_without_consent": 0.0025,
+        "none": 0.621
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "termination_at_will"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0388::9.5",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0245,
+        "penalty_or_forfeiture": 0.0503,
+        "restricts_legal_remedies": 0.0368,
+        "one_sided_arbitrator": 0.0076,
+        "termination_at_will": 0.0324,
+        "unstamped_or_invalid_form": 0.0121,
+        "personal_data_without_consent": 0.0024,
+        "none": 0.8338
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0096::26.2.4",
+      "risky": false,
+      "regex": false,
+      "kev_probs": {
+        "restraint_of_trade": 0.0147,
+        "penalty_or_forfeiture": 0.0302,
+        "restricts_legal_remedies": 0.0249,
+        "one_sided_arbitrator": 0.0043,
+        "termination_at_will": 0.0147,
+        "unstamped_or_invalid_form": 0.0196,
+        "personal_data_without_consent": 0.0024,
+        "none": 0.8892
+      },
+      "kev_tau0.5": "none",
+      "kev_tau0.7": "none"
+    }
+  ],
+  "kev_url": "http://127.0.0.1:8008/v1/systemone",
+  "summary": {
+    "regex": {
+      "caught": 4,
+      "missed": 11,
+      "false_alarms": 0,
+      "correctly_quiet": 34,
+      "by_source": {
+        "cuad_ordinary": {
+          "caught": 0,
+          "risky": 0,
+          "false_alarms": 0,
+          "safe": 30
+        },
+        "pune_injection": {
+          "caught": 4,
+          "risky": 6,
+          "false_alarms": 0,
+          "safe": 0
+        },
+        "supreme_court": {
+          "caught": 0,
+          "risky": 9,
+          "false_alarms": 0,
+          "safe": 4
+        }
+      }
+    },
+    "kev_tau0.5": {
+      "caught": 11,
+      "missed": 4,
+      "false_alarms": 9,
+      "correctly_quiet": 25,
+      "by_source": {
+        "cuad_ordinary": {
+          "caught": 0,
+          "risky": 0,
+          "false_alarms": 5,
+          "safe": 30
+        },
+        "pune_injection": {
+          "caught": 5,
+          "risky": 6,
+          "false_alarms": 0,
+          "safe": 0
+        },
+        "supreme_court": {
+          "caught": 6,
+          "risky": 9,
+          "false_alarms": 4,
+          "safe": 4
+        }
+      }
+    },
+    "kev_tau0.7": {
+      "caught": 11,
+      "missed": 4,
+      "false_alarms": 15,
+      "correctly_quiet": 19,
+      "by_source": {
+        "cuad_ordinary": {
+          "caught": 0,
+          "risky": 0,
+          "false_alarms": 11,
+          "safe": 30
+        },
+        "pune_injection": {
+          "caught": 5,
+          "risky": 6,
+          "false_alarms": 0,
+          "safe": 0
+        },
+        "supreme_court": {
+          "caught": 6,
+          "risky": 9,
+          "false_alarms": 4,
+          "safe": 4
+        }
+      }
+    }
+  }
+}

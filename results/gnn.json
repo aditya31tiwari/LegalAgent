@@ -1,0 +1,31 @@
+{
+  "gnn": {
+    "roc_auc": 0.7423076923076923,
+    "avg_precision": 0.49384861039321404,
+    "p_at_5": 0.356521747034529,
+    "pairs": 172,
+    "positives": 52
+  },
+  "no_graph": {
+    "roc_auc": 0.7475160256410256,
+    "avg_precision": 0.538701589709408,
+    "p_at_5": 0.3304347907719405,
+    "pairs": 172,
+    "positives": 52
+  },
+  "type_matrix": {
+    "roc_auc": 0.5169070512820513,
+    "avg_precision": 0.36886819174386554,
+    "p_at_5": 0.31304348422133405,
+    "pairs": 172,
+    "positives": 52
+  },
+  "cosine": {
+    "roc_auc": 0.7375,
+    "avg_precision": 0.5147275317075134,
+    "p_at_5": 0.3652173980422642,
+    "pairs": 172,
+    "positives": 52
+  },
+  "train_seconds": 1152
+}

@@ -1,0 +1,9 @@
+{
+  "threshold": 0.2711,
+  "weighted_f1_train": 0.433,
+  "auc_train": 0.576,
+  "n": 300,
+  "url": "http://127.0.0.1:8009/v1/systemone",
+  "rule": "flag pair iff P(no_issue) < threshold",
+  "tuned_on": "training contracts only"
+}

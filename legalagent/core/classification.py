@@ -21,7 +21,7 @@ MODELS_DIR = Path(__file__).resolve().parents[2] / "models"
 LABELLER_PATH = MODELS_DIR / "clause20_labeller.joblib"
 INLEGALBERT_DIR = MODELS_DIR / "clause20_inlegalbert"
 
-BACKENDS = ("auto", "keyword", "minilm_lr", "inlegalbert")
+BACKENDS = ("auto", "keyword", "minilm_lr", "inlegalbert", "ensemble")
 
 # A label is kept when its probability clears this. Tuned on the validation
 # split for minilm_lr (micro-F1: 0.3 -> 0.758, 0.5 -> 0.746). The lower end is
@@ -148,7 +148,7 @@ def predict_proba(texts: list[str], backend: str) -> tuple[list[str], "list"]:
     raise ValueError(f"predict_proba not supported for backend {backend!r}")
 
 
-def classify(clauses: list[Clause], use_model: bool = True, backend: str = "auto") -> list[Clause]:
+def classify(clauses: list[Clause], use_model: bool = True, backend: str = "auto", use_headings: bool = True) -> list[Clause]:
     """
     Label each clause with CLAUSE-20 types using the requested backend
     (falling back to keywords if the model is missing).
@@ -158,18 +158,73 @@ def classify(clauses: list[Clause], use_model: bool = True, backend: str = "auto
     backend = available_backend(backend) if use_model else "keyword"
     texts = [_strip_number(c.text) for c in clauses]
 
-    if backend == "inlegalbert" and _load_inlegalbert():
+    if backend == "ensemble" and _load_inlegalbert() and _load_minilm_lr():
+        labels, probs = ensemble_proba(texts)
+        _apply_probs(clauses, labels, probs, ENSEMBLE_THRESHOLD, "ensemble")
+    elif backend in ("inlegalbert", "ensemble") and _load_inlegalbert():
         labels, probs = predict_proba(texts, "inlegalbert")
         _apply_probs(clauses, labels, probs, _load_inlegalbert()[3], "inlegalbert")
-    elif backend in ("minilm_lr", "inlegalbert") and _load_minilm_lr():
+    elif backend in ("minilm_lr", "inlegalbert", "ensemble") and _load_minilm_lr():
         labels, probs = predict_proba(texts, "minilm_lr")
         _apply_probs(clauses, labels, probs, THRESHOLD, "clause20")
     else:
         _classify_keywords(clauses)
     if backend != "keyword":
         apply_backstop(clauses)
+    if use_headings:
+        apply_heading_prior(clauses)
     apply_known_gap_rules(clauses)
     return clauses
+
+
+ENSEMBLE_THRESHOLD = 0.35
+
+
+def ensemble_proba(texts: list[str]):
+    """Mean of InLegalBERT and MiniLM+LR probabilities, aligned by label name."""
+    import numpy as np
+    la, pa = predict_proba(texts, "inlegalbert")
+    lb, pb = predict_proba(texts, "minilm_lr")
+    labels = [l for l in la if l in set(lb)]
+    ia, ib = [la.index(l) for l in labels], [lb.index(l) for l in labels]
+    return labels, (np.asarray(pa)[:, ia] + np.asarray(pb)[:, ib]) / 2
+
+
+# Section / ARTICLE titles → CLAUSE-22 labels. Indian concession agreements title every part
+# ("ARTICLE 37 TERMINATION", "Force Majeure"); the classifier only sees the clause body, so the
+# document's own structure is an independent, high-precision signal.
+HEADING_PRIOR = [
+    (r"\bforce majeure\b", "force_majeure"), (r"\btermination\b|\btermination payment", "termination"),
+    (r"\barbitrat", "arbitration"), (r"dispute|conciliation|mediation", "dispute_resolution"),
+    (r"\bindemn", "indemnification"), (r"limitation of liability|\bliabilit", "limitation_of_liability"),
+    (r"\binsurance", "insurance"), (r"\btax", "tax"), (r"confidential", "confidentiality"),
+    (r"assignment|change in ownership|change of control|transfer of", "assignment_change_of_control"),
+    (r"substitution|step.?in|lenders?.? representative", "step_in_rights"),
+    (r"governing law|jurisdiction", "governing_law"), (r"\bnotices?\b", "notices"),
+    (r"amendment|entire agreement|waiver|miscellaneous", "amendment_and_integration"),
+    (r"warrant|representation", "warranty"), (r"liquidated damages|\bdamages\b", "liquidated_damages"),
+    (r"performance security|bank guarantee", "performance_security"), (r"change in law", "change_in_law"),
+    (r"intellectual property", "ip_ownership"), (r"\baudit|accounts|records", "audit_and_records"),
+    (r"\bpayment|\bfee\b|fees|tariff|escrow|revenue|price", "payment_and_fees"),
+    (r"applicable laws?|compliance|clearances", "compliance_and_law"),
+    (r"concession period|\bterm\b|renewal|extension of", "term_and_renewal"), (r"surviv", "survival"),
+    (r"remed", "remedies"), (r"exclusiv|competing facilit|non.?compet", "exclusivity_and_restraint"),
+]
+_HEADING_RX = [(re.compile(p, re.I), lab) for p, lab in HEADING_PRIOR]
+
+
+def heading_labels(part: str | None, heading: str | None) -> set[str]:
+    text = " ".join(x for x in (part, heading) if x)
+    return {lab for rx, lab in _HEADING_RX if rx.search(text)} if text else set()
+
+
+def apply_heading_prior(clauses: list[Clause]) -> None:
+    """Add labels implied by the clause's own heading / enclosing ARTICLE title (source=heading)."""
+    for c in clauses:
+        have = {l["label"] for l in c.labels}
+        for lab in heading_labels(getattr(c, "part", None), c.heading):
+            if lab not in have:
+                c.labels.append({"label": lab, "confidence": 0.6, "source": "heading"})
 
 
 # Safety-critical types whose miss hides the flagship clashes (cap x indemnity, restraint x
