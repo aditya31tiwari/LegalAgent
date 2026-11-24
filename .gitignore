@@ -69,3 +69,8 @@ graphify-out/
 data/demo/.cache/
 data/raw/CUAD_v1.json
 .agents/workflows/graphify.md
+
+# raw downloads + derived data (rebuild with scripts/fetch_datasets.py, clause20/build.py)
+dataset/
+clause20/data/
+models/*/checkpoint-*

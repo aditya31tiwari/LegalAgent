@@ -1,0 +1,185 @@
+# Translation table: source label -> CLAUSE-20 label(s).
+#
+# One source label may map to several CLAUSE-20 labels (a clause carrying
+# "Representations" is warranty, and sometimes compliance_and_law too), which is
+# why every value is a list.
+#
+# unmapped_policy: fail
+#   Any source label not listed here stops the build. This is deliberate -- if a
+#   source dataset revision adds or renames a label, the build must break rather
+#   than silently bin new data into `other`. Run:
+#       python clause20/build.py labels
+#   to print the exact label strings shipped by the downloaded datasets, then
+#   add the missing ones here.
+
+version: 1
+unmapped_policy: fail
+
+# --- CUAD: 41 lawyer-annotated categories ------------------------------------
+# Complete. CUAD's category list is fixed by the published annotation guide.
+cuad:
+  "Document Name":                      [other]
+  "Parties":                            [other]
+  "Agreement Date":                     [term_and_renewal]
+  "Effective Date":                     [term_and_renewal]
+  "Expiration Date":                    [term_and_renewal]
+  "Renewal Term":                       [term_and_renewal]
+  "Notice Period To Terminate Renewal": [termination, notices]
+  "Governing Law":                      [governing_law]
+  "Most Favored Nation":                [exclusivity_and_restraint, payment_and_fees]
+  "Non-Compete":                        [exclusivity_and_restraint]
+  "Exclusivity":                        [exclusivity_and_restraint]
+  "No-Solicit Of Customers":            [exclusivity_and_restraint]
+  "Competitive Restriction Exception":  [exclusivity_and_restraint]
+  "No-Solicit Of Employees":            [exclusivity_and_restraint]
+  "Non-Disparagement":                  [exclusivity_and_restraint]
+  "Termination For Convenience":        [termination]
+  "Rofr/Rofo/Rofn":                     [exclusivity_and_restraint]
+  "Change Of Control":                  [assignment_change_of_control]
+  "Anti-Assignment":                    [assignment_change_of_control]
+  "Revenue/Profit Sharing":             [payment_and_fees]
+  "Price Restrictions":                 [payment_and_fees]
+  "Minimum Commitment":                 [payment_and_fees]
+  "Volume Restriction":                 [payment_and_fees]
+  "Ip Ownership Assignment":            [ip_ownership]
+  "Joint Ip Ownership":                 [ip_ownership]
+  "License Grant":                      [license_grant]
+  "Non-Transferable License":           [license_grant, assignment_change_of_control]
+  "Affiliate License-Licensor":         [license_grant]
+  "Affiliate License-Licensee":         [license_grant]
+  "Unlimited/All-You-Can-Eat-License":  [license_grant]
+  "Irrevocable Or Perpetual License":   [license_grant, termination]
+  "Source Code Escrow":                 [ip_ownership]
+  "Post-Termination Services":          [survival, termination]
+  "Audit Rights":                       [audit_and_records]
+  "Uncapped Liability":                 [limitation_of_liability]
+  "Cap On Liability":                   [limitation_of_liability]
+  "Liquidated Damages":                 [limitation_of_liability]
+  "Warranty Duration":                  [warranty]
+  "Insurance":                          [insurance]
+  "Covenant Not To Sue":                [dispute_resolution]
+  "Third Party Beneficiary":            [compliance_and_law]
+
+# --- LEDGAR (LexGLUE): 100 provision labels ----------------------------------
+# PARTIAL -- see the note at the bottom of this file. Do not trust this section
+# as complete; `build.py labels` prints the authoritative list from the data.
+ledgar:
+  "Indemnifications":        [indemnification]
+  "Indemnity":               [indemnification]
+  "Warranties":              [warranty]
+  "Representations":         [warranty]
+  "Terminations":            [termination]
+  "Terms":                   [term_and_renewal]
+  "Effective Dates":         [term_and_renewal]
+  "Effectiveness":           [term_and_renewal]
+  "Survival":                [survival]
+  "Confidentiality":         [confidentiality]
+  "Disclosures":             [confidentiality]
+  "Publicity":               [confidentiality]
+  "Intellectual Property":   [ip_ownership]
+  "Assignments":             [assignment_change_of_control]
+  "Assigns":                 [assignment_change_of_control]
+  "Successors":              [assignment_change_of_control]
+  "Change In Control":       [assignment_change_of_control]
+  "Participations":          [assignment_change_of_control]
+  "Non-Disparagement":       [exclusivity_and_restraint]
+  "Payments":                [payment_and_fees]
+  "Fees":                    [payment_and_fees]
+  "Expenses":                [payment_and_fees]
+  "Costs":                   [payment_and_fees]
+  "Adjustments":             [payment_and_fees]
+  "Taxes":                   [tax]
+  "Tax Withholdings":        [tax]
+  "Withholdings":            [tax]
+  "Governing Laws":          [governing_law]
+  "Jurisdictions":           [dispute_resolution]
+  "Consent To Jurisdiction": [dispute_resolution]
+  "Submission To Jurisdiction": [dispute_resolution]
+  "Venues":                  [dispute_resolution]
+  "Waiver Of Jury Trials":   [dispute_resolution]
+  "Remedies":                [dispute_resolution]
+  "Specific Performance":    [dispute_resolution]
+  "Enforcements":            [dispute_resolution]
+  "Litigations":             [dispute_resolution]
+  "Releases":                [dispute_resolution]
+  "Books":                   [audit_and_records]
+  "Records":                 [audit_and_records]
+  "Financial Statements":    [audit_and_records]
+  "Insurances":              [insurance]
+  "Notices":                 [notices]
+  "Amendments":              [amendment_and_integration]
+  "Modifications":           [amendment_and_integration]
+  "Entire Agreements":       [amendment_and_integration]
+  "Integration":             [amendment_and_integration]
+  "Waivers":                 [amendment_and_integration]
+  "No Waivers":              [amendment_and_integration]
+  "Compliance With Laws":    [compliance_and_law]
+  "Sanctions":               [compliance_and_law]
+  "Erisa":                   [compliance_and_law]
+  "Liens":                   [compliance_and_law]
+  "Solvency":                [compliance_and_law]
+  "No Conflicts":            [compliance_and_law]
+  "No Defaults":             [compliance_and_law]
+  "Authority":               [compliance_and_law]
+  "Enforceability":          [compliance_and_law]
+  "Binding Effects":         [compliance_and_law]
+  # deliberate `other`: real labels with no conflict role (criterion 1)
+  "Headings":                [other]
+  "Counterparts":            [other]
+  "Construction":            [other]
+  "Interpretations":         [other]
+  "Definitions":             [other]
+  "Defined Terms":           [other]
+  "Severability":            [other]
+  "Miscellaneous":           [other]
+  "General":                 [other]
+  "Further Assurances":      [other]
+  "Cooperation":             [other]
+  "Titles":                  [other]
+  "Organizations":           [other]
+  "Existence":               [other]
+  "Capitalization":          [other]
+  "Subsidiaries":            [other]
+  "Brokers":                 [other]
+  # --- the remaining 24, added once the real label list was in hand ----------
+  # Judgement calls, flagged for review. The ones worth arguing about:
+  #   Arbitration          -> dispute_resolution  (clear, and it matters)
+  #   Applicable Laws      -> compliance_and_law, NOT governing_law: in LEDGAR
+  #                           these are "comply with applicable law" covenants,
+  #                           not choice-of-law clauses. Check this against the
+  #                           CSV before trusting it.
+  #   Base Salary/Benefits -> payment_and_fees: employment-agreement pay. Money
+  #                           either way, but a different kind of money.
+  # The rest are employment or deal boilerplate with no conflict role, so they
+  # fail criterion 1 in labels.yaml and go to `other`.
+  "Arbitration":                 [dispute_resolution]
+  "Anti-Corruption Laws":        [compliance_and_law]
+  "Applicable Laws":             [compliance_and_law]
+  "Authorizations":              [compliance_and_law]
+  "Approvals":                   [compliance_and_law]
+  "Transactions With Affiliates": [compliance_and_law]
+  "Base Salary":                 [payment_and_fees]
+  "Benefits":                    [payment_and_fees]
+  "Agreements":                  [other]
+  "Closings":                    [other]
+  "Consents":                    [other]
+  "Death":                       [other]
+  "Disability":                  [other]
+  "Duties":                      [other]
+  "Employment":                  [other]
+  "Forfeitures":                 [other]
+  "Interests":                   [other]
+  "Positions":                   [other]
+  "Powers":                      [other]
+  "Qualifications":              [other]
+  "Sales":                       [other]
+  "Use Of Proceeds":             [other]
+  "Vacations":                   [other]
+  "Vesting":                     [other]
+
+# NOTE ON COMPLETENESS
+# Both sections are now complete: CUAD's 41 categories and LEDGAR's 100 labels,
+# the latter checked against the official ordered list in ledgar_labels.json
+# rather than written from memory. `build.py labels` re-runs that check and
+# fails the build on any label this file does not name, so a dataset revision
+# that adds or renames one cannot slip through into `other` unnoticed.

@@ -1,11 +1,16 @@
 import re
 from legalagent.core.types import Clause
 
-# Decimal numbering (e.g., "5.2", "1.2.3"). Supports optional markdown '#' headings,
-# bold markers, and 'Section'/'Clause'/'Article' prefixes.
+# Clause numbering at the start of a line:
+#   dotted   "5.2", "1.2.3"           (always a clause)
+#   top-level "1. Definitions"        (only with a trailing dot + capitalised word,
+#                                      so "1 kg" or numbered prose doesn't split clauses)
+# Supports optional markdown '#' headings, bold markers, and
+# 'Section'/'Clause'/'Article' prefixes.
 CLAUSE_RE = re.compile(
-    r'^\s*(?:#{1,6}\s*)?(?:\*\*|__)?(?:Section|Clause|Article)?\s*(\d+(?:\.\d+)+)\.?\s*',
-    re.M | re.I,
+    r'^[ \t]*(?:#{1,6}[ \t]*)?(?:\*\*|__)?(?:(?i:Section|Clause|Article)[ \t]+)?'
+    r'(\d+(?:\.\d+)+|\d+(?=\.[ \t]+(?:\*\*|__)?[A-Z]))\.?[ \t]*',
+    re.M,
 )
 
 # Cross-reference regex: "Section 5.2", "Clause 1.2", etc.

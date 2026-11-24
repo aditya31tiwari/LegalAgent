@@ -1,26 +1,38 @@
-from rank_bm25 import BM25Okapi
 from legalagent.core.types import Clause
+from legalagent.core.retrieval import retrieve, DEFAULT_MODEL
 
-# Type matrix: label pairs that commonly conflict, weighted by risk.
+# Type matrix: CLAUSE-20 label pairs that commonly clash, weighted by risk.
 # Only pairs worth surfacing are listed — omit a pair rather than marking it False.
 TYPE_MATRIX = {
     ("limitation_of_liability", "indemnification"): 0.9,
     ("termination", "survival"): 0.6,
-    ("assignment", "confidentiality"): 0.5,
-    ("exclusivity", "assignment"): 0.6,
+    ("assignment_change_of_control", "confidentiality"): 0.5,
+    ("exclusivity_and_restraint", "assignment_change_of_control"): 0.6,
     ("warranty", "limitation_of_liability"): 0.7,
 }
 
 MAX_CANDIDATES = 30
 
 
+def _cap_unset(max_candidates) -> bool:
+    """None / <=0 / "none" / "all" means: keep every candidate (exhaustive audit)."""
+    if max_candidates is None:
+        return True
+    if isinstance(max_candidates, (int, float)) and max_candidates <= 0:
+        return True
+    return str(max_candidates).lower() in {"none", "unset", "all"}
+
+
 def select_candidates(clauses: list[Clause], config: dict) -> list[tuple[str, str, list[str]]]:
     """
-    Candidate selection v0: xref + type_matrix (always kept) + BM25 (fills remaining slots).
-    Returns list of (clause_a_id, clause_b_id, ["bm25", "type_matrix", ...])
+    Candidate selection: xref + type_matrix (always kept) + retrieval (fills
+    remaining slots), where retrieval is config["retrieval_method"]
+    (bm25 | dense | hybrid). Optional config["use_gnn"] adds pairs scored by
+    the clause-graph GNN (legalagent.core.gnn).
+
+    Returns list of (clause_a_id, clause_b_id, ["bm25", "type_matrix", ...]).
     """
     k = config.get("top_k", 5)
-    retrieval_method = config.get("retrieval_method", "bm25")
     pairs: dict[tuple[str, str], set[str]] = {}
 
     def add_pair(a_id: str, b_id: str, method: str):
@@ -47,40 +59,32 @@ def select_candidates(clauses: list[Clause], config: dict) -> list[tuple[str, st
 
     priority_pairs = dict(pairs)
 
-    # BM25 (real implementation, via rank_bm25) fills whatever slots remain.
-    if len(clauses) > 1:
-        tokenized = [c.text.lower().split() for c in clauses]
-        bm25 = BM25Okapi(tokenized)
+    # Retrieval (bm25 | dense | hybrid) fills whatever slots remain. Same
+    # retrieve() the evaluation harness scores, so the reported numbers describe
+    # the code that actually ships.
+    method = config.get("retrieval_method", "bm25")
+    model_name = config.get("embedding_model", DEFAULT_MODEL)
+    for clause_a_id, neighbours in retrieve(clauses, method=method, k=k, model_name=model_name).items():
+        for clause_b_id, _score in neighbours:
+            add_pair(clause_a_id, clause_b_id, method)
 
-        for i, clause_a in enumerate(clauses):
-            scores = bm25.get_scores(tokenized[i])
-            ranked = sorted(
-                ((score, clauses[j].id) for j, score in enumerate(scores) if j != i and score > 0),
-                reverse=True,
-            )
-            for score, clause_b_id in ranked[:k]:
-                add_pair(clause_a.id, clause_b_id, "bm25")
+    if config.get("use_gnn"):
+        try:
+            from legalagent.core.gnn import gnn_pairs
+            for a_id, b_id, _p in gnn_pairs(clauses, k=k):
+                add_pair(a_id, b_id, "gnn")
+        except Exception:  # model missing / torch_geometric absent: retrieval alone
+            pass
 
-    if retrieval_method in {"dense", "hybrid"}:
-        from legalagent.core.embeddings import related_pairs
-
-        for clause_a_id, clause_b_id, _score in related_pairs(
-            clauses,
-            top_k=k,
-            model_name=config.get("embedding_model", "bhavyagiri/InLegal-Sbert"),
-        ):
-            add_pair(clause_a_id, clause_b_id, "dense")
-
-    # Cap by priority: xref/type_matrix pairs are always kept; BM25-only pairs
-    # fill whatever room is left. If max_candidates is None or <= 0, the limit is unset.
     max_candidates = config.get("max_candidates", MAX_CANDIDATES)
-    if max_candidates is None or (isinstance(max_candidates, (int, float)) and max_candidates <= 0) or str(max_candidates).lower() in {"none", "unset", "all"}:
+    if _cap_unset(max_candidates):
         return [(a, b, sorted(hows)) for (a, b), hows in pairs.items()]
 
-    bm25_only = {key: hows for key, hows in pairs.items() if key not in priority_pairs}
+    # Cap by priority: xref/type_matrix pairs are always kept; retrieval-only
+    # pairs fill whatever room is left.
+    retrieval_only = {key: hows for key, hows in pairs.items() if key not in priority_pairs}
     remaining_slots = max(0, int(max_candidates) - len(priority_pairs))
     kept = dict(priority_pairs)
-    kept.update(dict(list(bm25_only.items())[:remaining_slots]))
+    kept.update(dict(list(retrieval_only.items())[:remaining_slots]))
 
     return [(a, b, sorted(hows)) for (a, b), hows in kept.items()]
-
