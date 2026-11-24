@@ -1,7 +1,7 @@
 # LegalAgent — understanding guide (for us, for the viva)
 
 For each part: **what** it is, **how** it works, **why** we chose it, **why not** the alternatives, and the
-questions the panel is likely to ask. A glossary of every term is at the end. Numbers: `docs/PROCESS.md`.
+questions the panel is likely to ask. A glossary of every term is at the end. Numbers: `docs/final_viva_docs/PROCESS.md`.
 
 ---
 
@@ -133,6 +133,33 @@ We report it as an ablation; it is optional in the shortlist.
 | Supreme Court casebook (18) | Court outcome (void / upheld) | clause-vs-law, statute retrieval |
 | Pune Metro injections (15) | We planted the faults ourselves | end-to-end |
 | Held-out teacher pairs (172) | Teacher (silver) | reported, never used to choose |
+
+## 10b. The results page (`/report`, `results/REPORT.html`): what each table tests
+
+Built by `venv/bin/python scripts/build_report.py` from `results/*.json`. Green cell = best in that column.
+
+| # | Table | The question it answers | Input → what is compared | How to read it |
+|---|---|---|---|---|
+| 1 | Clause classification | Does the model name a clause's type correctly? | one clause → predicted CLAUSE-22 labels vs human labels | micro-F1 (all labels pooled); OOD = contracts unlike training; ms/clause = speed |
+| 1b | Indian classifier variants | Does it still work on Indian contracts? | Indian clauses → labels vs teacher labels | lower (0.4–0.5) because OCR + different drafting + noisy labels |
+| 2 | Related-clause retrieval | Does search find the clause a clause is linked to? | a clause → top-k other clauses vs its real cross-references | R@5 = linked clause appears in top 5 |
+| 3 | Clause ↔ clause judge | Does the judge spot two clauses that create a risk together, without crying wolf? | a pair → risky / not vs checklist answers, CUAD lawyer categories, teacher | checklist acc = catches + clean passes; CUAD recall = catches; ms/pair = speed |
+| 4 | Clause ↔ Indian law | Looking at one clause, can we tell it breaks Indian law? | a clause → flag vs court outcome / planted fault / normal clause | "caught" high is good; "false alarms" low is good |
+| 5 | Statute retrieval | Does RAG fetch the exact section that applies? | a risky clause → top India Code sections vs the section a court applied | R@5 exact section; "Act in top 3" is the easier version |
+| 6 | GNN ablation | Does the clause graph help rank risky pairs? | pairs → risk score vs teacher labels | ROC-AUC 0.5 random, 1.0 perfect; GNN ≈ no graph → no gain |
+| 7 | Teacher validation | Can we trust Gemini 4's labels? | teacher output vs answers it did not make | 93 % checklist, 75 % lawyer types, 86 % real citations, κ 0.57 |
+| 8 | Training runs | What did each model cost to train? | — | minutes on the RTX 4050 |
+| 9 | Kev speed | How fast is the local judge? | benchmark requests | decisions/s, input tokens/s, p50/p95 latency |
+| 10 | End-to-end runs | How long does a whole contract take, and where does the time go? | contract → findings | seconds per stage; first OCR run of a scan is the slowest |
+
+**Kev speed:** Kev does not generate text. It reads the clauses plus the question (≈300 input tokens), then a pointer head
+outputs a probability over the given answers. So its speed is measured in **input tokens read per second** and
+**decisions per second**, not "output tokens per second" as for a chatbot. On our RTX 4050 one decision takes about
+0.15–0.5 s. Our judge issues 2 in parallel: about 4 decisions/s, roughly 1,000+ tokens read per second (see table 9).
+
+**Why one big scanned contract takes minutes, not hours:** the shortlist keeps every explicit cross-reference
+(113 on Pune Metro) plus the 60 best other pairs. Earlier the clause-type matrix alone produced 13,940 pairs for
+580 clauses, about an hour of judging; capping and ranking them brought it to 173 pairs and 4.4 minutes for 305 pages.
 
 ## 11. Engineering
 

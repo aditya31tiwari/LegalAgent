@@ -180,5 +180,7 @@ def test_stored_text_is_returned_raw_for_client_side_escaping(client):
     cid = ev[-1]["contract_id"]
     data = client.get(f"/api/contracts/{cid}").json()
     html = (ROOT / "web" / "index.html").read_text(encoding="utf-8")
-    assert "escapeHtml(c.text)" in html and "escapeHtml(f.description" in html
+    assert "escapeHtml(c.text)" in html
+    # finding description: the card strips the confidence prefix into `desc`, then escapes it
+    assert "const desc = (f.description" in html and "escapeHtml(desc)" in html
     assert any("<img" in c["text"] for c in data["clauses"])

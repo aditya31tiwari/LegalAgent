@@ -50,8 +50,8 @@ def request(clause_text: str) -> dict:
 
 
 def assess(clause_text: str) -> dict:
-    from legalagent.core.local_judge import _post
-    ans = _post(request(clause_text))["answers"]["risk"]
+    from legalagent.core.local_judge import post_with_retry
+    ans = post_with_retry(request(clause_text))["answers"]["risk"]
     return {"choice": ans["choice"], "probabilities": ans["probabilities"], "confidence": ans.get("confidence")}
 
 
@@ -80,7 +80,10 @@ def kev_statutory_findings(clauses: list[Clause], show_from: float = 0.3, max_cl
     out = []
     cands = [c for c in clauses if ({l["label"] for l in c.labels} or {"other"}) & RISK_TYPES][:max_clauses]
     for c in cands:
-        r = assess(c.text)
+        try:
+            r = assess(c.text)
+        except Exception:   # one clause Kev could not read must not drop the others
+            continue
         probs = r["probabilities"]
         risk = round(1.0 - float(probs.get("none", 0.0)), 3)
         if risk < show_from:

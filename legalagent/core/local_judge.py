@@ -187,17 +187,43 @@ def _to_finding(a: Clause, b: Clause, surfaced_by: list[str], sections: list[dic
     )
 
 
-def judge_pairs(pairs: list[tuple[Clause, Clause, list[str]]], model_dir: str | None = None, workers: int = 4) -> list[Finding | None]:
-    """Judge every pair with the local Kev server. Raises if the server is not running."""
+def post_with_retry(body: dict, tries: int = 3) -> dict:
+    """A long OCR'd clause can briefly exhaust the 6 GB GPU; Kev frees memory after the error, so retry."""
+    import time
+    for i in range(tries):
+        try:
+            return _post(body)
+        except Exception:
+            if i == tries - 1:
+                raise
+            time.sleep(1.5 * (i + 1))
+
+
+def judge_pairs(pairs: list[tuple[Clause, Clause, list[str]]], model_dir: str | None = None,
+                workers: int | None = None) -> list[Finding | None]:
+    """Judge every pair with the local Kev server. Raises if the server is not running or most pairs fail;
+    a pair that still fails after retries is skipped (logged) instead of dropping the whole contract to rules."""
+    import logging
     if not pairs:
         return []
     if not available():
         raise RuntimeError(f"Kev server not reachable at {KEV_URL}")
+    workers = workers or int(os.environ.get("KEV_WORKERS", "2"))
+    failed = []
 
     def one(pair):
         a, b, surfaced_by = pair
         sections = statute_options(a, b)
-        return _to_finding(a, b, surfaced_by, sections, _post(pair_request(a, b, surfaced_by, sections)))
+        try:
+            return _to_finding(a, b, surfaced_by, sections, post_with_retry(pair_request(a, b, surfaced_by, sections)))
+        except Exception as exc:
+            failed.append((a.id, b.id, str(exc)[:80]))
+            return None
 
     with ThreadPoolExecutor(workers) as pool:
-        return list(pool.map(one, pairs))
+        out = list(pool.map(one, pairs))
+    if failed:
+        logging.getLogger(__name__).warning("Kev skipped %d of %d pairs (%s)", len(failed), len(pairs), failed[0][2])
+        if len(failed) > len(pairs) // 2:
+            raise RuntimeError(f"Kev failed on {len(failed)} of {len(pairs)} pairs")
+    return out

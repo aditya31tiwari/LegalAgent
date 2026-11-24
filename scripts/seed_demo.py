@@ -138,8 +138,23 @@ def main():
         t0 = time.time()
         cid = f"demo_{i:02d}"
         config = {"judge": args.judge, "retrieval_method": "hybrid", "top_k": 5, "max_candidates": args.max_candidates, "classifier": "auto"}
-        run, clauses, findings = analyse(str(path), config, contract_id=cid)
+        from legalagent.core.ingestion import ingest
+        t_in = time.time()
+        text = ingest(str(path))
+        ingest_s = round(time.time() - t_in, 2)
+        from legalagent.core.pipeline import analyse_text
+        run, clauses, findings = analyse_text(text, config, contract_id=cid)
         persist(cid, title, "India", category, clauses, findings, run)
+        # per-contract timings for results/REPORT.html (scripts/build_report.py)
+        rp = ROOT / "results" / "demo_runs.json"
+        try:
+            runs = [r for r in json.loads(rp.read_text()) if r["id"] != cid]
+        except Exception:
+            runs = []
+        runs.append({"id": cid, "title": title, "clauses": len(clauses), "pairs": run.stats["pairs"], "findings": len(findings),
+                     "judge": run.stats["judge"], "seconds": round(time.time() - t0, 1), "ingest_s": ingest_s,
+                     **{k: v for k, v in run.stats.items() if k.endswith("_s")}})
+        rp.write_text(json.dumps(sorted(runs, key=lambda r: r["id"]), indent=2))
         print(f"{cid}  {len(clauses):4d} clauses  {run.stats['pairs']:4d} pairs  {len(findings):3d} findings  "
               f"judge={run.stats['judge']}  {time.time() - t0:5.1f}s  {title}", flush=True)
 

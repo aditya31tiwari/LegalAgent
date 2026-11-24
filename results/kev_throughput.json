@@ -1,0 +1,28 @@
+{
+  "gpu": "RTX 4050 Laptop 6 GB",
+  "model": "Kev-0.8B (Qwen3.5-0.8B + pointer head), bf16",
+  "note": "Kev outputs a probability over the given options (no generated text); speed = input tokens read per second and decisions per second",
+  "runs": [
+    {
+      "workers": 1,
+      "requests": 48,
+      "wall_s": 4.27,
+      "decisions_per_s": 11.25,
+      "input_tokens_per_s": 3500,
+      "avg_input_tokens": 311,
+      "latency_ms_p50": 81.5,
+      "latency_ms_p95": 105.9
+    },
+    {
+      "workers": 2,
+      "requests": 48,
+      "wall_s": 4.24,
+      "decisions_per_s": 11.32,
+      "input_tokens_per_s": 3522,
+      "avg_input_tokens": 311,
+      "latency_ms_p50": 176.4,
+      "latency_ms_p95": 178.4
+    }
+  ],
+  "gpu_memory_mib": 1810
+}

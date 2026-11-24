@@ -1,7 +1,7 @@
 # TODO — LegalAgent final sprint (updated 21:20)
 
 Owner key: **[C]** Claude session · **[U]** you · **[GPU]** queued job on the laptop.
-Plan: [`docs/PLAN.md`](docs/PLAN.md) · Morning: [`docs/MORNING_RUNBOOK.md`](docs/MORNING_RUNBOOK.md)
+Plan: [`docs/PLAN.md`](docs/PLAN.md) · Morning: [`docs/final_viva_docs/MORNING_RUNBOOK.md`](docs/final_viva_docs/MORNING_RUNBOOK.md)
 
 ## In progress (21:20)
 - [ ] [GPU] Kev v2 — balanced 440 pairs + focal loss, 2 epochs (ends ≈ 21:48); then calibrate τ, evaluate, select judge
@@ -16,7 +16,7 @@ Plan: [`docs/PLAN.md`](docs/PLAN.md) · Morning: [`docs/MORNING_RUNBOOK.md`](doc
 - [ ] [C] `eval_all tables`; update EVALUATION.md, VIVA_NOTES.md with final numbers; README; commit; push `final`
 
 ## 23:00 — learning & documentation pack (requested)
-- [ ] [C] **Process write-up (Markdown)** — `docs/PROCESS.md`: the whole journey in order — starting state,
+- [ ] [C] **Process write-up (Markdown)** — `docs/final_viva_docs/PROCESS.md`: the whole journey in order — starting state,
       every phase (merge, GPU, data, taxonomy research, ingestion/OCR, extraction, classifier, retrieval,
       statute library, teacher labelling, Kev, GNN, evaluation, demo), with **results**, the
       **schema/structure** (Clause / Finding / Run records, DB tables, files and folders, data formats,
@@ -50,7 +50,7 @@ Plan: [`docs/PLAN.md`](docs/PLAN.md) · Morning: [`docs/MORNING_RUNBOOK.md`](doc
       evaluates, re-selects the judge, re-seeds demo only if it changed, commits)
 
 ## Morning
-- [ ] [U] follow `docs/MORNING_RUNBOOK.md` (check overnight → start demo → click-through → copy numbers → push → rehearse)
+- [ ] [U] follow `docs/final_viva_docs/MORNING_RUNBOOK.md` (check overnight → start demo → click-through → copy numbers → push → rehearse)
 
 ## Done
 - [x] Merge branches → `final`; GPU fixed; uv envs (project + Kev)

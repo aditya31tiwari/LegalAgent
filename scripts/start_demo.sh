@@ -30,6 +30,9 @@ if [[ -n "$RUN" ]] && ! curl -sf http://127.0.0.1:8008/v1/models >/dev/null; the
   # A small cache + expandable segments keeps Kev under ~4 GB with no measurable slowdown for our requests.
   export KEV_PREFIX_CACHE="${KEV_PREFIX_CACHE:-2}" KEV_PREFIX_MAX_TOKENS="${KEV_PREFIX_MAX_TOKENS:-6000}" KEV_TRUNCATE_STATES=1
   export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
+  # CUDA graphs are captured per input shape and each keeps GPU memory; on 6 GB they fill the card
+  # (out-of-memory on later requests). Eager mode is stable; measured speed: results/kev_throughput.json.
+  export KEV_CUDA_GRAPHS="${KEV_CUDA_GRAPHS:-0}"
   (cd "$KEV" && setsid nohup "$KPY" -m kev.serve --run "$RUN" --port 8008 > /tmp/kev_demo_serve.log 2>&1 < /dev/null &)
   for _ in $(seq 1 90); do curl -sf http://127.0.0.1:8008/v1/models >/dev/null && break; sleep 2; done
 fi

@@ -196,6 +196,9 @@ labels instead of being hidden or presented as verdicts.
 | 16 | Nyaya embedding model comparison | Stopped unfinished | Slow on CPU, would compete with Kev for the GPU; user asked for no more experiments | Kept fine-tuned InLegal-SBERT |
 | 17 | Editing a running shell script | Training run crashed with a syntax error | bash reads scripts incrementally | Never edit scripts while running |
 | 18 | `results/` was in `.gitignore` | Results were not committed | Old ignore rule | `!results/` |
+| 19 | Shortlist on a 580-clause scanned contract | 14,025 pairs, ≈1 hour of judging for one PDF | Clause-type-matrix pairs were "never capped": every liability × indemnity × payment clause combination became a pair | Cross-references always kept; other pairs ranked (signals agreeing → clash weight → retrieval rank) and capped at 60 → 173 pairs, **4.4 min for 305 pages** |
+| 20 | Kev on long OCR'd clauses | HTTP 500 (CUDA out of memory), contract fell back to rules | Kev's state-prefix cache (64k tokens by default) + 4 parallel requests filled the 6 GB card | Prefix cache capped (2 states / 6k tokens), expandable CUDA segments, 2 parallel requests, retry per pair, skip a single failing pair instead of dropping the whole contract |
+| 21 | Demo excerpt with answer-key notes | Planted clauses carried "*(Statutory Conflict: …)*" notes inside the text | The adversarial sample was written for humans | The dashboard analyses a clean copy with the notes stripped (`data/demo/generated/pune_metro_15_planted_clean.md`) |
 
 ---
 

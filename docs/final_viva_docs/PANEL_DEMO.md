@@ -45,7 +45,7 @@ nothing public. Do **not** rely on college Wi-Fi (client isolation is common).
    venv/bin/python scripts/show_steps.py data/demo/generated/supreme_court_casebook.md --rows 12 --pairs 8
    ```
    Run it once to warm up, then clear the screen. A second terminal tab: `watch -n 1 nvidia-smi`.
-6. Keep `docs/LEARNING.md` (answers + glossary) and `results/REPORT_TABLES.md` open on a phone/tablet.
+6. Keep `docs/final_viva_docs/LEARNING.md` (answers + glossary) and `results/REPORT_TABLES.md` open on a phone/tablet.
 
 If something breaks: `bash scripts/start_demo.sh stop` then `bash scripts/start_demo.sh` again. The database is
 already filled, so the dashboard works even if Kev is down (new uploads then fall back to the rules judge, and the
@@ -104,7 +104,14 @@ Press **Enter** per stage and say one line each:
 
 The same output is saved as `logs/steps_supreme_court_casebook.html` (open it if the terminal is hard to read).
 
-### ⑥ Under the hood + results (1 min) — frontend laptop, `/scores`
+### ⑥ All comparisons on one page (1 min) — frontend laptop, `/report`
+`http://<aryan-ip>:8080/report` (static file `results/REPORT.html`, rebuild with
+`venv/bin/python scripts/build_report.py`). Every table says what it tests; green = best. Scroll to:
+3 (judge: Kev 71 % vs rules 46 %), 4 (law: Kev 6/9 vs regex 0/9), 5 (statute RAG), **9 (Kev speed: decisions/s,
+tokens read/s, latency)** and **10 (end-to-end time per contract, per stage)**. Say: "Kev reads ~300 tokens and
+points at an answer; it doesn't generate text, so we measure tokens read per second and decisions per second."
+
+### ⑥b Under the hood (optional) — frontend laptop, `/scores`
 - **Document → clauses**: pick the 305-page scanned Pune Metro PDF; show a page image next to its OCR'd clauses.
 - **Clause-pair scores**: BM25 / dense / GNN / type-matrix scores behind the shortlist for one clause.
 - **Finding explained**: every number behind one finding (Kev probabilities, retrieval scores).
@@ -128,7 +135,7 @@ The same output is saved as `logs/steps_supreme_court_casebook.html` (open it if
 ## 4. If asked "is it finished?"
 Yes — it is a working end-to-end system: any PDF/DOCX/TXT goes in, findings come out, stored and browsable, with
 every stage measured. What is *not* done is lawyer-verified training data for Indian clause pairs; that is the
-honest limitation and the first item of future work (see `docs/FINAL_REPORT.md` §6).
+honest limitation and the first item of future work (see `docs/final_viva_docs/FINAL_REPORT.md` §6).
 
 ## 5. Fallbacks
 | Problem | Do |

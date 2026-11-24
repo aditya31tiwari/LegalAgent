@@ -67,14 +67,18 @@ def select_candidates(clauses: list[Clause], config: dict) -> list[tuple[str, st
     """
     k = config.get("top_k", 5)
     pairs: dict[tuple[str, str], set[str]] = {}
+    weight: dict[tuple[str, str], float] = {}   # clash weight from the type matrix
+    sim: dict[tuple[str, str], float] = {}      # best retrieval score seen for the pair
 
-    def add_pair(a_id: str, b_id: str, method: str):
+    def add_pair(a_id: str, b_id: str, method: str, w: float = 0.0, s: float = 0.0):
         if a_id == b_id:
             return
         key = tuple(sorted((a_id, b_id)))
         pairs.setdefault(key, set()).add(method)
+        weight[key] = max(weight.get(key, 0.0), float(w or 0.0))
+        sim[key] = max(sim.get(key, 0.0), float(s or 0.0))
 
-    # Priority pairs first: xref and type_matrix are never dropped by the cap.
+    # Explicit cross-references are never dropped by the cap.
     for clause in clauses:
         for xref in clause.xrefs:
             if xref["resolved"]:
@@ -85,12 +89,10 @@ def select_candidates(clauses: list[Clause], config: dict) -> list[tuple[str, st
         for label_obj in clause.labels:
             labels_to_clauses.setdefault(label_obj["label"], []).append(clause.id)
 
-    for (label_a, label_b) in TYPE_MATRIX:
+    for (label_a, label_b), w in TYPE_MATRIX.items():
         for clause_a_id in labels_to_clauses.get(label_a, []):
             for clause_b_id in labels_to_clauses.get(label_b, []):
-                add_pair(clause_a_id, clause_b_id, "type_matrix")
-
-    priority_pairs = dict(pairs)
+                add_pair(clause_a_id, clause_b_id, "type_matrix", w=w)
 
     # Retrieval (bm25 | dense | hybrid) fills whatever slots remain. Same
     # retrieve() the evaluation harness scores, so the reported numbers describe
@@ -98,8 +100,8 @@ def select_candidates(clauses: list[Clause], config: dict) -> list[tuple[str, st
     method = config.get("retrieval_method", "bm25")
     model_name = config.get("embedding_model", DEFAULT_MODEL)
     for clause_a_id, neighbours in retrieve(clauses, method=method, k=k, model_name=model_name).items():
-        for clause_b_id, _score in neighbours:
-            add_pair(clause_a_id, clause_b_id, method)
+        for rank, (clause_b_id, _score) in enumerate(neighbours):
+            add_pair(clause_a_id, clause_b_id, method, s=1.0 / (1 + rank))
 
     if config.get("use_gnn"):
         try:
@@ -113,11 +115,15 @@ def select_candidates(clauses: list[Clause], config: dict) -> list[tuple[str, st
     if _cap_unset(max_candidates):
         return [(a, b, sorted(hows)) for (a, b), hows in pairs.items()]
 
-    # Cap by priority: xref/type_matrix pairs are always kept; retrieval-only
-    # pairs fill whatever room is left.
-    retrieval_only = {key: hows for key, hows in pairs.items() if key not in priority_pairs}
-    remaining_slots = max(0, int(max_candidates) - len(priority_pairs))
-    kept = dict(priority_pairs)
-    kept.update(dict(list(retrieval_only.items())[:remaining_slots]))
+    # Cap: cross-reference pairs are always kept. The rest are ranked by how many signals agree
+    # (type matrix AND retrieval beats either alone), then by clash weight, then by retrieval rank.
+    # (Before: every type-matrix pair was kept, which on the 580-clause Pune Metro PDF meant
+    # 13,940 pairs ≈ 1 hour of judging instead of ~1 minute.)
+    xref_pairs = {key: hows for key, hows in pairs.items() if "xref" in hows}
+    rest = sorted((key for key in pairs if key not in xref_pairs),
+                  key=lambda key: (-len(pairs[key]), -weight.get(key, 0.0), -sim.get(key, 0.0)))
+    kept = dict(xref_pairs)
+    for key in rest[: max(0, int(max_candidates))]:
+        kept[key] = pairs[key]
 
     return [(a, b, sorted(hows)) for (a, b), hows in kept.items()]

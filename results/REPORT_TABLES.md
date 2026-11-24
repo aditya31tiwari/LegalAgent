@@ -20,6 +20,22 @@ epochs 3.0, lr 3e-05, batch 16, max_len 256, threshold 0.5 (tuned on validation)
 | test | 8415 | 0.925 | 0.834 | 0.929 | 0.928 | 5.56 |
 | test_ood | 693 | 0.715 | 0.661 | 0.810 | 0.641 | 5.88 |
 
+## Table 5.1/5.2 — Clause classification (CLAUSE-20)
+
+| classifier | split | n | micro-F1 | macro-F1 | top-1 acc | exact match | ms/clause |
+|---|---|---|---|---|---|---|---|
+| keyword | test | 8415 | 0.275 | 0.205 | 0.373 | 0.344 | 0.05 |
+| keyword | test_ood | 703 | 0.404 | 0.267 | 0.344 | 0.188 | 0.09 |
+| keyword | india_silver | 220 | 0.329 | 0.172 | 0.386 | 0.236 | 0.06 |
+| minilm_lr | test | 8415 | 0.828 | 0.746 | 0.856 | 0.819 | 19.7 |
+| minilm_lr | test_ood | 703 | 0.591 | 0.524 | 0.656 | 0.468 | 27.5 |
+| minilm_lr | india_silver | 220 | 0.418 | 0.279 | 0.468 | 0.386 | 27.12 |
+| inlegalbert | test | 8415 | 0.931 | 0.881 | 0.934 | 0.934 | 305.7 |
+| inlegalbert | test_ood | 703 | 0.750 | 0.710 | 0.842 | 0.670 | 242.6 |
+| inlegalbert | india_silver | 220 | 0.417 | 0.363 | 0.441 | 0.364 | 497.16 |
+
+india_silver = Indian government contract clauses labelled by the Gemini teacher (silver; see research/gold_set for human checks).
+
 ## Table 5.3 — Related-clause retrieval (gold = resolved cross-references, clause numbers + xref phrases masked)
 
 | method | corpus | P@1 | P@3 | P@5 | R@3 | R@5 | R@10 |
@@ -37,8 +53,114 @@ epochs 3.0, lr 3e-05, batch 16, max_len 256, threshold 0.5 (tuned on validation)
 | hybrid_inlegal_sbert | cuad | 0.171 | 0.128 | 0.103 | 0.245 | 0.320 | 0.434 |
 | hybrid_inlegal_sbert | india | 0.058 | 0.044 | 0.032 | 0.099 | 0.120 | 0.165 |
 
+## Statute grounding — retrieving the cited Indian section (47 queries)
+
+| retriever | R@1 | R@3 | R@5 | correct Act in top-3 |
+|---|---|---|---|---|
+| bm25 | 0.000 | 0.000 | 0.000 | 0.255 |
+| dense_inlegal_sbert | 0.000 | 0.000 | 0.000 | 0.043 |
+| hybrid | 0.000 | 0.000 | 0.000 | 0.106 |
+| hybrid+act_prior | 0.000 | 0.000 | 0.000 | 0.170 |
+| hybrid_ft+act_prior | 0.000 | 0.021 | 0.064 | 0.702 |
+| *always answer Indian Contract Act* (baseline) | — | — | — | 0.936 |
+
+⚠ teacher-citation gold is ~94% Indian Contract Act (s.37 over-cited) - see always_ica baseline; the litigated gold (statute applied by the Supreme Court) is the independent test
+
+### Statute retrieval vs the statute the Supreme Court applied (10 cases; independent gold)
+
+| retriever | section R@1 | section R@3 | section R@5 | correct Act in top-3 |
+|---|---|---|---|---|
+| bm25 | 0.000 | 0.000 | 0.000 | 0.300 |
+| dense_inlegal_sbert | 0.000 | 0.000 | 0.000 | 0.200 |
+| hybrid | 0.000 | 0.000 | 0.000 | 0.200 |
+| hybrid+act_prior | 0.000 | 0.100 | 0.100 | 0.300 |
+| hybrid_ft+act_prior | 0.100 | 0.200 | 0.500 | 0.600 |
+| *always answer Indian Contract Act* (baseline) | — | — | — | 0.700 |
+
+## Pair judge comparison (172 held-out pairs, reference = teacher_gemini; no human gold yet)
+
+| judge | accuracy | macro-F1 | risky P | risky R | risky F1 | ms/pair | data leaves machine |
+|---|---|---|---|---|---|---|---|
+| rules | 0.698 | 0.244 | 0.500 | 0.019 | 0.037 | 0.0 | no |
+| kev_base_zero_shot | 0.198 | 0.116 | 0.319 | 0.846 | 0.463 | 268.1 | no |
+| kev_finetuned | 0.680 | 0.277 | 0.628 | 0.519 | 0.568 | 841.7 | no |
+| kev_finetuned_tau | 0.674 | 0.339 | 0.615 | 0.615 | 0.615 | 841.7 | no |
+| kev_base_zero_shot_tau | 0.198 | 0.116 | 0.309 | 0.808 | 0.447 | 268.1 | no |
+| teacher_gemini (reference) | 1.000 | 1.000 | — | — | — | API | yes |
+
+## Known-answer checklist (28 minimal pairs: 12 risky/fixed twins + 4 planted injections) — independent of teacher labels
+
+| judge | binary accuracy | risky caught (bad pairs) | correctly clear (fixed pairs) | ms/pair | misses |
+|---|---|---|---|---|---|
+| rules | 0.464 | 0.125 | 0.917 | 0.0 | survival_confidentiality_bad, notice_periods_bad, arbitration_vs_courts_bad, ld_vs_cap_bad, noncompete_survival_bad, assignment_change_of_control_bad |
+| kev_base_zero_shot | 0.714 | 0.688 | 0.750 | 332.5 | noncompete_survival_bad, payment_tax_grossup_bad, force_majeure_payment_bad, confidentiality_vs_regulator_bad, inj_91.2_91.4, cap_indemnity_fixed |
+| teacher:gemini-4-hydrogen-high | 0.929 | — | — | API | |
+| kev_finetuned_v1_imbalanced | 0.429 | 0.000 | 1.000 | 262.7 | cap_indemnity_bad, survival_confidentiality_bad, notice_periods_bad, arbitration_vs_courts_bad, ld_vs_cap_bad, noncompete_survival_bad |
+| kev_finetuned | 0.536 | 0.312 | 0.833 | 325.4 | survival_confidentiality_bad, notice_periods_bad, arbitration_vs_courts_bad, ld_vs_cap_bad, assignment_change_of_control_bad, payment_tax_grossup_bad |
+| kev_finetuned_tau | 0.536 | 0.312 | 0.833 | 325.4 | survival_confidentiality_bad, notice_periods_bad, arbitration_vs_courts_bad, ld_vs_cap_bad, assignment_change_of_control_bad, payment_tax_grossup_bad |
+| kev_base_zero_shot_tau | 0.536 | 0.562 | 0.500 | 332.5 | noncompete_survival_bad, payment_tax_grossup_bad, ip_assignment_vs_license_bad, force_majeure_payment_bad, confidentiality_vs_regulator_bad, inj_91.2_91.4 |
+
+## CUAD lawyer-grounded interaction pairs (280 pairs; no LLM labels) — recall of each judge
+
+| judge | recall | ms/pair | per category pair |
+|---|---|---|---|
+| rules | 0.075 | 0.0 | Cap On Liability x Uncapped Liability: 0.100; Anti-Assignment x Change Of Control: 0.000; License Grant x Ip Ownership Assignment: 0.025; Termination For Convenience x Post-Termination Services: 0.300; Non-Compete x Post-Termination Services: 0.050; Exclusivity x Non-Compete: 0.000; Liquidated Damages x Cap On Liability: 0.050 |
+| kev_finetuned | 0.214 | 528.5 | Cap On Liability x Uncapped Liability: 0.500; Anti-Assignment x Change Of Control: 0.200; License Grant x Ip Ownership Assignment: 0.050; Termination For Convenience x Post-Termination Services: 0.300; Non-Compete x Post-Termination Services: 0.075; Exclusivity x Non-Compete: 0.050; Liquidated Damages x Cap On Liability: 0.325 |
+| kev_finetuned_tau | 0.311 | 528.5 | Cap On Liability x Uncapped Liability: 0.675; Anti-Assignment x Change Of Control: 0.275; License Grant x Ip Ownership Assignment: 0.125; Termination For Convenience x Post-Termination Services: 0.375; Non-Compete x Post-Termination Services: 0.125; Exclusivity x Non-Compete: 0.200; Liquidated Damages x Cap On Liability: 0.400 |
+| kev_base_zero_shot | 0.746 | 455.1 | Cap On Liability x Uncapped Liability: 0.875; Anti-Assignment x Change Of Control: 0.900; License Grant x Ip Ownership Assignment: 0.550; Termination For Convenience x Post-Termination Services: 0.825; Non-Compete x Post-Termination Services: 0.825; Exclusivity x Non-Compete: 0.500; Liquidated Damages x Cap On Liability: 0.750 |
+| kev_base_zero_shot_tau | 0.775 | 455.1 | Cap On Liability x Uncapped Liability: 0.925; Anti-Assignment x Change Of Control: 0.875; License Grant x Ip Ownership Assignment: 0.525; Termination For Convenience x Post-Termination Services: 0.950; Non-Compete x Post-Termination Services: 0.850; Exclusivity x Non-Compete: 0.450; Liquidated Damages x Cap On Liability: 0.850 |
+
+## Litigated clauses — Supreme Court of India decisions as ground truth (case study, not a statistic)
+
+| case | year | kind | court held | should flag | statutory rule | rules | kev_base_zero_shot |
+|---|---|---|---|---|---|---|---|
+| Percept D'Mark (India) Pvt. Ltd. v. Zaheer Khan & Anr. | 2006 | single_clause | void | yes | no_flag | — | — |
+| Superintendence Company of India (P) Ltd. v. Krishan Murgai | 1980 | single_clause | void | yes | no_flag | — | — |
+| Niranjan Shankar Golikari v. Century Spinning and Mfg. Co. Ltd. | 1967 | single_clause | upheld | no | no_flag | — | — |
+| Gujarat Bottling Co. Ltd. & Ors. v. The Coca Cola Co. & Ors. | 1995 | single_clause | upheld | no | no_flag | — | — |
+| M/s Kailash Nath Associates v. Delhi Development Authority & Anr. | 2015 | single_clause | penalty | yes | no_flag | — | — |
+| Maula Bux v. Union of India | 1969 | single_clause | penalty | yes | no_flag | — | — |
+| Oil & Natural Gas Corporation Ltd. v. Saw Pipes Ltd. | 2003 | single_clause | upheld | no | no_flag | — | — |
+| Central Inland Water Transport Corporation Ltd. v. Brojo Nath Ganguly & Anr. | 1986 | single_clause | void | yes | no_flag | — | — |
+| Union of India & Anr. v. M/s IndusInd Bank Ltd. & Anr. | 2016 | single_clause | upheld | no | no_flag | — | — |
+| Jagdish Chander v. Ramesh Chander & Ors. | 2007 | single_clause | other | yes | no_flag | — | — |
+| M/s N.N. Global Mercantile Pvt. Ltd. v. M/s Indo Unique Flame Ltd. | 2023 | single_clause | other | yes | no_flag | — | — |
+| Perkins Eastman Architects DPC & Anr. v. HSCC (India) Ltd. | 2019 | single_clause | void | yes | no_flag | — | — |
+| TRF Ltd. v. Energo Engineering Projects Ltd. | 2017 | cross_clause | void | yes | no_flag | no_issue | no_issue |
+| Enercon (India) Ltd. & Ors. v. Enercon GmbH & Anr. | 2014 | cross_clause | other | yes | no_flag | no_issue | no_issue |
+| Union of India v. Hardy Exploration and Production (India) Inc. | 2018 | cross_clause | other | yes | no_flag | no_issue | no_issue |
+| BGS SGS Soma JV v. NHPC Ltd. | 2019 | single_clause | other | yes | no_flag | — | — |
+| Mankastu Impex Pvt. Ltd. v. Airvisual Ltd. | 2020 | cross_clause | other | yes | no_flag | no_issue | no_issue |
+| M/s Swastik Gases (P) Ltd. v. Indian Oil Corporation Ltd. | 2013 | cross_clause | upheld | no | no_flag | no_issue | no_issue |
+
+| component | cases | caught | missed | false alarms | correctly quiet |
+|---|---|---|---|---|---|
+| statutory_rule | 18 | 0 | 13 | 0 | 5 |
+| rules | 5 | 0 | 4 | 0 | 1 |
+| kev_base_zero_shot | 5 | 0 | 4 | 0 | 1 |
+| kev_base_zero_shot_tau | 5 | 0 | 4 | 1 | 0 |
+
 ## Teacher validation (ground truth not produced by the teacher)
 
+- **checklist|gemini-4-hydrogen-high**: pairs=28, risky_detected_on_bad=1.000, no_issue_on_fixed=0.833, binary_accuracy=0.929, exact_relation_on_bad=0.625
+- **clause_types_vs_lawyer_gold|agy_claude-sonnet-5-5-medium**: clauses=285, any_overlap=0.793, first_type_correct=0.698
 - **clause_types_vs_lawyer_gold|agy_gemini-4-hydrogen-high**: clauses=428, any_overlap=0.853, first_type_correct=0.750
+- **citations|agy_claude-sonnet-5-5-medium**: flagged_pairs=163, with_citation=163, verified_in_india_code=125, verified_rate=0.767
 - **citations|agy_gemini-4-hydrogen-high**: flagged_pairs=272, with_citation=266, verified_in_india_code=228, verified_rate=0.857
+- **agreement|agy_claude-sonnet-5-5-medium vs agy_gemini-4-hydrogen-high**: pairs=300, relation_agreement=0.577, relation_kappa=0.385, risky_kappa=0.567
 
+## Kev judge fine-tuning
+
+- base `jaredpalmer/kev-0.8b`, LoRA delta, lr 2e-4, epochs 2, grad-accum 8, 440 training pairs, 3467 s on RTX 4050
+
+- **retriever_clauses**: base `bhavyagiri/InLegal-Sbert`, 2821 positive pairs, CachedMultipleNegativesRankingLoss (mini-batch 8), batch 64, 123 s
+- **retriever_statutes**: base `bhavyagiri/InLegal-Sbert`, 2967 positive pairs, CachedMultipleNegativesRankingLoss (mini-batch 8), batch 64, 79 s
+
+## Clause-graph GNN — ranking risky pairs on held-out contracts
+
+| scorer | ROC-AUC | avg precision | P@5 |
+|---|---|---|---|
+| gnn | 0.742 | 0.494 | 0.357 |
+| no_graph | 0.748 | 0.539 | 0.330 |
+| type_matrix | 0.517 | 0.369 | 0.313 |
+| cosine | 0.738 | 0.515 | 0.365 |
