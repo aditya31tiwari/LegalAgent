@@ -604,12 +604,7 @@
       </button>
 
       <select id="contract-select" class="header-select" onchange="handleContractSwitch()">
-        <option value="tech_msa">Indian Tech Services MSA (IT/SaaS)</option>
-        <option value="employment_nda">Executive Employment (Non-Compete)</option>
-        <option value="vendor_supply">Vendor Supply Agreement (LD / Penalty)</option>
-        <option value="pune_metro_ppp">Pune Metro Line III — PPP Concession (2019)</option>
-        <option value="highway_concession">NHAI 4-Laning Highway Concession (BOT-Toll)</option>
-        <option value="lorem_ipsum_demo">Lorem Ipsum Synthetic Instrument</option>
+        <!-- filled from /api/contracts (real pipeline runs) by renderContractsSidebar() -->
       </select>
 
       <a href="/findings" target="_blank" class="header-btn header-btn-outline" style="text-decoration:none;" title="Gemini 5-Contract Benchmark Review">
@@ -1704,6 +1699,19 @@
         document.getElementById('header-contracts-count').innerText = contracts.length;
         document.getElementById('sidebar-contract-count').innerText = contracts.length;
 
+        // Header dropdown = exactly the contracts in the database.
+        const sel = document.getElementById('contract-select');
+        if (sel) {
+          sel.innerHTML = '';
+          contracts.forEach(c => {
+            const o = document.createElement('option');
+            o.value = c.id; o.textContent = c.title;
+            sel.appendChild(o);
+          });
+          if (!contracts.some(c => c.id === currentContractId) && contracts.length) currentContractId = contracts[0].id;
+          sel.value = currentContractId;
+        }
+
         const list = document.getElementById('sidebar-contracts-list');
         list.innerHTML = '';
 
@@ -2157,11 +2165,10 @@ This Agreement is governed by the laws of India. Any dispute arising out of or i
       }
     }
 
-    function finishAndOpenContract(contractId, title) {
+    async function finishAndOpenContract(contractId, title) {
       closeUploadModal();
-      const select = document.getElementById('contract-select');
-      if (select) select.value = contractId;
       currentContractId = contractId;
+      await renderContractsSidebar();
       handleContractSwitch();
     }
 
@@ -2176,18 +2183,12 @@ This Agreement is governed by the laws of India. Any dispute arising out of or i
     function copyExportMemo() { const ta = document.getElementById('export-textarea'); ta.select(); navigator.clipboard.writeText(ta.value); alert("Legal memorandum copied to clipboard."); closeExportModal(); }
 
     /* ── Init ── */
-    window.onload = function() {
+    window.onload = async function() {
       setupResizers();
-      
-      // Check if URL has ?contract= parameter
-      const params = new URLSearchParams(window.location.search);
-      const requestedContract = params.get('contract');
-      if (requestedContract) {
-        const select = document.getElementById('contract-select');
-        if (select) select.value = requestedContract;
-      }
-
-      renderContractsSidebar();
+      // ?contract=<id> opens that contract; otherwise the first one in the database.
+      const requestedContract = new URLSearchParams(window.location.search).get('contract');
+      currentContractId = requestedContract || "";
+      await renderContractsSidebar();
       handleContractSwitch();
     };
   </script>
