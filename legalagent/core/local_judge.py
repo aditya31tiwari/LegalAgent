@@ -117,10 +117,38 @@ def available() -> bool:
         return False
 
 
+def threshold() -> float | None:
+    """
+    Decision threshold τ for the served Kev model: a pair is flagged when P(no_issue) < τ.
+    Kev's training data is ~73 % no_issue, so its probabilities lean that way and argmax
+    under-flags; τ is tuned on TRAINING contracts only (train/calibrate_kev.py).
+    Source: env KEV_THRESHOLD, else results/judge_selection.json, else None (= argmax).
+    """
+    env = os.environ.get("KEV_THRESHOLD")
+    if env:
+        return float(env)
+    from pathlib import Path
+    sel = Path(__file__).resolve().parents[2] / "results" / "judge_selection.json"
+    try:
+        t = json.loads(sel.read_text()).get("threshold")
+        return float(t) if t is not None else None
+    except Exception:
+        return None
+
+
+def decide(rel_probs: dict, tau: float | None) -> str:
+    """argmax, or threshold rule: risky iff P(no_issue) < τ, then the most likely risky relation."""
+    if tau is None:
+        return max(rel_probs, key=lambda k: float(rel_probs[k]))
+    if float(rel_probs.get("no_issue", 0.0)) >= tau:
+        return "no_issue"
+    return max((k for k in rel_probs if k != "no_issue"), key=lambda k: float(rel_probs[k]))
+
+
 def _to_finding(a: Clause, b: Clause, surfaced_by: list[str], sections: list[dict], resp: dict) -> Finding | None:
     ans = resp["answers"]
     rel_probs = ans["relation"]["probabilities"]
-    relation = ans["relation"]["choice"]
+    relation = decide(rel_probs, threshold())
     if relation == "no_issue":
         return None
     sev_probs = [float(ans["severity"]["probabilities"][str(i)]) for i in range(len(SEVERITIES))]

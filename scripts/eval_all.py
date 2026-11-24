@@ -197,21 +197,35 @@ def _judge_predictions(rows, which):
         f = analyse_pair(mk(r, "a"), mk(r, "b"), r["surfaced_by"])
         preds["rules"].append(f.relation_type if f else "no_issue")
     latency["rules"] = 1000 * (time.time() - t0) / max(1, len(rows))
+    from legalagent.core.local_judge import decide
     for name, url in which:
         local_judge.KEV_URL = url
         if not local_judge.available():
             print("skip", name, "(server not running at", url, ")")
             continue
-        out, t0 = [], time.time()
+        probs, t0 = [], time.time()
         for r in rows:
             a, b = mk(r, "a"), mk(r, "b")
-            out.append(_post(pair_request(a, b, r["surfaced_by"], statute_options(a, b)))["answers"]["relation"]["choice"])
-        preds[name] = out
-        latency[name] = 1000 * (time.time() - t0) / max(1, len(rows))
+            probs.append(_post(pair_request(a, b, r["surfaced_by"], statute_options(a, b)))["answers"]["relation"]["probabilities"])
+        latency[name] = latency[name + "_tau"] = 1000 * (time.time() - t0) / max(1, len(rows))
+        preds[name] = [decide(p, None) for p in probs]                     # argmax
+        tau = _kev_threshold(name)
+        if tau is not None:                                                 # calibrated on training contracts
+            preds[name + "_tau"] = [decide(p, tau) for p in probs]
     return preds, latency
 
 
 KEV_SERVERS = (("kev_base_zero_shot", "http://127.0.0.1:8009/v1/systemone"), ("kev_finetuned", "http://127.0.0.1:8008/v1/systemone"))
+THRESHOLD_FILES = {"kev_base_zero_shot": ROOT / "models" / "kev_base_threshold.json",
+                   "kev_finetuned": ROOT / "models" / "kev_judge" / "threshold.json"}
+
+
+def _kev_threshold(name):
+    p = THRESHOLD_FILES.get(name)
+    try:
+        return float(json.loads(p.read_text())["threshold"]) if p and p.exists() else None
+    except Exception:
+        return None
 
 
 def eval_checklist(args):

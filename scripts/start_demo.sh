@@ -11,8 +11,20 @@ if [[ "${1:-start}" == "stop" ]]; then
   pkill -f "kev.serve .*--port 8008"; pkill -f "web/server.py"; echo "stopped"; exit 0
 fi
 
-if ! curl -sf http://127.0.0.1:8008/v1/models >/dev/null; then
-  if [[ -d models/kev_judge ]]; then RUN="$REPO/models/kev_judge"; else RUN="jaredpalmer/kev-0.8b"; fi
+# Which judge to serve: results/judge_selection.json (scripts/select_judge.py, chosen on independent tests).
+RUN=$(venv/bin/python - <<'EOF'
+import json
+try:
+    s = json.load(open("results/judge_selection.json"))
+    print(s.get("serve") or "")
+except Exception:
+    print("jaredpalmer/kev-0.8b")
+EOF
+)
+[[ "$RUN" == models/* ]] && RUN="$REPO/$RUN"
+echo "selected judge: $(venv/bin/python -c "import json;s=json.load(open('results/judge_selection.json'));print(s['judge'],'threshold',s.get('threshold'))" 2>/dev/null || echo 'none (default base Kev)')"
+if [[ -z "$RUN" ]]; then echo "selection is the rules judge — Kev not started"; fi
+if [[ -n "$RUN" ]] && ! curl -sf http://127.0.0.1:8008/v1/models >/dev/null; then
   echo "starting Kev judge ($RUN) on 127.0.0.1:8008 …"
   (cd "$KEV" && setsid nohup "$KPY" -m kev.serve --run "$RUN" --port 8008 > /tmp/kev_demo_serve.log 2>&1 < /dev/null &)
   for _ in $(seq 1 90); do curl -sf http://127.0.0.1:8008/v1/models >/dev/null && break; sleep 2; done

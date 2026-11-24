@@ -245,15 +245,21 @@ def import_labels(args):
     labels, bad = {}, 0
     # Only the primary teacher trains Kev; other model families (second opinion) and the
     # checklist are evaluation-only and live in the same folder.
-    for f in sorted((src / "labels").glob(args.label_glob)):
+    files = sorted({f for g in args.label_glob.split(",") for f in (src / "labels").glob(g.strip())})
+    print("label files:", [f.name for f in files])
+    for f in files:
+        teacher = f.stem.replace("extra_", "").replace("agy_", "antigravity-")
         for l in f.read_text(encoding="utf-8").splitlines():
             try:
                 r = json.loads(l)
+                if r.get("pair_id") in labels:   # first file wins (primary teacher listed first)
+                    continue
                 rel, sev = str(r["relation"]).lower(), str(r.get("severity", "low")).lower()
                 assert r["pair_id"] in pairs and rel in RELATIONS and sev in SEVERITIES
                 labels[r["pair_id"]] = {"relation": rel, "severity": sev, "risk": max(0.0, min(1.0, float(r.get("risk", 0)))),
                                         "rationale": str(r.get("rationale", ""))[:400], "citation": str(r.get("citation", ""))[:200],
                                         # optional richer fields (later runs); kept verbatim for audit and gold-set selection
+                                        "teacher_file": teacher,
                                         **{k: r[k] for k in ("a_types", "b_types", "fix_clause", "suggested_fix", "confidence", "_provenance") if k in r}}
             except Exception:
                 bad += 1
@@ -261,7 +267,7 @@ def import_labels(args):
     with (OUT / "judge_pairs.jsonl").open("w", encoding="utf-8") as f:
         for pid, p in pairs.items():
             if pid in labels:
-                f.write(json.dumps({**p, "teacher": args.teacher, **labels[pid]}, ensure_ascii=False) + "\n")
+                f.write(json.dumps({**p, "teacher": labels[pid].get("teacher_file", args.teacher), **labels[pid]}, ensure_ascii=False) + "\n")
     from collections import Counter
     print(f"imported {len(labels)}/{len(pairs)} labels ({bad} malformed lines skipped);",
           dict(Counter(l["relation"] for l in labels.values())))

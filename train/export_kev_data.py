@@ -80,6 +80,22 @@ def main():
         f.close()
     for k, v in sorted(stats.items()):
         print(f"{k[0]:5s} {k[1]:18s} {v}")
+    balance(OUT / "train.jsonl", OUT / "train_balanced.jsonl")
+
+
+def balance(src, dst, seed=0):
+    """
+    Class-balanced training file: every risky pair + an equal number of no_issue pairs.
+    v1 trained on the raw 73 % no_issue distribution and collapsed to the majority class.
+    """
+    recs = [json.loads(l) for l in src.read_text(encoding="utf-8").splitlines() if l.strip()]
+    risky = [r for r in recs if r["questions"]["relation"]["label"] != "no_issue"]
+    clean = [r for r in recs if r["questions"]["relation"]["label"] == "no_issue"]
+    rnd = random.Random(seed)
+    pick = risky + rnd.sample(clean, min(len(clean), len(risky)))
+    rnd.shuffle(pick)
+    dst.write_text("".join(json.dumps(r, ensure_ascii=False) + "\n" for r in pick), encoding="utf-8")
+    print(f"balanced: {len(risky)} risky + {min(len(clean), len(risky))} no_issue -> {dst}")
 
 
 if __name__ == "__main__":

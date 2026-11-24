@@ -28,13 +28,13 @@ pkill -f "web/server[.]py" 2>/dev/null; pkill -f "kev[.]serve" 2>/dev/null; slee
 start=$(date +%s)
 # kev.train defaults to Qwen3-0.6B-Base; kev-0.8b is built on Qwen3.5-0.8B-Base (revision pinned
 # in its model card), and warm_start() refuses a mismatched backbone.
-(cd "$KEV" && "$KPY" -m kev.train --data "$REPO/data/derived/kev/train.jsonl" --init_from jaredpalmer/kev-0.8b \
+(cd "$KEV" && "$KPY" -m kev.train --data "$REPO/data/derived/kev/${KEV_DATA:-train.jsonl}" --init_from jaredpalmer/kev-0.8b ${KEV_EXTRA:-} \
    --base Qwen/Qwen3.5-0.8B-Base --base_revision dc7cdfe2ee4154fa7e30f5b51ca41bfa40174e68 \
-   --lr 1e-4 --epochs "${KEV_EPOCHS:-1}" --accum 8 --max_state 1280 \
+   --lr "${KEV_LR:-1e-4}" --epochs "${KEV_EPOCHS:-1}" --accum 8 --max_state 1280 \
    --device cuda --dtype bf16 --weights_dtype bf16 --checkpointing 1 \
    --out "$REPO/models/kev_judge") > /tmp/kev_train.log 2>&1
 status=$?
-echo "{\"base\": \"jaredpalmer/kev-0.8b\", \"lr\": 1e-4, \"epochs\": 2, \"accum\": 8, \"exit\": $status, \"train_seconds\": $(( $(date +%s) - start )), \"train_records\": $(wc -l < data/derived/kev/train.jsonl)}" > results/kev_train.json
+echo "{\"base\": \"jaredpalmer/kev-0.8b\", \"lr\": \"${KEV_LR:-1e-4}\", \"epochs\": ${KEV_EPOCHS:-1}, \"accum\": 8, \"data\": \"${KEV_DATA:-train.jsonl}\", \"extra\": \"${KEV_EXTRA:-}\", \"exit\": $status, \"train_seconds\": $(( $(date +%s) - start )), \"train_records\": $(wc -l < data/derived/kev/${KEV_DATA:-train.jsonl})}" > results/kev_train.json
 log "train exit=$status: $(cat results/kev_train.json)"
 
 if [[ -z "${SKIP_BASE:-}" ]]; then

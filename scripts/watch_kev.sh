@@ -54,7 +54,10 @@ else:
 EOF
 }
 
-while pgrep -f "bash train/kev_pipeline" >/dev/null; do
+running() {   # the pipeline is running until its log says it is done (a stray shell must not keep us waiting)
+  pgrep -f "bash train/kev_pipeline" >/dev/null && ! grep -q "kev pipeline done" "$PIPE" 2>/dev/null
+}
+while running; do
   clear
   echo "══ Kev judge fine-tune — $(date +%T) ══════════════════════════════════════"
   panel
