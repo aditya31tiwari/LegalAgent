@@ -47,7 +47,7 @@ lines with page numbers is a TOC, not clauses), and a parser for reference phras
 
 > **Labels in one line:** CLAUSE-22 = 22 trained types + `other`, plus 7 rule-based Indian labels (force majeure,
 > liquidated damages, data protection, stamp duty, performance security, change in law, step-in rights).
-> The full list with meanings, the 40 clash pairs and why it changed from CLAUSE-20 are in **FACTS_REFERENCE.md §1**.
+> The full list with meanings, the 40 clash pairs and why it changed from CLAUSE-20 are in **LEARN_EVERYTHING.md §1**.
 
 **What.** Multi-label tags from **CLAUSE-22** (termination, limitation_of_liability, arbitration, …).
 **How.** **InLegalBERT** (BERT pre-trained on Indian legal text by IIT Kharagpur) fine-tuned on 74,374 labelled

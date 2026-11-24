@@ -6,7 +6,7 @@
 |---|---|
 | [PANEL_DEMO.md](PANEL_DEMO.md) | **How to show the project tomorrow**: which laptop shows what, setup, the 12-minute walk-through, fallbacks |
 | [LEARNING.md](LEARNING.md) | **For us**: every part explained (what / how / why / why not), what each result table tests, likely viva questions, glossary |
-| [FACTS_REFERENCE.md](FACTS_REFERENCE.md) | **Exact facts**: the 22 + 7 labels, 40 clash pairs, datasets + sizes, models + training settings, Kev's exact questions, every threshold, pages/ports/commands |
+| [LEARN_EVERYTHING.md](LEARN_EVERYTHING.md) | **Exact facts**: the 22 + 7 labels, 40 clash pairs, datasets + sizes, models + training settings, Kev's exact questions, every threshold, pages/ports/commands |
 | [PROCESS.md](PROCESS.md) | The whole build: timeline, schema, all results, every failed attempt and why it failed |
 | [FINAL_REPORT.md](FINAL_REPORT.md) | Report-style write-up (abstract → conclusion) to copy from |
 | [REPORT_CHANGES.md](REPORT_CHANGES.md) | Section-by-section edits for LegalAgent_Final_Report.docx |

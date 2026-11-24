@@ -85,7 +85,7 @@ Then skim tables 6 (GNN: no gain, an honest ablation) and 7 (teacher checked aga
 - Glossary at the end of `LEARNING.md`: make sure you can define PyMuPDF, OCR, BM25, embeddings, RRF, RAG, LoRA,
   focal loss, F1, recall@k, κ.
 
-### A6. Exact facts (10 min) — read `FACTS_REFERENCE.md`
+### A6. Exact facts (10 min) — read `LEARN_EVERYTHING.md`
 The 22 + 7 labels (and why CLAUSE-20 became CLAUSE-22), the 40 clash pairs, datasets and sizes, the models, and
 Kev's exact questions. Panels ask "how many labels / what data / which model / what threshold": the answers are there.
 
