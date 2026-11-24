@@ -44,7 +44,7 @@ Plan: [`docs/PLAN.md`](docs/PLAN.md) · Morning: [`docs/final_viva_docs/MORNING_
       Cohen's κ, contrastive learning / MNRL, GraphSAGE / GNN / link prediction, RAG, CUAD, LEDGAR / LexGLUE,
       India Code, ICA s.27 / s.74 / s.124, A&C Act, DPDP Act, Kev / Jev / decision model, SSE, FastAPI, SQLite.
 
-## Overnight (you start before sleeping)
+## Overnight — CANCELLED (project shown as committed; nothing run overnight or on viva day)
 - [ ] [U] ≥22:05 (Gemini quota reset): `bash research/teacher_labels/run_teacher.sh more-gemini`
 - [ ] [U] then: `nohup bash scripts/overnight.sh > logs/overnight.log 2>&1 &` (waits for the labelling; trains Kev v3,
       evaluates, re-selects the judge, re-seeds demo only if it changed, commits)

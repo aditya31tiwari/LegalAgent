@@ -207,5 +207,5 @@ labels instead of being hidden or presented as verdicts.
 - Lawyer-reviewed Indian clause-pair test set (current pair labels are silver).
 - Larger Kev (4B) or contrastive bad/fixed training pairs; ContractNLI as auxiliary data.
 - Full Indian Acts index (Open India Law Qdrant) with a small local embedding model.
-- Overnight run (`scripts/overnight.sh`): Kev v3 with all teacher labels; replaces the demo judge only if it
+- Kev v3 on all ~2,400 teacher labels (`scripts/overnight.sh` is ready but was not run before the viva).
   beats the base on the independent tests.

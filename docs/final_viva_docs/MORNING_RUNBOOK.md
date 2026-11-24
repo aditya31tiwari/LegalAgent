@@ -36,12 +36,8 @@ On the frontend laptop (same hotspot): `http://<ip>:8080/…`
    ```
    press Enter through 8 stages.
 
-## 3. Report (30–45 min)
-- `docs/final_viva_docs/REPORT_CHANGES.md` — what to change in the .docx, section by section.
-- `docs/final_viva_docs/FINAL_REPORT.md` — wording to paste.
-- Numbers only from `results/REPORT.html` / `results/REPORT_TABLES.md`.
-
-## 4. Rehearse (rest of the time)
+## 3. Rehearse (rest of the time)
+Nothing is changed in the morning — the project is shown exactly as committed (branch `final`).
 - `PANEL_DEMO.md` walk-through twice, timed (≈12 min).
 - `LEARNING.md` — likely questions + glossary + "what each table tests".
 - `PROCESS.md` §4 — the failed attempts (panels like these).
@@ -52,10 +48,7 @@ On the frontend laptop (same hotspot): `http://<ip>:8080/…`
 | Page doesn't load on other laptop | open everything on Aryan's laptop (`http://localhost:8080/app`) · or `sudo ufw allow 8080/tcp` |
 | Kev down / "judge=rules" on uploads | `bash scripts/start_demo.sh stop; bash scripts/start_demo.sh` — stored results still show meanwhile |
 | GPU out of memory in `/tmp/kev_demo_serve.log` | same restart; close anything else using the GPU (`nvidia-smi`) |
-| Database looks wrong / empty | `venv/bin/python scripts/seed_demo.py --judge local` (≈15 min, all 10 contracts; Kev must be up) |
+| Database looks wrong / empty | `git checkout origin/final -- contracts.db` then restart (the committed database has all 10 contracts) |
 | Need exact pushed state back | `git fetch origin; git checkout origin/final -- .` then restart |
 
-## Optional: overnight Kev v3 (not recommended the night before)
-`nohup bash scripts/overnight.sh > logs/overnight.log 2>&1 &` trains Kev v3 on all teacher labels and switches the
-demo judge only if v3 beats the base model on the independent tests (v2 did not). It also restarts and re-seeds the
-demo, so only run it if you will check `tail -n 25 logs/overnight.log` in the morning.
+**Do not** run `scripts/overnight.sh`, `seed_demo.py` or any training: the demo is shown as committed.

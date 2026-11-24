@@ -90,6 +90,7 @@ Then skim tables 6 (GNN: no gain, an honest ablation) and 7 (teacher checked aga
 ---
 
 ## PART B — Morning (≈ 30 min) — `MORNING_RUNBOOK.md`
+Nothing is changed or retrained: the project is shown exactly as committed. Only start, check, rehearse.
 1. Both laptops on one hotspot. On Aryan's laptop: `bash scripts/start_demo.sh`, then `hostname -I` → IP.
 2. If the other laptop can't open the page: `sudo ufw allow 8080/tcp` (once).
 3. Warm up: open every contract once; **do one upload** (first one ≈ 50 s, later ≈ 15 s); open `/scores` once.
