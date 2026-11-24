@@ -763,12 +763,12 @@
           <!-- File drag-and-drop -->
           <div class="upload-dropzone" id="upload-dropzone"
                ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleFileDrop(event)">
-            <input type="file" id="file-upload-input" accept=".txt,.pdf,.docx,.md"
+            <input type="file" id="file-upload-input" accept=".txt,.pdf,.docx,.md,.png,.jpg,.jpeg,.tif,.tiff"
                    onchange="handleFileSelect(event)" style="z-index:2;">
             <div class="dropzone-icon">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--copper);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
             </div>
-            <div class="dropzone-text">Drag & drop a .txt, .md, .pdf, or .docx file — or click to browse</div>
+            <div class="dropzone-text">Drag & drop a PDF (scanned is fine — OCR), DOCX, image, TXT or MD — or click to browse</div>
             <div class="dropzone-filename" id="dropzone-filename"></div>
           </div>
 
@@ -794,6 +794,25 @@
             </label>
             <span style="font-size:10px; color:var(--text-muted);">Audits all candidate pairs across agreement</span>
           </div>
+          <div style="margin-top:8px; display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Pair judge</label>
+              <select id="analysis-judge" class="form-input">
+                <option value="local" selected>Local Kev model — private, on this machine</option>
+                <option value="rules">Deterministic rules</option>
+                <option value="gemini">Gemini (cloud — sends text to Google)</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin:0;">
+              <label class="form-label">Related-clause retrieval</label>
+              <select id="analysis-retrieval" class="form-input">
+                <option value="hybrid" selected>Hybrid (BM25 + dense, RRF)</option>
+                <option value="bm25">BM25 (lexical)</option>
+                <option value="dense">Dense (embeddings)</option>
+              </select>
+            </div>
+          </div>
+          <div id="system-status-line" style="margin-top:6px; font-size:10.5px; color:var(--text-muted);"></div>
         </div>
 
         <!-- ─ Live analysis progress (shown during and after streaming) ─ -->
@@ -1003,10 +1022,10 @@
         card.innerHTML = `
           <div class="clause-card-top">
             <span class="clause-num">Section ${c.clause_num || c.num}</span>
-            <span class="clause-tag ${tagClass}">${c.tag}</span>
+            <span class="clause-tag ${tagClass}">${escapeHtml(c.tag)}</span>
           </div>
-          <div class="clause-title">${c.title}</div>
-          <div class="clause-excerpt clamped" id="${excerptId}">${c.text}</div>
+          <div class="clause-title">${escapeHtml(c.title)}</div>
+          <div class="clause-excerpt clamped" id="${excerptId}">${escapeHtml(c.text)}</div>
           <button class="clause-expand-btn" onclick="event.stopPropagation(); toggleClauseExpand('${excerptId}', this)">Read more</button>
           ${xrefsHtml}
         `;
@@ -1112,20 +1131,54 @@
         card.dataset.target = f.target_clause_ref || '';
         card.dataset.relationType = f.relation_type || '';
         card.style.animationDelay = `${idx * 50}ms`;
+        // Everything below comes from documents or models: always escaped (report TC13).
+        const clauseRef = (ref) => {
+          const c = (contractData.clauses || []).find(x => x.id === ref);
+          return c ? `Clause ${escapeHtml(c.clause_num || '')} — ${escapeHtml((c.text || '').slice(0, 260))}${(c.text || '').length > 260 ? '…' : ''}`
+                   : escapeHtml(ref || '');
+        };
+        const sameClause = (f.source_clause_ref || '') === (f.target_clause_ref || '');
         card.innerHTML = `
           <div class="finding-top">
-            <span class="severity-badge ${sevClass}">${(f.severity || 'high').toUpperCase()}</span>
-            <span class="finding-relation">${f.relation_type}</span>
+            <span class="severity-badge ${sevClass}">${escapeHtml((f.severity || 'high').toUpperCase())}</span>
+            <span class="finding-relation">${escapeHtml(f.relation_type || '')}</span>
           </div>
-          <div class="finding-title">${f.title}</div>
-          <div class="finding-desc">${f.description}</div>
-          <div class="provision-box"><div class="provision-label">Source Provision</div><div class="provision-text">${f.source_clause_ref}</div></div>
-          <div class="provision-box"><div class="provision-label conflict">Conflicting Target</div><div class="provision-text conflict-ref">${f.target_clause_ref}</div></div>
-          <div class="citation-box"><div class="citation-label">Statutory Authority</div><div class="citation-text">${f.statute_citation}</div></div>
-          <div class="remedy-box"><div class="remedy-label">Recommended Amendment</div><div class="remedy-text">${f.remedy_suggestion}</div></div>
+          <div class="finding-title">${escapeHtml(f.title || '')}</div>
+          <div class="finding-desc">${escapeHtml(f.description || '')}</div>
+          <div class="provision-box"><div class="provision-label">Source Provision</div><div class="provision-text">${clauseRef(f.source_clause_ref)}</div></div>
+          ${sameClause ? '' : `<div class="provision-box"><div class="provision-label conflict">Related Provision</div><div class="provision-text conflict-ref">${clauseRef(f.target_clause_ref)}</div></div>`}
+          <div class="citation-box"><div class="citation-label">Statutory Authority (India Code)</div><div class="citation-text">${escapeHtml(f.statute_citation || '—')}</div></div>
+          <div class="remedy-box"><div class="remedy-label">Recommended Amendment</div><div class="remedy-text" id="remedy-${idx}">${escapeHtml(f.remedy_suggestion || '')}</div></div>
+          ${f.id ? `<button class="btn btn-secondary" style="margin-top:6px; padding:3px 10px; font-size:11px;"
+              title="Opt-in: sends these two clauses and the retrieved statute sections to Gemini"
+              onclick="event.stopPropagation(); expandFinding('${escapeHtml(f.id)}', ${idx}, this)">Expand with Gemini (cloud) ↗</button>
+             <div class="expand-box" id="expand-${idx}" style="display:none; margin-top:6px; padding:8px 10px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:4px; font-size:11.5px;"></div>` : ''}
         `;
         container.appendChild(card);
       });
+    }
+
+    async function expandFinding(findingId, idx, btn) {
+      const box = document.getElementById(`expand-${idx}`);
+      if (!confirm('This sends the two clauses and retrieved statute sections to Google Gemini. Continue?')) return;
+      btn.disabled = true; btn.innerText = 'Asking Gemini…';
+      box.style.display = 'block'; box.innerText = 'Generating explanation grounded in retrieved India Code sections…';
+      try {
+        const res = await fetch(`/api/findings/${encodeURIComponent(findingId)}/expand`, { method: 'POST' });
+        const d = await res.json();
+        if (!res.ok) throw new Error(d.detail || res.statusText);
+        const basis = (d.legal_basis || []).map(b =>
+          `<li><b>${escapeHtml(b.act)}, Section ${escapeHtml(b.section)}</b> ${b.verified ? '<span style="color:#047857">✓ verified</span>' : '<span style="color:#b45309">unverified</span>'}
+           — ${escapeHtml(b.why || '')} ${b.url ? `<a href="${escapeHtml(b.url)}" target="_blank" rel="noopener">India Code ↗</a>` : ''}</li>`).join('');
+        box.innerHTML = `<div>${escapeHtml(d.explanation || '')}</div>
+          ${basis ? `<ul style="margin:6px 0 0 16px;">${basis}</ul>` : ''}
+          ${d.suggested_redline ? `<div style="margin-top:6px;"><b>Suggested redline:</b> ${escapeHtml(d.suggested_redline)}</div>` : ''}
+          <div style="margin-top:4px; color:var(--text-muted); font-size:10px;">Cloud assist (Gemini) · confidence ${escapeHtml(d.confidence || '?')} · citations restricted to locally retrieved sections</div>`;
+        btn.innerText = 'Expanded ✓';
+      } catch (e) {
+        box.innerText = `Cloud assist unavailable: ${e.message}. The local finding above stands on its own.`;
+        btn.disabled = false; btn.innerText = 'Retry Expand';
+      }
     }
 
     /* ── Network Graph ── */
@@ -1475,7 +1528,7 @@
         const pBox = document.createElement('div');
         pBox.className = 'cv-preamble-box';
         pBox.innerHTML = 
-          `<div class="cv-doc-title">${c.title}</div>` +
+          `<div class="cv-doc-title">${escapeHtml(c.title)}</div>` +
           `<div class="cv-doc-meta">${c.category} &bull; ${c.jurisdiction}</div>` +
           `<div class="cv-parties-block">${c.description || 'Full legal instrument text.'}</div>`;
         body.appendChild(pBox);
@@ -1487,15 +1540,15 @@
         div.className = 'contract-viewer-clause';
         div.id = `cv-clause-${cl.id || idx}`;
         
-        let tagBadge = cl.tag ? `<span style="font-size:10.5px; font-weight:600; padding:2px 7px; border-radius:3px; background:#f5f3ef; border:1px solid #e2ded5; color:#64748b;">${cl.tag}</span>` : '';
+        let tagBadge = cl.tag ? `<span style="font-size:10.5px; font-weight:600; padding:2px 7px; border-radius:3px; background:#f5f3ef; border:1px solid #e2ded5; color:#64748b;">${escapeHtml(cl.tag)}</span>` : '';
         
         div.innerHTML = 
           `<div class="cv-clause-header">` +
             `<span class="contract-viewer-num">Section ${cl.clause_num || cl.num}</span>` +
             `${tagBadge}` +
           `</div>` +
-          `<div class="contract-viewer-title">${cl.title}</div>` +
-          `<div class="contract-viewer-text">${cl.text}</div>`;
+          `<div class="contract-viewer-title">${escapeHtml(cl.title)}</div>` +
+          `<div class="contract-viewer-text">${escapeHtml(cl.text)}</div>`;
         body.appendChild(div);
       });
 
@@ -1669,7 +1722,7 @@
               ${c.health_score}
             </div>
             <div class="clc-info">
-              <div class="clc-title" title="${c.title}">${c.title}</div>
+              <div class="clc-title" title="${escapeHtml(c.title)}">${escapeHtml(c.title)}</div>
               <div class="clc-meta">${c.clause_count} clauses · ${c.jurisdiction || 'India'}</div>
               <div class="clc-badges">
                 ${c.critical_count > 0 ? `<span class="clc-badge conflict">${c.critical_count} critical</span>` : ''}
@@ -1777,18 +1830,27 @@ This Agreement is governed by the laws of India. Any dispute arising out of or i
       }
 
       if (file.name.endsWith('.txt') || file.name.endsWith('.md')) {
+        window.selectedUploadFile = null;
         const reader = new FileReader();
         reader.onload = function(evt) {
           document.getElementById('custom-contract-text').value = evt.target.result;
         };
         reader.readAsText(file);
       } else {
-        // PDF or DOCX file note
-        document.getElementById('custom-contract-text').value = 
-`[Binary document uploaded: ${file.name}]
-Backend PyMuPDF & Tesseract OCR will ingest and parse this document on submission.
-You may also paste specific clauses directly below if desired.`;
+        // PDF / DOCX / image: the file itself is uploaded and parsed (and OCR'd) server-side.
+        window.selectedUploadFile = file;
+        document.getElementById('custom-contract-text').value = '';
+        document.getElementById('custom-contract-text').placeholder =
+          `${file.name} will be uploaded and parsed on the server (PyMuPDF/pymupdf4llm, Tesseract OCR for scanned pages). Leave this box empty.`;
       }
+    }
+
+    async function loadSystemStatus() {
+      try {
+        const s = await (await fetch('/api/system/status')).json();
+        const el = document.getElementById('system-status-line');
+        if (el) el.innerText = `Classifier: ${s.classifier} · Kev judge: ${s.kev_server ? 'running' : 'offline (falls back to rules)'} · GPU: ${s.gpu || 'none'} · Statute library: ${s.statute_sections} sections`;
+      } catch (e) { /* status is informational only */ }
     }
 
     /* ── Modal Operations ── */
@@ -1804,6 +1866,7 @@ You may also paste specific clauses directly below if desired.`;
       document.getElementById('btn-submit-analyze').disabled = false;
       document.getElementById('upload-modal-close').style.display = 'flex';
       document.getElementById('upload-modal').classList.add('open');
+      loadSystemStatus();
     }
 
     function closeUploadModal() {
@@ -1816,7 +1879,8 @@ You may also paste specific clauses directly below if desired.`;
       const text = document.getElementById('custom-contract-text').value.trim();
       const jurisdiction = document.getElementById('custom-contract-jurisdiction').value.trim() || "India";
 
-      if (!text) {
+      const uploadFile = window.selectedUploadFile || null;
+      if (!text && !uploadFile) {
         alert("Please paste contract text or select a file to analyze.");
         return;
       }
@@ -1881,13 +1945,28 @@ You may also paste specific clauses directly below if desired.`;
 
       const unsetLimit = document.getElementById('unset-candidate-limit') ? document.getElementById('unset-candidate-limit').checked : true;
       const max_candidates = unsetLimit ? null : 30;
+      const judge = (document.getElementById('analysis-judge') || {}).value || 'local';
+      const retrieval = (document.getElementById('analysis-retrieval') || {}).value || 'hybrid';
 
       try {
-        const response = await fetch('/api/contracts/analyze/stream', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title, text, jurisdiction, max_candidates })
-        });
+        let response;
+        if (uploadFile && !text) {
+          const form = new FormData();
+          form.append('file', uploadFile);
+          form.append('title', title);
+          form.append('jurisdiction', jurisdiction);
+          form.append('judge', judge);
+          form.append('retrieval', retrieval);
+          form.append('max_candidates', max_candidates === null ? 0 : max_candidates);
+          response = await fetch('/api/contracts/upload/stream', { method: 'POST', body: form });
+        } else {
+          response = await fetch('/api/contracts/analyze/stream', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ title, text, jurisdiction, max_candidates, judge, retrieval })
+          });
+        }
+        window.selectedUploadFile = null;
 
         if (!response.ok) {
           throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
