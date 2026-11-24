@@ -1,5 +1,7 @@
 # Final viva docs — read in this order
 
+**Start with [START_HERE.md](START_HERE.md)**: one ordered plan (understand tonight → morning checks → panel).
+
 | File | What it is for |
 |---|---|
 | [PANEL_DEMO.md](PANEL_DEMO.md) | **How to show the project tomorrow**: which laptop shows what, setup, the 12-minute walk-through, fallbacks |
