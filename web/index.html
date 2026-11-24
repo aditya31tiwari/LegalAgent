@@ -220,43 +220,6 @@
     .filter-sep { width: 1px; height: 16px; background: var(--border); margin: 0 4px; }
     .filter-btn-fit { font-size: 11px; font-weight: 500; font-family: var(--font-sans); padding: 3px 8px; border-radius: 3px; border: none; cursor: pointer; background: transparent; color: var(--text-muted); }
     .filter-btn-fit:hover { color: var(--text-primary); }
-
-    /* Maximized Canvas View */
-    .workspace.canvas-maximized #panel-left,
-    .workspace.canvas-maximized #resizer-left,
-    .workspace.canvas-maximized #panel-right,
-    .workspace.canvas-maximized #resizer-right {
-      display: none !important;
-    }
-    .workspace.canvas-maximized #panel-center {
-      flex: 1 1 100% !important;
-      width: 100% !important;
-    }
-    .filter-btn-toggle {
-      font-size: 11px;
-      font-weight: 500;
-      font-family: var(--font-sans);
-      padding: 3px 8px;
-      border-radius: 3px;
-      border: 1px solid var(--border);
-      cursor: pointer;
-      background: rgba(255,255,255,0.9);
-      color: var(--text-secondary);
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      transition: all 0.15s var(--ease);
-    }
-    .filter-btn-toggle:hover {
-      background: var(--bg-ivory);
-      color: var(--text-primary);
-      border-color: var(--copper);
-    }
-    .filter-btn-toggle.active {
-      background: var(--navy);
-      color: #ffffff;
-      border-color: var(--navy);
-    }
     .graph-legend { position: absolute; bottom: 12px; left: 16px; right: 16px; display: flex; align-items: center; justify-content: space-between; pointer-events: none; z-index: 10; }
     .graph-legend > * { pointer-events: auto; }
     .legend-items { display: flex; align-items: center; gap: 16px; padding: 5px 14px; background: rgba(255,255,255,0.92); border: 1px solid var(--border); border-radius: 5px; backdrop-filter: blur(8px); }
@@ -718,12 +681,6 @@
           <button onclick="setGraphFilter('statutory', this)" class="filter-chip">Statutory</button>
           <button onclick="setGraphFilter('xref', this)" class="filter-chip">Cross-Refs</button>
           <div class="filter-sep"></div>
-          <button id="btn-graph-layout" onclick="toggleGraphLayout()" class="filter-btn-toggle" title="Switch between Organic Force and Structured Uncluttered Layout">
-            <span id="layout-icon">⊞</span> <span id="layout-text">Structured</span>
-          </button>
-          <button id="btn-graph-expand" onclick="toggleGraphExpand()" class="filter-btn-toggle" title="Expand Graph Canvas (Full Width)">
-            <span id="expand-icon">⛶</span> <span id="expand-text">Expand Canvas</span>
-          </button>
           <button onclick="fitGraphView()" class="filter-btn-fit" title="Zoom to Fit">Fit</button>
         </div>
       </div>
@@ -922,8 +879,6 @@
     let contractData = null;
     let networkInstance = null;
     let currentGraphFilter = "all";
-    let currentGraphLayout = "organic"; // 'organic' | 'structured'
-    let isGraphExpanded = false;
     let searchQuery = "";
     let embeddingNetwork = null;
     let pipelineNetwork = null;
@@ -1176,19 +1131,12 @@
     /* ── Network Graph ── */
     function renderNetworkGraph() {
       const container = document.getElementById('network-canvas');
-      if (!contractData || !contractData.clauses) return;
-
-      const isStructured = currentGraphLayout === 'structured';
-      const hasInjections = contractData.clauses.some(c => (c.clause_num || c.num || '').startsWith('91'));
-      const isLarge = contractData.clauses.length >= 18;
-
-      const nodes = new vis.DataSet(contractData.clauses.map((c, idx) => {
+      const nodes = new vis.DataSet(contractData.clauses.map(c => {
         let bg = '#ffffff', border = '#64748b';
         if (c.tag.includes("Risk") || c.tag === "Liability") { bg = '#fdf8f8'; border = '#9b2c2c'; }
         else if (c.tag.includes("Indemnity") || c.tag.includes("Statutory") || c.tag.includes("DPDPA") || c.tag === "Compliance") { bg = '#fdf6fa'; border = '#7b3060'; }
         else if (c.tag === "Commercial" || c.tag === "Payment") { bg = '#f6fcf8'; border = '#276749'; }
-
-        const nodeObj = {
+        return {
           id: c.id,
           label: `Section ${c.clause_num || c.num}\n${c.title}`,
           shape: "box",
@@ -1210,27 +1158,6 @@
           },
           shadow: { enabled: true, color: 'rgba(26,35,50,0.06)', size: 8, x: 0, y: 3 }
         };
-
-        if (isStructured) {
-          if (hasInjections) {
-            const isInj = (c.clause_num || c.num || '').startsWith('91');
-            const colIndex = isInj ? 1 : 0;
-            const peers = contractData.clauses.filter(x => (x.clause_num || x.num || '').startsWith('91') === isInj);
-            const rowInCol = peers.findIndex(x => x.id === c.id);
-            nodeObj.x = colIndex === 0 ? -380 : 380;
-            nodeObj.y = (rowInCol - (peers.length / 2)) * 115;
-            nodeObj.fixed = { x: true, y: true };
-          } else {
-            // General 2-column comparative layout
-            const col = idx % 2;
-            const row = Math.floor(idx / 2);
-            nodeObj.x = (col === 0 ? -320 : 320);
-            nodeObj.y = (row - Math.floor(contractData.clauses.length / 4)) * 110;
-            nodeObj.fixed = { x: true, y: true };
-          }
-        }
-
-        return nodeObj;
       }));
 
       let edgeList = contractData.edges || [];
@@ -1253,26 +1180,26 @@
           dashes: !!e.dashes,
           font: { color: '#334155', size: 11, align: 'horizontal', background: '#fafaf8', strokeWidth: 0 },
           arrows: { to: { enabled: true, scaleFactor: 0.7 } },
-          smooth: { enabled: true, type: isStructured ? 'cubicBezier' : 'curvedCW', roundness: isStructured ? 0.35 : 0.18 },
+          smooth: { enabled: true, type: 'curvedCW', roundness: 0.18 },
           rawEdge: e
         };
       }));
 
       const options = {
-        physics: isStructured ? false : {
+        physics: {
           enabled: true,
           stabilization: {
             enabled: true,
-            iterations: isLarge ? 240 : 180,
-            updateInterval: 25
+            iterations: 180,
+            updateInterval: 20
           },
           barnesHut: {
-            gravitationalConstant: isLarge ? -7000 : -2800,
-            centralGravity: isLarge ? 0.12 : 0.22,
-            springLength: isLarge ? 270 : 145,
-            springConstant: 0.04,
+            gravitationalConstant: -2800,
+            centralGravity: 0.22,
+            springLength: 145,
+            springConstant: 0.05,
             damping: 0.35,
-            avoidOverlap: 1.0
+            avoidOverlap: 0.85
           },
           minVelocity: 0.75
         },
@@ -1282,70 +1209,23 @@
       if (networkInstance) networkInstance.destroy();
       networkInstance = new vis.Network(container, { nodes, edges }, options);
 
-      if (isStructured) {
-        setTimeout(() => {
-          if (networkInstance) networkInstance.fit({ animation: { duration: 300 }, padding: 45 });
-        }, 80);
-      } else {
-        networkInstance.once("stabilizationIterationsDone", () => {
+      // Lock nodes in place and stop rotation once stabilized
+      networkInstance.once("stabilizationIterationsDone", () => {
+        networkInstance.setOptions({ physics: { enabled: false } });
+        networkInstance.fit({ animation: { duration: 300 }, padding: 35 });
+      });
+
+      // Safety fallback: ensure physics freezes completely
+      setTimeout(() => {
+        if (networkInstance) {
           networkInstance.setOptions({ physics: { enabled: false } });
-          networkInstance.fit({ animation: { duration: 300 }, padding: 35 });
-        });
-        setTimeout(() => {
-          if (networkInstance) networkInstance.setOptions({ physics: { enabled: false } });
-        }, 500);
-      }
+        }
+      }, 450);
 
       networkInstance.on("click", params => {
         if (params.nodes.length > 0) focusClause(params.nodes[0]);
         if (params.edges.length > 0) highlightFindingForEdge(params.edges[0]);
       });
-    }
-
-    /* ── Toggle Graph Layout (Structured vs Organic) ── */
-    function toggleGraphLayout() {
-      currentGraphLayout = (currentGraphLayout === 'organic') ? 'structured' : 'organic';
-      const btn = document.getElementById('btn-graph-layout');
-      const icon = document.getElementById('layout-icon');
-      const txt = document.getElementById('layout-text');
-      if (currentGraphLayout === 'structured') {
-        if (btn) btn.classList.add('active');
-        if (icon) icon.innerText = '⚛';
-        if (txt) txt.innerText = 'Organic Force';
-      } else {
-        if (btn) btn.classList.remove('active');
-        if (icon) icon.innerText = '⊞';
-        if (txt) txt.innerText = 'Structured';
-      }
-      renderNetworkGraph();
-    }
-
-    /* ── Toggle Full-Width Canvas Expansion ── */
-    function toggleGraphExpand() {
-      isGraphExpanded = !isGraphExpanded;
-      const workspace = document.getElementById('workspace-container');
-      const btn = document.getElementById('btn-graph-expand');
-      const icon = document.getElementById('expand-icon');
-      const txt = document.getElementById('expand-text');
-
-      if (isGraphExpanded) {
-        workspace.classList.add('canvas-maximized');
-        if (btn) btn.classList.add('active');
-        if (icon) icon.innerText = '⤢';
-        if (txt) txt.innerText = 'Restore Panels';
-      } else {
-        workspace.classList.remove('canvas-maximized');
-        if (btn) btn.classList.remove('active');
-        if (icon) icon.innerText = '⛶';
-        if (txt) txt.innerText = 'Expand Canvas';
-      }
-
-      setTimeout(() => {
-        if (networkInstance) {
-          networkInstance.redraw();
-          networkInstance.fit({ animation: { duration: 350 }, padding: 45 });
-        }
-      }, 150);
     }
 
     /* ── Highlight Finding from Edge Click & Show Inspector ── */
