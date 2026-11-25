@@ -2,6 +2,7 @@
 
 | Order | File | Time | Why |
 |---|---|---|---|
+| 0 | [PRESENTATION_SCRIPT.md](PRESENTATION_SCRIPT.md) | 10 min | Who presents what (3 speakers), in what order, what to explain, who answers which questions |
 | 1 | [PANEL_VIVA.md](PANEL_VIVA.md) | 20 min | The 10 numbers, expected questions, hard questions. Read this if nothing else |
 | 2 | [DECISIONS.md](DECISIONS.md) | 15 min | Every "why X, why not Y", with the number behind it |
 | 3 | [PANEL_DEMO.md](PANEL_DEMO.md) §2 | 10 min | The 12-minute walkthrough: what to click, what to say |
