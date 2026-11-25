@@ -15,5 +15,7 @@
 | [REPORT_CHANGES.md](REPORT_CHANGES.md) | Section-by-section edits for LegalAgent_Final_Report.docx |
 | [MORNING_RUNBOOK.md](MORNING_RUNBOOK.md) | Morning checklist: what to check, start, and do if something broke |
 
+Interactive explainer (real teacher / Kev / retrieval outputs, calculators, GNN demo): https://claude.ai/artifact/XXHDentcXnZNQEiS6Xjzqf (private to its owner unless shared).
+
 Live pages (backend on Aryan's laptop): `/app` dashboard · `/scores` under the hood · `/report` every comparison with timings.
 Backend stage-by-stage tables: `venv/bin/python scripts/show_steps.py <contract file>`.
