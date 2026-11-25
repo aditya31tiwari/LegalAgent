@@ -98,7 +98,19 @@ def analyse_clauses(clauses: list[Clause], config: dict, contract_id: str = "loc
         t = time.perf_counter()
         try:
             from legalagent.core.statutory_kev import kev_statutory_findings
-            findings.extend(kev_statutory_findings(clauses, rule_hits={f.target_clause_id for f in rule_findings}))
+            kev_findings = kev_statutory_findings(clauses, rule_hits={f.target_clause_id for f in rule_findings})
+            # One card per clause: when the rules confirm Kev's finding, fold the rule finding into it
+            # (rule explanation + references) instead of showing the same clause twice.
+            confirmed = {f.target_clause_id: f for f in kev_findings if f.scores.get("rule_confirmed")}
+            for rf in rule_findings:
+                kf = confirmed.get(rf.target_clause_id)
+                if kf is None:
+                    continue
+                kf.rationale += f" Rule check: {rf.rationale}"
+                kf.refs = kf.refs + [r for r in rf.refs if r not in kf.refs]
+                kf.risk_score = max(kf.risk_score, rf.risk_score)
+            findings = [f for f in findings if not (f in rule_findings and f.target_clause_id in confirmed)]
+            findings.extend(kev_findings)
         except Exception as exc:
             logger.warning("Kev statutory check skipped: %s", exc)
         timings["kev_statutory_s"] = round(time.perf_counter() - t, 3)

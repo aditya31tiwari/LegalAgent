@@ -4,6 +4,20 @@
 sections, base Kev served, statute 0.32, no ContractNLI/FAISS/login claims, no placeholders. About a dozen fixes
 remain. **#1 and #3 are the ones a panel can catch.**
 
+## NEW (viva day): clause-vs-law check upgraded. Update §3.2.6, §5.1.4, Table 5.4
+The law check now combines four measured signals, and the dashboard shows the result:
+1. **Type gate:** InLegalBERT; only clauses whose type can carry a legal risk are checked.
+2. **Kev risk type:** 7 categories, each mapped to its section.
+3. **RAG corroboration:** the India Code search independently retrieves the same section → *law-confirmed*, +1 confidence level.
+4. **Rule corroboration:** the regex rules fire too → *rule-confirmed*, +1 level; merged into one card.
+
+Suggested text for §5.1.4: "As deployed, the check surfaced 13 of 15 real violations (7/9 Supreme Court struck-down,
+6/6 planted) and flagged 1 of 30 ordinary clauses; keyword rules alone caught 4 of 15. Findings confirmed by an
+independent India Code search were correct 4 times out of 5. Having Kev judge directly from retrieved statute text was
+tested and was weaker (AUC 0.64 vs 0.74), so retrieval corroborates rather than decides. The 4 clauses the court upheld
+are still flagged, because legal exceptions are not modelled." The full table is `/report` 4b
+(`results/eval_lawcheck_pipeline.json`, `scripts/eval_rag_check.py`). This replaces the "nine false alarms" / 11/30 wording.
+
 ## Required changes (most serious first)
 
 | # | Where | Now says | Change to | Why |
