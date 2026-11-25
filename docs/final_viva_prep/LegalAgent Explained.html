@@ -1,0 +1,596 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>LegalAgent Explained</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single reading column with full-width "exhibit" bands; each band is one part of the pipeline story. */
+:root{
+  --bg:#f6f7fb; --surface:#ffffff; --surface-2:#eef1f8; --ink:#141b2d; --muted:#5b6478; --line:#d9deea;
+  --accent:#2f4fd8; --accent-soft:#e4e9ff; --risk:#c2342b; --risk-soft:#fde8e6; --law:#7a2e86; --law-soft:#f6e7f8;
+  --ok:#11795a; --ok-soft:#e1f5ec; --warn:#a15c00; --warn-soft:#fdf0db; --code:#0f172a; --code-ink:#dbe3f4;
+  --f-display:"Space Grotesk",system-ui,sans-serif; --f-body:"Inter",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1220; --surface:#141b2e; --surface-2:#1b2440; --ink:#e6eaf5; --muted:#9aa4bd; --line:#2a3555;
+  --accent:#8fa6ff; --accent-soft:#1f2a55; --risk:#ff8a80; --risk-soft:#3a1d1f; --law:#e2a6ec; --law-soft:#33203a;
+  --ok:#5fd3a6; --ok-soft:#14342a; --warn:#f5b75c; --warn-soft:#3a2c14; --code:#070b15; --code-ink:#d5ddf0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1220; --surface:#141b2e; --surface-2:#1b2440; --ink:#e6eaf5; --muted:#9aa4bd; --line:#2a3555;
+  --accent:#8fa6ff; --accent-soft:#1f2a55; --risk:#ff8a80; --risk-soft:#3a1d1f; --law:#e2a6ec; --law-soft:#33203a;
+  --ok:#5fd3a6; --ok-soft:#14342a; --warn:#f5b75c; --warn-soft:#3a2c14; --code:#070b15; --code-ink:#d5ddf0; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--f-body);margin:0;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 64px}
+.wrap{max-width:1060px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;letter-spacing:-.01em}
+h1{font-size:clamp(30px,5vw,46px);line-height:1.08}
+h2{font-size:clamp(22px,3vw,28px);margin-bottom:6px}
+h3{font-size:17px}
+p{margin:0}
+.lede{color:var(--muted);max-width:68ch}
+.eyebrow{font:600 11px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+code,.mono{font-family:var(--f-mono);font-size:.86em}
+header.hero{padding-block:48px 28px;display:grid;gap:16px}
+.checks{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-top:8px}
+.check{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:grid;gap:6px}
+.check b{font-family:var(--f-display);font-size:17px}
+.tag{display:inline-block;font:600 11px/1 var(--f-mono);padding:5px 8px;border-radius:999px;letter-spacing:.04em}
+.t-risk{background:var(--risk-soft);color:var(--risk)} .t-law{background:var(--law-soft);color:var(--law)}
+.t-ok{background:var(--ok-soft);color:var(--ok)} .t-warn{background:var(--warn-soft);color:var(--warn)} .t-acc{background:var(--accent-soft);color:var(--accent)}
+nav.toc{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);
+  display:flex;gap:6px;overflow-x:auto;padding-block:10px;margin-bottom:8px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+nav.toc a{white-space:nowrap;text-decoration:none;color:var(--muted);font:500 13px var(--f-body);padding:6px 10px;border-radius:8px}
+nav.toc a:hover,nav.toc a:focus-visible{background:var(--surface-2);color:var(--ink);outline:none}
+section{padding-block:36px;border-bottom:1px solid var(--line);display:grid;gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+pre{background:var(--code);color:var(--code-ink);font:12.5px/1.55 var(--f-mono);padding:14px;border-radius:10px;overflow-x:auto;margin:0;white-space:pre-wrap;word-break:break-word}
+.k{color:#8fb3ff}.s{color:#9fe0b8}.n{color:#ffc58a}
+button{font:600 13px var(--f-body);cursor:pointer;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 12px}
+button:hover{border-color:var(--accent)} button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+/* pipeline */
+.stages{display:flex;flex-wrap:wrap;gap:8px}
+.stage{display:flex;align-items:center;gap:8px}
+.stage .num{font:600 11px var(--f-mono);color:var(--muted)}
+.stage-body{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:14px}
+@media (max-width:760px){.stage-body{grid-template-columns:1fr}}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:14px}
+.kv dt{font:600 12px var(--f-mono);color:var(--muted);padding-top:2px} .kv dd{margin:0}
+/* bars */
+.bars{display:grid;gap:6px}
+.bar{display:grid;grid-template-columns:150px 1fr 52px;align-items:center;gap:8px;font-size:13px}
+@media (max-width:520px){.bar{grid-template-columns:110px 1fr 46px}}
+.bar .track{height:12px;background:var(--surface-2);border-radius:6px;overflow:hidden}
+.bar .fill{height:100%;background:var(--accent);border-radius:6px;transition:width .4s}
+.bar.win .fill{background:var(--risk)} .bar .v{font:500 12px var(--f-mono);text-align:right;font-variant-numeric:tabular-nums}
+.bar .lbl{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.verdict{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:14px}
+.clause{border-left:3px solid var(--line);padding:6px 10px;background:var(--surface-2);border-radius:0 8px 8px 0;font-size:13.5px}
+.clause b{font-family:var(--f-mono);font-size:12px}
+.note{font-size:13px;color:var(--muted)}
+.big{font:700 clamp(26px,4vw,34px)/1 var(--f-display);font-variant-numeric:tabular-nums}
+.stat{display:grid;gap:4px}
+table{border-collapse:collapse;width:100%;font-size:13.5px} th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font:600 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tw{overflow-x:auto}
+input[type=range]{width:100%} input[type=number],input[type=search]{font:500 14px var(--f-body);padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink);width:100%}
+.svgbox{width:100%;max-width:100%;overflow-x:auto}
+svg text{font-family:var(--f-mono)}
+.gloss{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.gloss .card{padding:12px} .gloss b{font-family:var(--f-display)}
+.fail td:first-child{font-weight:600}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<div class="wrap">
+<header class="hero">
+  <span class="eyebrow">B.Tech major project · JIIT · interactive explainer</span>
+  <h1>LegalAgent, from a scanned contract to grounded findings</h1>
+  <p class="lede">Every box on this page shows what one part of the system actually does, with real outputs from our runs:
+  what the Gemini teacher wrote, what Kev answered with which probabilities, and what the Indian law retrieval returned.
+  Click through the stages, play with the calculators, and use it to rehearse the viva.</p>
+  <div class="checks">
+    <div class="check"><span class="tag t-risk">Check 1</span><b>Clause ↔ clause</b><span class="note">Two clauses that create a risk together, e.g. a liability cap undone by an indemnity "without limit and notwithstanding any other provision".</span></div>
+    <div class="check"><span class="tag t-law">Check 2</span><b>Clause ↔ Indian law</b><span class="note">One clause that Indian law makes void or risky, e.g. a 36-month post-termination non-compete under the Indian Contract Act s.27.</span></div>
+    <div class="check"><span class="tag t-ok">Constraint</span><b>Everything local</b><span class="note">One RTX 4050 laptop GPU with 6 GB. No contract text leaves the machine. Gemini is only the offline teacher and an opt-in "Explain" button.</span></div>
+  </div>
+</header>
+
+<nav class="toc" aria-label="Sections">
+  <a href="#pipeline">Pipeline</a><a href="#judges">Teacher vs Kev vs rules</a><a href="#kev">Inside Kev</a>
+  <a href="#teacher">Teacher labels</a><a href="#shortlist">Shortlisting + RRF</a><a href="#gnn">GNN</a>
+  <a href="#rag">Indian law RAG</a><a href="#results">Results</a><a href="#failed">What failed</a><a href="#glossary">Glossary</a>
+</nav>
+
+<!-- PIPELINE -->
+<section id="pipeline">
+  <span class="eyebrow">The pipeline · follow one real clause</span>
+  <h2>Eight stages, one clause's journey</h2>
+  <p class="lede">We follow <b>Clause 91.3</b> of the Pune Metro Line-3 concession (a 305-page scan with 15 irregularities we planted): <i>"For 36 months following termination, the Concessionaire shall not compete with, advise, or participate in any competing infrastructure business in India."</i> Pick a stage.</p>
+  <div class="stages" id="stageBtns" role="tablist"></div>
+  <div class="card stage-body" id="stageBody" aria-live="polite"></div>
+</section>
+
+<!-- JUDGES -->
+<section id="judges">
+  <span class="eyebrow">Same input, three judges · real outputs</span>
+  <h2>Teacher vs Kev vs rules on one bad/fixed twin</h2>
+  <p class="lede">From our 28-item checklist: the same two clauses written badly (the indemnity overrides the cap) and fixed (the indemnity is made subject to the cap). A good judge flags the bad one and clears the fixed one.</p>
+  <div class="verdict"><button id="twBad" class="on">Bad version</button><button id="twFix">Fixed version</button></div>
+  <div class="grid2">
+    <div class="card" style="display:grid;gap:8px">
+      <h3>The two clauses</h3>
+      <div class="clause"><b>12.1</b> The aggregate liability of the Supplier under or in connection with this Agreement shall not exceed the fees paid in the twelve months preceding the claim.</div>
+      <div class="clause" id="twB"></div>
+      <p class="note">Classifier (InLegalBERT + keyword backstop) on these: 12.1 → <code>payment_and_fees 0.82</code>, <code>limitation_of_liability 0.50 (backstop)</code>; 14.2 → <code>indemnification 0.97</code>.</p>
+    </div>
+    <div class="card" style="display:grid;gap:10px">
+      <h3>Verdicts</h3>
+      <div id="twVerdicts" style="display:grid;gap:10px"></div>
+    </div>
+  </div>
+  <div class="grid2">
+    <div class="card" style="display:grid;gap:8px"><h3>Kev's probabilities (relation question)</h3><div class="bars" id="twKev"></div><p class="note" id="twKevNote"></p></div>
+    <div class="card" style="display:grid;gap:8px"><h3>Kev's statute choice (4 retrieved options + none)</h3><div class="bars" id="twStat"></div>
+      <p class="note">Kev may only pick from sections our retrieval found, so it can't invent a law. Here it leaned to "none", and ICA s.124 (contract of indemnity) was the best real option.</p></div>
+  </div>
+  <div class="card"><h3>Gemini 4 teacher, raw output for the bad version</h3>
+<pre id="twTeacher"></pre>
+  <p class="note" style="margin-top:8px">The teacher thought for 14,642 tokens on its batch of 7 checklist pairs (86 s). Kev answers in about 0.28 s on the laptop. That gap is why the teacher labels training data offline and Kev runs in the product.</p></div>
+  <div class="card t-warn" style="background:var(--warn-soft);border-color:transparent"><b>The honest reading.</b> On this twin Kev says "ambiguity" for both versions; P(no_issue) only moves from 0.202 to 0.209. Across all 28 twins Kev is right 71 % of the time (catches 69 % of bad ones, clears 75 % of fixed ones), rules 46 %, the teacher 93 %. Fine distinctions like this are where a small model needs better (lawyer-verified) training data.</div>
+</section>
+
+<!-- KEV -->
+<section id="kev">
+  <span class="eyebrow">Inside the judge</span>
+  <h2>Kev reads, then points at an answer</h2>
+  <p class="lede">Kev-0.8B is a <b>decision model</b>: a small language model (Qwen3.5, 0.8 billion parameters) with a <b>pointer head</b>. It reads a "state" and a question with fixed options, and returns a probability for each option. It never writes free text, so it cannot invent a reason or a law. Below is the real request and response for Clause 91.3 (the Indian-law check).</p>
+  <div class="grid2">
+    <div class="card" style="display:grid;gap:8px"><h3>Request we send</h3>
+<pre><span class="k">"state"</span>: <span class="s">"A clause from a commercial or employment contract governed by Indian law:
+91.3 Post-Termination Non-Compete. For 36 months following termination, the
+Concessionaire shall not compete with, advise, or participate in any competing
+infrastructure business in India."</span>,
+<span class="k">"questions"</span>: { <span class="k">"risk"</span>: { <span class="k">"type"</span>: <span class="s">"choice"</span>,
+  <span class="k">"instructions"</span>: <span class="s">"Which legal risk under Indian law does this clause carry, if any?"</span>,
+  <span class="k">"criteria"</span>: {
+    <span class="k">"restraint_of_trade"</span>: <span class="s">"stops a party from carrying on a lawful profession, trade or
+       business, or from joining or working with competitors, especially after the
+       contract or employment ends"</span>,
+    <span class="k">"penalty_or_forfeiture"</span>: <span class="s">"fixes a sum payable on breach, or forfeits a deposit…"</span>,
+    <span class="k">"restricts_legal_remedies"</span>: …, <span class="k">"one_sided_arbitrator"</span>: …,
+    <span class="k">"termination_at_will"</span>: …, <span class="k">"unstamped_or_invalid_form"</span>: …,
+    <span class="k">"personal_data_without_consent"</span>: …,
+    <span class="k">"none"</span>: <span class="s">"an ordinary clause an Indian court would enforce as written"</span> } } }</pre></div>
+    <div class="card" style="display:grid;gap:10px"><h3>Response (109 ms, 325 input tokens)</h3>
+      <div class="bars" id="kevLaw"></div>
+      <dl class="kv"><dt>choice</dt><dd><code>restraint_of_trade</code> → Indian Contract Act, Section 27</dd>
+        <dt>P(risk)</dt><dd>1 − P(none) = 1 − 0.241 = <b>0.759</b></dd>
+        <dt>label</dt><dd><span class="tag t-risk">high confidence</span> (≥ 0.70)</dd></dl>
+      </div>
+    </div>
+  </div>
+  <div class="card" style="display:grid;gap:10px">
+    <h3>Try it: how a probability becomes a confidence label</h3>
+    <label for="pNone" class="note">Drag P(none), Kev's probability that the clause is ordinary.</label>
+    <input type="range" id="pNone" min="0" max="1" step="0.01" value="0.24">
+    <div class="verdict" id="confOut"></div>
+    <p class="note">Rule in <code>statutory_kev.py</code>: shown only if P(risk) ≥ 0.30; <b>high</b> ≥ 0.70, <b>medium</b> ≥ 0.45, else <b>low</b>. Low-confidence findings stay visible in a separate group. They are shown, never hidden.</p>
+  </div>
+  <div class="card"><h3>How the card text is made</h3>
+    <p>The dashboard sentence is a template filled by these probabilities: <i>"Kev reads this clause as one that <u>stops a party from carrying on a lawful profession…</u>. A court would test it under <u>The Indian Contract Act, 1872, Section 27</u>."</i> The underlined parts come from the winning option's fixed description and its mapped law. No model writes the sentence.</p></div>
+</section>
+
+<!-- TEACHER -->
+<section id="teacher">
+  <span class="eyebrow">Where training labels came from</span>
+  <h2>Teacher labels: Gemini 4 and Claude, real records</h2>
+  <p class="lede">No public dataset labels Indian clause <i>pairs</i>, so a big model (the teacher) labelled 2,360 pairs via the Antigravity CLI with a strict JSON schema; Kev (the student) was fine-tuned on them. Every label carries provenance.</p>
+  <div class="verdict"><button class="on" data-t="gem">Gemini 4 · conflict</button><button data-t="cla">Claude Sonnet · conflict</button><button data-t="typ">Gemini 4 · clause types</button></div>
+  <div class="grid2">
+    <div class="card" style="display:grid;gap:8px" id="tIn"></div>
+    <div class="card" style="display:grid;gap:8px"><h3>Teacher output</h3><pre id="tOut"></pre></div>
+  </div>
+  <div class="grid3">
+    <div class="card stat"><span class="note">Teacher on our known-answer checklist</span><span class="big">92.9 %</span></div>
+    <div class="card stat"><span class="note">Teacher citations that exist in India Code</span><span class="big">85.7 %</span></div>
+    <div class="card stat"><span class="note">Gemini vs Claude agreement (Cohen's κ)</span><span class="big">0.57</span><span class="note">moderate: the task is genuinely hard</span></div>
+  </div>
+</section>
+
+<!-- SHORTLIST -->
+<section id="shortlist">
+  <span class="eyebrow">Choosing which pairs to judge</span>
+  <h2>From 14,025 possible pairs to 173</h2>
+  <p class="lede">Judging every pair of a 580-clause contract would take hours. Three signals pick the pairs worth asking Kev about: <b>cross-references</b> ("subject to Clause 14.2", always kept), a <b>40-pair clash matrix</b> of clause types (cap × indemnity weight 0.90), and <b>hybrid search</b> (BM25 keywords + dense meaning). The rest is ranked and capped at 60.</p>
+  <div class="grid3">
+    <div class="card stat"><span class="note">Pune Metro scan: clauses</span><span class="big">580</span></div>
+    <div class="card stat"><span class="note">Pairs before the cap fix</span><span class="big">14,025</span><span class="note">≈ 1 hour of judging</span></div>
+    <div class="card stat"><span class="note">Pairs now (113 cross-refs + 60 best)</span><span class="big">173</span><span class="note">whole scan in 4.4 min</span></div>
+  </div>
+  <div class="card" style="display:grid;gap:12px">
+    <h3>Try it: Reciprocal Rank Fusion</h3>
+    <p class="note">Hybrid search merges two ranked lists with score = Σ 1 / (60 + rank). Enter where two documents ranked in each list.</p>
+    <div class="grid2">
+      <div style="display:grid;gap:6px"><b>Document X</b>
+        <label class="note" for="xb">BM25 rank</label><input type="number" id="xb" min="1" value="1">
+        <label class="note" for="xd">Dense rank</label><input type="number" id="xd" min="1" value="3"></div>
+      <div style="display:grid;gap:6px"><b>Document Y</b>
+        <label class="note" for="yb">BM25 rank</label><input type="number" id="yb" min="1" value="2">
+        <label class="note" for="yd">Dense rank (0 = not found)</label><input type="number" id="yd" min="0" value="0"></div>
+    </div>
+    <pre id="rrfOut"></pre>
+  </div>
+</section>
+
+<!-- GNN -->
+<section id="gnn">
+  <span class="eyebrow">Graph neural network · toy demonstration</span>
+  <h2>GraphSAGE: a clause learns from its neighbours</h2>
+  <p class="lede">Each clause is a node. Edges connect clauses that cite each other, a clause and its parent, neighbours in the document, and each clause's 5 most similar clauses. In one round of <b>message passing</b> every node replaces its vector with a mix of its own and the <b>mean</b> of its neighbours'. Two rounds means a clause "hears" from clauses two hops away. Below, each node carries one number (think "riskiness") instead of a 415-number vector, to show the mechanics.</p>
+  <div class="card" style="display:grid;gap:10px">
+    <div class="verdict"><button id="gStep">Run one round</button><button id="gReset">Reset</button><span class="note" id="gRound">Round 0</span></div>
+    <div class="svgbox"><svg id="gSvg" viewBox="0 0 640 300" width="640" height="300" role="img" aria-label="Toy clause graph"></svg></div>
+    <p class="note">Toy rule here: new = 0.5 × own + 0.5 × mean(neighbours). Real GraphSAGE learns weight matrices for both parts, uses 2 layers with 128 hidden units, and then scores a pair from [h_a, h_b, |h_a−h_b|, h_a·h_b, clash weight].</p>
+  </div>
+  <div class="grid2">
+    <div class="card"><h3>Our result (172 held-out pairs)</h3><div class="bars" id="gnnBars" style="margin-top:8px"></div></div>
+    <div class="card"><h3>Why the graph didn't help</h3><p>The ablation trains the <b>same</b> scorer without message passing. It did as well (0.748 vs 0.742), so the graph structure added nothing measurable. Likely reasons: contracts have few cross-references per clause, so the graph is sparse; only 172 labelled test pairs; and the text embedding already carries most of the signal. The GNN is built, trained (19 min) and evaluated, but off by default.</p></div>
+  </div>
+</section>
+
+<!-- RAG -->
+<section id="rag">
+  <span class="eyebrow">Retrieval-augmented grounding</span>
+  <h2>Indian law is retrieved, never written from memory</h2>
+  <div class="grid2">
+    <div class="card" style="display:grid;gap:8px"><h3>How</h3>
+      <dl class="kv"><dt>library</dt><dd>4,408 India Code sections (ICA 201, A&amp;C Act 102, Stamp Act 77, DPDP 45, Specific Relief 44, Companies 453, IBC 268 …) plus key Supreme Court precedents</dd>
+      <dt>search</dt><dd>BM25 + our fine-tuned InLegal-SBERT, fused with RRF, plus a small bonus for contract-related Acts</dd>
+      <dt>use</dt><dd>Kev chooses among 4 retrieved sections; every citation is checked to exist; each reference carries a confidence chip</dd></dl></div>
+    <div class="card" style="display:grid;gap:8px"><h3>Exact section in top 5 (19 independent queries)</h3><div class="bars" id="ragBars"></div>
+      <p class="note">Gold = the section a court applied, plus our planted faults. Fine-tuning the retriever (1.3 min on 2,967 pairs) brought 0.21 → 0.32. The reranker made it worse and needs GPU memory, so it is off.</p></div>
+  </div>
+  <div class="card"><h3>Real stored reference for a non-compete finding (Pune Metro scan)</h3>
+<pre>{ <span class="k">"source"</span>: <span class="s">"The Indian Contract Act, 1872"</span>, <span class="k">"section"</span>: <span class="s">"Section 27"</span>,
+  <span class="k">"heading"</span>: <span class="s">"Agreement in restraint of trade, void"</span>,
+  <span class="k">"snippet"</span>: <span class="s">"Every agreement by which any one is restrained from exercising a lawful
+     profession, trade or business of any kind, is to that extent void. Exception 1…"</span>,
+  <span class="k">"url"</span>: <span class="s">"https://www.indiacode.nic.in/handle/123456789/2187"</span>, <span class="k">"verified"</span>: <span class="n">true</span> },
+{ <span class="k">"source"</span>: <span class="s">"Supreme Court of India Precedent (ICA s.27)"</span>,
+  <span class="k">"section"</span>: <span class="s">"Percept D'Mark (India) (P) Ltd. v. Zaheer Khan, (2006) 4 SCC 227"</span>,
+  <span class="k">"grounding"</span>: <span class="s">"retrieved"</span>, <span class="k">"confidence"</span>: <span class="s">"low"</span>, <span class="k">"retrieval_score"</span>: <span class="n">0.0328</span> }</pre></div>
+  <div class="card"><h3>Ground truth example: a real Supreme Court clause</h3>
+    <p><b>Superintendence Company of India v. Krishan Murgai</b> (1980), clause 10 of an appointment letter: <i>"…you will not be permitted to join any firm of our competitors or run a business of your own … for a period of two years … after you leave the Company."</i> The court refused to enforce it (ICA s.27). On this clause Kev answered <code>restraint_of_trade 0.69</code>, <code>none 0.17</code> → flagged, high confidence. Regex rules did not flag it.</p></div>
+</section>
+
+<!-- RESULTS -->
+<section id="results">
+  <span class="eyebrow">Measured on ground truth we did not create</span>
+  <h2>Results</h2>
+  <div class="verdict" id="resBtns"></div>
+  <div class="card" style="display:grid;gap:10px"><h3 id="resTitle"></h3><p class="note" id="resWhat"></p><div class="bars" id="resBars"></div><p class="note" id="resNote"></p></div>
+  <div class="grid3">
+    <div class="card stat"><span class="note">Kev decisions per second (RTX 4050)</span><span class="big">11.3</span><span class="note">~3,500 input tokens read/s · 82 ms median · 1.8 GB GPU</span></div>
+    <div class="card stat"><span class="note">305-page scan, end to end</span><span class="big">4.4 min</span><span class="note">classify 97 s · shortlist 42 s · Kev pairs 49 s · Kev law 12 s (+ cached OCR)</span></div>
+    <div class="card stat"><span class="note">Training on the laptop</span><span class="big">48 / 58 min</span><span class="note">InLegalBERT / Kev LoRA · retrievers 1–2 min · GNN 19 min</span></div>
+  </div>
+</section>
+
+<!-- FAILED -->
+<section id="failed">
+  <span class="eyebrow">Negative results are findings</span>
+  <h2>What failed, and what it taught us</h2>
+  <div class="card tw"><table class="fail"><thead><tr><th>Attempt</th><th>What happened</th><th>Why</th><th>What we did</th></tr></thead><tbody id="failRows"></tbody></table></div>
+</section>
+
+<!-- GLOSSARY -->
+<section id="glossary">
+  <span class="eyebrow">Terms the panel may use</span>
+  <h2>Glossary</h2>
+  <label class="note" for="gq">Filter terms</label>
+  <input type="search" id="gq" placeholder="e.g. BM25, LoRA, recall">
+  <div class="gloss" id="gList"></div>
+</section>
+<p class="note" style="padding-top:20px">Sources: results/*.json, the demo database and teacher label files in the LegalAgent repository (branch <code>final</code>). Kev and teacher outputs above are copied from real runs on 24–25 Nov 2026.</p>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function bars(el, rows, opts = {}) {
+  const max = opts.max || Math.max(...rows.map(r => r[1]));
+  const win = opts.win === undefined ? rows.reduce((a, r, i) => r[1] > rows[a][1] ? i : a, 0) : opts.win;
+  el.innerHTML = rows.map((r, i) => `<div class="bar ${i === win ? "win" : ""}"><span class="lbl" title="${esc(r[0])}">${esc(r[0])}</span>
+    <span class="track"><span class="fill" style="width:${(100 * r[1] / max).toFixed(1)}%"></span></span>
+    <span class="v">${opts.pct ? (100 * r[1]).toFixed(1) + "%" : r[1].toFixed(opts.dp ?? 3)}</span></div>`).join("");
+}
+
+/* ---------- pipeline ---------- */
+const STAGES = [
+ {n:"Ingest", what:"Turn the file into text.", how:"Digital pages: PyMuPDF through pymupdf4llm (keeps headings and tables as Markdown). Scanned pages (no text layer): render to an image and run Tesseract OCR, one process per page, cached by the file's hash.", why:"Indian concessions are often scans. Cloud OCR would send the contract out.",
+  io:`file   pune_metro_adversarial_15_changes.pdf
+pages  305   (300 scanned → OCR, 5 digital → pymupdf4llm)
+time   ~2 min first run, instant afterwards (cache)
+text   "...ARTICLE 91 ... 91.3 Post-Termination Non-Compete
+        For 36 months following termination, the Concessionaire
+        shall not compete with ..."`},
+ {n:"Extract", what:"Split text into clauses.", how:"Regex for numbering (91, 91.3, 91.3(a)); ARTICLE/SCHEDULE lines start a part; a run of short numbered lines with page numbers is a table of contents and is dropped; phrases like 'Clauses 91.2 and 91.3 shall survive' become resolved cross-references.", why:"Numbering is regular, so rules are exact and explainable.",
+  io:`clause  91.3      parent 91     part "ARTICLE 91 ..."
+clause  91.4      text "Clauses 91.2 and 91.3 shall survive
+                        termination indefinitely ..."
+xref    91.4 → 91.2, 91.4 → 91.3   (resolved)
+whole scan: 580 clauses · 99 parts · 137 resolved cross-references`},
+ {n:"Classify", what:"Label each clause with its type(s).", how:"Fine-tuned InLegalBERT (BERT pre-trained on Indian legal text) predicts 22 CLAUSE-22 types with one sigmoid each (threshold 0.5), plus a keyword backstop, a heading prior and 7 Indian rule labels (stamp duty, DPDP, step-in…).", why:"Types decide which pairs are worth checking. 0.931 F1 vs 0.828 for our mid-term MiniLM model.",
+  io:`real example (checklist clause 14.2):
+  indemnification          0.973   (inlegalbert)
+real example (clause 12.1):
+  payment_and_fees         0.82    (inlegalbert)
+  limitation_of_liability  0.50    (keyword_backstop)`},
+ {n:"Shortlist", what:"Pick the pairs worth judging.", how:"Cross-reference pairs are always kept; the rest come from the 40-pair clash matrix and hybrid BM25 + dense search, ranked by how many signals agree, then clash weight, then search rank, capped at 60.", why:"14,025 candidate pairs on this scan would take about an hour; 173 take under a minute.",
+  io:`(91.4, 91.3)  xref + type_matrix (survival × exclusivity 0.75)
+...
+Pune Metro scan: 173 pairs = 113 cross-ref + 60 ranked
+signals on the casebook: xref 5 · type_matrix 39 · hybrid 33`},
+ {n:"Judge pairs", what:"Ask Kev about each pair.", how:"Three typed questions: relation (conflict / dependency / overlap / ambiguity / no_issue), severity (low / medium / high), statute (one of 4 retrieved sections or none). Highest probability wins.", why:"Local, fast (~0.1–0.3 s), probabilities instead of prose.",
+  io:`real (casebook pair 13.1 ↔ 13.2):
+  P(no_issue) 0.16  conflict 0.06  dependency 0.14
+  overlap 0.43  ambiguity 0.22   → overlap, severity high
+Pune scan: 173 pairs judged in 49 s`},
+ {n:"Law check", what:"Ask Kev about each risky-type clause alone.", how:"One question over 7 Indian-law risk categories + none; each category maps to a section (restraint of trade → ICA s.27). Shown if P(risk) ≥ 0.30 with a confidence label.", why:"Regex caught 0 of 9 clauses the Supreme Court struck down; Kev caught 6.",
+  io:`91.3 → restraint_of_trade 0.529 · none 0.241
+P(risk) = 0.759 → HIGH confidence → ICA s.27`},
+ {n:"Ground (RAG)", what:"Attach the real law text.", how:"Search 4,408 India Code sections with BM25 + fine-tuned InLegal-SBERT, fuse with RRF, add a small prior for contract Acts; verify every cited section exists; add a confidence chip.", why:"The law shown is real text; nothing is invented.",
+  io:`ICA 1872 s.27  "Agreement in restraint of trade, void"   verified
+SC precedent  Percept D'Mark v. Zaheer Khan (2006)     low confidence`},
+ {n:"Store + show", what:"Save and display.", how:"Findings are validated (evidence spans exist), ranked by severity, saved in SQLite and served by FastAPI; uploads stream live progress (SSE).", why:"Everything you see in the dashboard came from this pipeline. Nothing is typed in.",
+  io:`dashboard card:
+  HIGH · Clause ↔ Indian law · Clause 91.3
+  "Kev reads this clause as one that stops a party from
+   carrying on a lawful profession, trade or business ...
+   A court would test it under The Indian Contract Act, 1872,
+   Section 27."
+whole scan: 291 findings · 4.4 min end to end`}
+];
+function showStage(i) {
+  [...$("#stageBtns").children].forEach((b, j) => { b.classList.toggle("on", i === j); b.setAttribute("aria-selected", i === j); });
+  const s = STAGES[i];
+  $("#stageBody").innerHTML = `<div style="display:grid;gap:10px;min-width:0"><span class="eyebrow">Stage ${i + 1} of 8</span><h3>${s.n}: ${s.what}</h3>
+    <dl class="kv"><dt>how</dt><dd>${s.how}</dd><dt>why</dt><dd>${s.why}</dd></dl>
+    <div class="verdict"><button ${i === 0 ? "disabled" : ""} id="sPrev">← Previous</button><button ${i === 7 ? "disabled" : ""} id="sNext">Next →</button></div></div>
+    <div style="min-width:0"><pre>${esc(s.io)}</pre></div>`;
+  $("#sPrev").onclick = () => showStage(i - 1); $("#sNext").onclick = () => showStage(i + 1);
+}
+$("#stageBtns").innerHTML = STAGES.map((s, i) => `<button class="stage" role="tab"><span class="num">${i + 1}</span>${s.n}</button>`).join("");
+[...$("#stageBtns").children].forEach((b, i) => b.onclick = () => showStage(i));
+showStage(0);
+
+/* ---------- twin ---------- */
+const TW = {
+ bad: {b:"<b>14.2</b> The Supplier shall indemnify the Customer against all losses arising from third-party intellectual property claims, <u>without limit and notwithstanding any other provision of this Agreement</u>.",
+  kev:{conflict:.147, dependency:.1072, overlap:.2128, ambiguity:.3309, no_issue:.202}, sev:"medium (p 0.47)", ms:279.3,
+  stat:[["MSMED Act 2006 s.17",.1098],["ICA 1872 s.224",.0802],["ICA 1872 s.124",.3085],["Sale of Goods 1930 s.10",.0571],["none",.4444]],
+  verdicts:[["Gemini 4 teacher","conflict · high · ICA s.124","ok","correct"],["Kev (served, zero-shot)","ambiguity · medium","ok","correct (flagged)"],["Rules","flagged","ok","correct"]]},
+ fix: {b:"<b>14.2</b> <u>Subject to the limitation in Clause 12.1</u>, the Supplier shall indemnify the Customer against losses arising from third-party intellectual property claims.",
+  kev:{conflict:.1478, dependency:.1322, overlap:.2253, ambiguity:.2855, no_issue:.2092}, sev:"medium (p 0.50)", ms:234.9,
+  stat:[["ICA 1872 s.224",.0922],["MSMED Act 2006 s.17",.0941],["ICA 1872 s.124",.2662],["ICA 1872 s.53",.0494],["none",.4981]],
+  verdicts:[["Gemini 4 teacher","no_issue","ok","correct"],["Kev (served, zero-shot)","ambiguity · medium","risk","false alarm"],["Rules","flagged","risk","false alarm"]]}
+};
+const TEACHER_CK01 = `{
+  "pair_id": "ck01",
+  "relation": "conflict",
+  "severity": "high",
+  "risk": 0.85,
+  "citation": "Indian Contract Act, 1872, Section 124",
+  "rationale": "Clause 12.1 caps the Supplier's 'aggregate liability ... under or in connection
+    with this Agreement' at 12 months' fees without any carve-out, whereas Clause 14.2 requires
+    indemnification for third-party IP claims 'without limit and notwithstanding any other
+    provision of this Agreement', silently overriding the cap.",
+  "suggested_fix": "Amend Clause 12.1 to carve out Clause 14.2 ('Except for liability under
+    Clause 14.2...') if IP indemnities are intended to be uncapped, or delete 'without limit and
+    notwithstanding any other provision of this Agreement' in Clause 14.2 and make it expressly
+    subject to Clause 12.1.",
+  "a_types": ["limitation_of_liability"], "b_types": ["indemnification"],
+  "confidence": "high", "fix_clause": "both",
+  "_provenance": { "teacher_model": "gemini-4-hydrogen-high", "batch": "ck01..ck07",
+    "labelled_at": "2026-11-24T19:34:28",
+    "usage": { "input_tokens": 12995, "output_tokens": 16274, "thinking_tokens": 14642 },
+    "duration_s": 86.15 }
+}`;
+function showTwin(k) {
+  $("#twBad").classList.toggle("on", k === "bad"); $("#twFix").classList.toggle("on", k === "fix");
+  const t = TW[k];
+  $("#twB").innerHTML = t.b;
+  const rows = Object.entries(t.kev); bars($("#twKev"), rows, {max: .5});
+  $("#twKevNote").textContent = `Decision: highest probability → ${rows.reduce((a, r) => r[1] > a[1] ? r : a)[0]}. Severity ${t.sev}. ${t.ms} ms on the laptop GPU.`;
+  bars($("#twStat"), t.stat, {max: .5});
+  $("#twVerdicts").innerHTML = t.verdicts.map(v => `<div class="verdict"><b style="min-width:170px">${v[0]}</b><code>${v[1]}</code><span class="tag t-${v[2]}">${v[3]}</span></div>`).join("") +
+    `<p class="note">${k === "bad" ? "Expected: risky (conflict)." : "Expected: no issue. The cap now governs the indemnity."}</p>`;
+  $("#twTeacher").textContent = k === "bad" ? TEACHER_CK01 : '{ "pair_id": "ck01 fixed twin", "relation": "no_issue" }   // teacher cleared it (part of its 92.9 %)';
+}
+$("#twBad").onclick = () => showTwin("bad"); $("#twFix").onclick = () => showTwin("fix"); showTwin("bad");
+
+/* ---------- kev law ---------- */
+bars($("#kevLaw"), [["restraint_of_trade",.529],["none",.2412],["restricts_legal_remedies",.0884],["termination_at_will",.0701],["penalty_or_forfeiture",.0478],["unstamped_or_invalid_form",.0166],["personal_data_w/o_consent",.004],["one_sided_arbitrator",.0029]], {max:.6, win:0});
+function conf() {
+  const pn = +$("#pNone").value, r = 1 - pn;
+  let lab, cls;
+  if (r < .3) { lab = "not shown (below 0.30)"; cls = "acc"; } else if (r >= .7) { lab = "high confidence"; cls = "risk"; } else if (r >= .45) { lab = "medium confidence"; cls = "warn"; } else { lab = "low confidence (grouped separately)"; cls = "law"; }
+  $("#confOut").innerHTML = `P(none) <code>${pn.toFixed(2)}</code> → P(risk) <code>${r.toFixed(2)}</code> → <span class="tag t-${cls}">${lab}</span>`;
+}
+$("#pNone").oninput = conf; conf();
+
+/* ---------- teacher ---------- */
+const TCH = {
+ gem: {inp:`<h3>Pair it was given (our Indian Tech MSA sample)</h3>
+  <div class="clause"><b>A · 12.1 · indemnification</b> Vendor shall defend, indemnify, and hold harmless Customer against all third-party claims … alleging that Cloud Services infringe any patent, copyright, or trademark, without any financial limitation whatsoever and notwithstanding Section 8.1.</div>
+  <div class="clause"><b>B · 8.1 · limitation_of_liability</b> … neither Party's total aggregate liability arising under this Agreement shall exceed INR 15,00,000 (Rupees Fifteen Lakhs only). Consequential and indirect damages are expressly excluded.</div>
+  <p class="note">Why paired: hybrid + type_matrix + xref (12.1 cites 8.1).</p>`,
+  out:`{
+  "pair_id": "p02477",
+  "relation": "conflict",
+  "severity": "high",
+  "risk": 0.9,
+  "citation": "Indian Contract Act, 1872, Section 124",
+  "rationale": "Section 8.1 caps \\"total aggregate liability arising under this Agreement\\" at
+    INR 15,00,000 and excludes consequential damages without carving out indemnities, directly
+    conflicting with Section 12.1's IP indemnity \\"without any financial limitation whatsoever
+    and notwithstanding Section 8.1\\"."
+}`},
+ cla: {inp:`<h3>Pair it was given (a CUAD contract, LEO / GALEN)</h3>
+  <div class="clause"><b>A · 5.3 · confidentiality</b> Neither Party shall make any press release or other public announcement or other disclosure to third Parties relating to this Agreement without the prior consent of the other Party …</div>
+  <div class="clause"><b>B · 5.4 · survival, termination</b> This Article V shall survive the termination of this Agreement for a period of ten (10) years, provided, however, that following the termination of this Agreement LEO shall be free to use all data, information or other confidential information …</div>`,
+  out:`{
+  "pair_id": "p01156",
+  "relation": "conflict", "severity": "medium", "risk": 0.5,
+  "citation": "Indian Contract Act, 1872, Section 37",
+  "rationale": "Article V survives for ten years, but the proviso in 5.4 lets LEO and GALEN
+    freely use confidential information after termination, which undoes the confidentiality
+    and publicity restriction in 5.3.",
+  "suggested_fix": "Limit the post-termination free-use right to each party's own information
+    and state that the other party's confidential information stays protected for the
+    ten-year survival period.",
+  "fix_clause": "b", "confidence": "medium",
+  "_provenance": { "teacher_model": "claude-sonnet-5-5-medium",
+    "labelled_at": "2026-11-24T20:01:43",
+    "usage": { "input_tokens": 31365, "output_tokens": 3454 }, "duration_s": 25.98 }
+}`},
+ typ: {inp:`<h3>Clause-type labelling (NHAI model concession, clause 42.6)</h3>
+  <p>Besides pairs, the teacher labelled clause types on Indian contracts. These made the 220-clause Indian silver set that tests our classifier on Indian drafting (InLegalBERT 0.41, ensemble 0.44 micro-F1).</p>`,
+  out:`{
+  "clause_id": "model_concession_4_laning::42.6",
+  "types": ["survival"],
+  "confidence": "high",
+  "_provenance": { "teacher_model": "gemini-4-hydrogen-high",
+    "labelled_at": "2026-11-24T20:13:24",
+    "usage": { "input_tokens": 16697, "output_tokens": 14415, "thinking_tokens": 13502 },
+    "duration_s": 72.73 }
+}`}
+};
+document.querySelectorAll("[data-t]").forEach(b => b.onclick = () => {
+  document.querySelectorAll("[data-t]").forEach(x => x.classList.toggle("on", x === b));
+  $("#tIn").innerHTML = TCH[b.dataset.t].inp; $("#tOut").textContent = TCH[b.dataset.t].out;
+});
+$("#tIn").innerHTML = TCH.gem.inp; $("#tOut").textContent = TCH.gem.out;
+
+/* ---------- RRF ---------- */
+function rrf() {
+  const t = r => r > 0 ? 1 / (60 + r) : 0;
+  const xb = +$("#xb").value, xd = +$("#xd").value, yb = +$("#yb").value, yd = +$("#yd").value;
+  const X = t(xb) + t(xd), Y = t(yb) + t(yd);
+  const f = (b, d) => `${b > 0 ? `1/(60+${b})` : "0"} + ${d > 0 ? `1/(60+${d})` : "0"}`;
+  $("#rrfOut").textContent = `X = ${f(xb, xd)} = ${X.toFixed(4)}\nY = ${f(yb, yd)} = ${Y.toFixed(4)}\n→ ${X === Y ? "tie" : (X > Y ? "X" : "Y") + " ranks first"}. Only ranks matter, so BM25 and cosine scores on different scales combine fairly.`;
+}
+["#xb", "#xd", "#yb", "#yd"].forEach(s => $(s).oninput = rrf); rrf();
+
+/* ---------- GNN toy ---------- */
+const N = [{id:"8.1 cap",x:90,y:70,v:.9},{id:"12.1 indemnity",x:260,y:50,v:.8},{id:"14 survival",x:430,y:80,v:.3},{id:"3 definitions",x:110,y:220,v:.0},{id:"20 notices",x:300,y:230,v:.1},{id:"9 payment",x:520,y:210,v:.4}];
+const E = [[0,1],[1,2],[0,3],[3,4],[1,4],[2,5],[4,5]];
+let vals = N.map(n => n.v), round = 0;
+const nb = i => E.filter(e => e.includes(i)).map(e => e[0] === i ? e[1] : e[0]);
+function drawG() {
+  const css = getComputedStyle(document.documentElement);
+  const ink = css.getPropertyValue("--ink").trim(), line = css.getPropertyValue("--line").trim(), surf = css.getPropertyValue("--surface").trim(), risk = css.getPropertyValue("--risk").trim(), acc = css.getPropertyValue("--accent").trim();
+  let s = E.map(([a, b]) => `<line x1="${N[a].x}" y1="${N[a].y}" x2="${N[b].x}" y2="${N[b].y}" stroke="${line}" stroke-width="2"/>`).join("");
+  s += N.map((n, i) => { const v = vals[i]; const col = v > .5 ? risk : acc;
+    return `<g><circle cx="${n.x}" cy="${n.y}" r="${18 + 16 * v}" fill="${col}" fill-opacity="${.15 + .6 * v}" stroke="${col}" stroke-width="2"/>
+    <text x="${n.x}" y="${n.y + 4}" text-anchor="middle" font-size="13" font-weight="600" fill="${ink}">${v.toFixed(2)}</text>
+    <text x="${n.x}" y="${n.y + 52}" text-anchor="middle" font-size="11" fill="${ink}">${n.id}</text></g>`; }).join("");
+  $("#gSvg").innerHTML = `<rect width="640" height="300" fill="${surf}"/>` + s;
+  $("#gRound").textContent = `Round ${round}` + (round ? ` · e.g. "20 notices" now mixes in its neighbours (definitions, indemnity, payment)` : "");
+}
+$("#gStep").onclick = () => { vals = vals.map((v, i) => { const m = nb(i).reduce((a, j) => a + vals[j], 0) / nb(i).length; return .5 * v + .5 * m; }); round++; drawG(); };
+$("#gReset").onclick = () => { vals = N.map(n => n.v); round = 0; drawG(); };
+drawG();
+matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", drawG);
+bars($("#gnnBars"), [["GraphSAGE GNN",.742],["same features, no graph",.748],["cosine similarity only",.738],["clash matrix only",.517]], {max:1, win:1});
+
+/* ---------- RAG ---------- */
+bars($("#ragBars"), [["BM25",.105],["dense InLegal-SBERT",.053],["hybrid + Act prior",.211],["fine-tuned hybrid + prior",.316],["+ reranker",.263]], {max:.35, win:3});
+
+/* ---------- results ---------- */
+const RES = {
+ "Classifier": {t:"Clause classification (CLAUSE-22), test micro-F1", w:"Given one clause, does the model name its type(s)? n = 8,415 test clauses.", r:[["keyword rules",.275],["MiniLM + LogReg",.828],["InLegalBERT (ours)",.931]], n:"Out-of-domain: 0.404 / 0.590 / 0.750. Indian silver set: 0.33 / 0.42 / 0.41 (ensemble 0.44).", pct:false, max:1},
+ "Checklist": {t:"Pair judge on 28 bad/fixed twins (accuracy)", w:"Does the judge flag the bad version and clear the fixed one?", r:[["rules",.464],["Kev v1 fine-tuned",.429],["Kev v2 fine-tuned",.536],["Kev base zero-shot (served)",.714],["Gemini 4 teacher",.929]], n:"The served judge is chosen on this and CUAD, never on teacher agreement.", pct:true, max:1, win:3},
+ "CUAD recall": {t:"Pair judge recall on 280 lawyer-annotated interactions", w:"CUAD lawyers labelled categories that interact by definition (cap × uncapped liability…). How many does the judge find?", r:[["rules",.075],["Kev v2 fine-tuned",.214],["Kev v2 + threshold",.311],["Kev base (served)",.746]], n:"Fine-tuning on 440 silver pairs made Kev agree more with the teacher (risky-F1 0.62 vs 0.46) but find far fewer real interactions.", pct:true, max:1},
+ "Law check": {t:"Supreme Court struck-down clauses caught (of 9)", w:"Looking at one clause, can the method tell that Indian law makes it void?", r:[["regex rules",0],["Kev single-clause check",6]], n:"Kev also flagged all 4 upheld clauses, so every law finding carries a confidence label. Planted Pune faults: regex 4/6, Kev 5/6.", pct:false, max:9, dp:0},
+ "Teacher": {t:"Teacher validated against independent truth", w:"Can we trust Gemini 4's labels?", r:[["checklist accuracy",.929],["clause types vs CUAD lawyers",.75],["citations exist in India Code",.857]], n:"Gemini vs Claude agreement κ = 0.57 (moderate).", pct:true, max:1}
+};
+$("#resBtns").innerHTML = Object.keys(RES).map((k, i) => `<button data-r="${k}" class="${i ? "" : "on"}">${k}</button>`).join("");
+function showRes(k) {
+  document.querySelectorAll("[data-r]").forEach(b => b.classList.toggle("on", b.dataset.r === k));
+  const r = RES[k]; $("#resTitle").textContent = r.t; $("#resWhat").textContent = "Tests: " + r.w; $("#resNote").textContent = r.n;
+  bars($("#resBars"), r.r, {max: r.max, pct: r.pct, win: r.win, dp: r.dp});
+}
+document.querySelectorAll("[data-r]").forEach(b => b.onclick = () => showRes(b.dataset.r)); showRes("Classifier");
+
+/* ---------- failed ---------- */
+const FAILS = [
+ ["Kev v1 fine-tune","Always answered no_issue; caught 0 bad checklist pairs","73 % of training pairs were no_issue","Balanced data, focal loss, threshold → v2"],
+ ["Kev v2 fine-tune","Closer to the teacher, worse on real tests (54 % vs 71 %)","440 silver labels taught the teacher's habits, not the task","Serve the base model; choose by independent tests"],
+ ["Regex for Indian law","0 of 9 struck-down clauses","Real drafting doesn't match keyword patterns","Kev single-clause check + statute RAG"],
+ ["Cross-encoder reranker","Exact-section top-5 fell 0.32 → 0.26","General reranker doesn't know Indian statutes; costs GPU","Turned off"],
+ ["GNN","No gain over no-graph (0.742 vs 0.748)","Sparse graph, 172 test pairs","Off by default, reported as ablation"],
+ ["Uncapped shortlist","14,025 pairs ≈ 1 hour on one scan","Clash-matrix pairs were never capped","Rank + cap: 173 pairs, 4.4 min"],
+ ["Kev on 6 GB with defaults","HTTP 500, out of GPU memory","CUDA graphs + prefix cache filled the card","No CUDA graphs, small cache, retries: 1.8 GB"],
+ ["Teacher citations as statute gold","Every retriever looked the same","94 % of citations were ICA (s.37 over-cited)","Court-applied sections + planted faults as gold"],
+ ["Serial OCR","Looked 'hung' on 305 pages","One page at a time, no cache","Parallel per page + cache by file hash"]
+];
+$("#failRows").innerHTML = FAILS.map(f => `<tr>${f.map(x => `<td>${esc(x)}</td>`).join("")}</tr>`).join("");
+
+/* ---------- glossary ---------- */
+const G = [
+ ["PyMuPDF / pymupdf4llm","PDF library; the add-on outputs Markdown so headings and tables survive."],
+ ["OCR / Tesseract","Reading text from page images; Tesseract is the open-source engine we run locally."],
+ ["Token","A sub-word piece; models read and limit input in tokens."],
+ ["Transformer / attention","Architecture where every token weighs every other token to build meaning."],
+ ["BERT / InLegalBERT","Transformer encoder pre-trained by masking words; InLegalBERT is further trained on Indian legal text."],
+ ["Fine-tuning","Extra training of a pre-trained model on our labelled task."],
+ ["Multi-label","A clause can have several types; one sigmoid per label, threshold 0.5."],
+ ["Embedding","A vector representing meaning; similar texts point the same way."],
+ ["Cosine similarity","Angle-based closeness of two vectors: 1 same, 0 unrelated."],
+ ["SBERT / InLegal-SBERT","BERT trained to give one good vector per sentence; ours fine-tuned for clauses and statutes."],
+ ["MNRL (contrastive loss)","Pull a matching pair together, push the batch's other items away."],
+ ["BM25","Keyword ranking weighted by word rarity and document length."],
+ ["Hybrid search / RRF","Combine keyword and meaning search by summing 1/(60 + rank)."],
+ ["Reranker (cross-encoder)","Re-reads query + document together to re-score top results; tried, worse here."],
+ ["RAG","Retrieve real documents first and ground the answer in them."],
+ ["Decision model / pointer head","Reads a state and points at one of the given options with probabilities; no text generation."],
+ ["Kev","Our judge: open Qwen3.5-0.8B decision model, served locally on port 8008."],
+ ["Zero-shot","Using a model without task-specific training."],
+ ["LoRA","Train small low-rank add-on matrices; the base weights stay frozen."],
+ ["bf16 / gradient checkpointing","Half-size numbers and recomputing activations, to train on 6 GB."],
+ ["CUDA graphs","Recorded GPU operation sequences; faster, but each shape keeps memory (disabled)."],
+ ["Class imbalance / collapse","One answer dominates and the model learns to always say it."],
+ ["Focal loss","Down-weights easy examples so rare, hard ones matter."],
+ ["Threshold τ / calibration","Flag when P(no_issue) < τ instead of taking the top answer."],
+ ["Distillation (teacher–student)","A big model labels data; a small model learns from it."],
+ ["Silver vs gold labels","Model-made vs expert/real-world labels."],
+ ["Cohen's κ","Agreement corrected for chance; 0.41–0.60 is moderate."],
+ ["Precision / recall / F1","Right among flagged / found among real / their harmonic mean."],
+ ["Micro vs macro F1","Pooled over labels vs averaged per label."],
+ ["Recall@k","Is the right answer in the top k?"],
+ ["ROC-AUC","Chance a random risky pair scores above a random safe one."],
+ ["Ablation","Remove one part and measure again to prove it matters."],
+ ["Out-of-domain (OOD)","Test data unlike the training data."],
+ ["GNN / GraphSAGE","Neural network on graphs; GraphSAGE averages neighbours' vectors and learns how to combine them."],
+ ["Message passing","Each node updates its vector from its neighbours' vectors, once per layer."],
+ ["Link prediction","Predicting whether a pair of nodes should be connected; here, whether a clause pair is risky."],
+ ["CLAUSE-22","Our taxonomy: 22 clause types + other, plus 7 rule-based Indian labels."],
+ ["Clash matrix","40 clause-type pairs that commonly conflict, each with a risk weight."],
+ ["ICA s.27 / s.74 / s.28","Restraint of trade void / reasonable compensation not penalty / restraint of legal proceedings void."],
+ ["A&C Act s.12(5)","An interested party can't be or unilaterally appoint the arbitrator."],
+ ["Stamp Act s.35 / DPDP s.6","Unstamped documents inadmissible / personal data needs consent."],
+ ["SSE","Server-sent events: the server pushes live progress to the page."],
+ ["SQLite","A database in one file; stores contracts, clauses and findings."]
+];
+function gl() { const q = $("#gq").value.toLowerCase(); $("#gList").innerHTML = G.filter(g => (g[0] + g[1]).toLowerCase().includes(q)).map(g => `<div class="card"><b>${esc(g[0])}</b><p class="note">${esc(g[1])}</p></div>`).join("") || `<p class="note">No term matches "${esc(q)}".</p>`; }
+$("#gq").oninput = gl; gl();
+</script>
+
+</body></html>
