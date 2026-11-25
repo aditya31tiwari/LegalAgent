@@ -66,17 +66,53 @@ def confidence_label(p: float) -> str:
     return "high" if p >= 0.7 else "medium" if p >= 0.45 else "low"
 
 
-def kev_statutory_findings(clauses: list[Clause], show_from: float = 0.3, max_clauses: int = 150) -> list[Finding]:
+LEVELS = ["low", "medium", "high"]
+
+
+def bump(conf: str, steps: int) -> str:
+    """Raise a confidence label by `steps` levels (capped at high)."""
+    return LEVELS[min(LEVELS.index(conf) + max(0, steps), len(LEVELS) - 1)]
+
+
+def mapped_section(category: str) -> tuple[str, str] | None:
+    """(Act, section number) the risk category maps to, e.g. restraint_of_trade -> (ICA 1872, '27')."""
+    _, act, sec = CATEGORIES.get(category, (None, None, None))
+    return (act, sec.replace("Section ", "").strip()) if act and sec else None
+
+
+def law_confirmed(category: str, retrieved: list[dict]) -> bool:
+    """RAG corroboration: the law search, run on the clause text alone, independently found the section Kev's
+    reading points to. On our ground truth this was right 4 times out of 5 (results/eval_lawcheck_pipeline.json)."""
+    key = mapped_section(category)
+    return bool(key) and any((s.get("act"), str(s.get("section"))) == key for s in retrieved)
+
+
+def kev_statutory_findings(clauses: list[Clause], show_from: float = 0.3, max_clauses: int = 150,
+                           rule_hits: set[str] | None = None, retrieve_k: int = 5) -> list[Finding]:
     """
-    Pipeline hook: Kev-based clause-vs-Indian-law findings for risk-typed clauses.
-    Weak signals are SHOWN with a confidence label rather than hidden: any clause whose
-    P(some risk) >= show_from becomes a finding marked high / medium / low confidence.
-    (Evaluation: 6/9 struck-down Supreme Court clauses caught at P>=0.5, but it also flags
-    clauses the court upheld — hence confidence labels and a reviewer, not a verdict.)
+    Pipeline hook: clause-vs-Indian-law findings, combining every signal we measured.
+
+      1. gate    InLegalBERT types: only clauses whose type can carry a legal risk (RISK_TYPES) are checked
+                 (as deployed this cut false alarms on ordinary clauses from 11/30 to 1/30)
+      2. Kev     reads the clause, picks one of 7 plain-language risk types (or none) → P(risk), mapped section
+      3. RAG     retrieves the top India Code sections for the clause; if the law search independently finds
+                 Kev's section, the finding is LAW-CONFIRMED (+1 confidence level)
+      4. rules   if the deterministic regex rules also fire on this clause, it is RULE-CONFIRMED (+1 level)
+      5. law     the mapped section's real text is attached (verified in India Code), plus the retrieved sections
+
+    Weak signals are SHOWN with a confidence label (high / medium / low) rather than hidden.
+    Ground truth (scripts/eval_rag_check.py + eval_lawcheck_pipeline.json): 13/15 real violations surfaced,
+    1/30 ordinary clauses flagged; the court-upheld clauses are still flagged (legal exceptions are not modelled).
     """
     from legalagent.core import local_judge
     if not local_judge.available():
         return []
+    try:
+        from legalagent.core.statutes import load_library, retrieve_sections
+        lib = {(s["act"], str(s["section"])): s for s in load_library()}
+    except Exception:
+        lib, retrieve_sections = {}, None
+    rule_hits = rule_hits or set()
     out = []
     cands = [c for c in clauses if ({l["label"] for l in c.labels} or {"other"}) & RISK_TYPES][:max_clauses]
     for c in cands:
@@ -90,15 +126,36 @@ def kev_statutory_findings(clauses: list[Clause], show_from: float = 0.3, max_cl
             continue
         cat = max((k for k in probs if k != "none"), key=lambda k: float(probs[k]))
         desc, act, sec = CATEGORIES[cat]
-        conf = confidence_label(risk)
+        retrieved = []
+        if retrieve_sections:
+            try:
+                retrieved = [s for s, _ in retrieve_sections(c.text[:900], k=retrieve_k)]
+            except Exception:
+                retrieved = []
+        lc = law_confirmed(cat, retrieved)
+        rc = c.id in rule_hits
+        base = confidence_label(risk)
+        conf = bump(base, int(lc) + int(rc))
+        tags = "".join([" · law-confirmed" if lc else "", " · rule-confirmed" if rc else ""])
+        key = mapped_section(cat)
+        sect = lib.get(key) if key else None
+        refs = [{"source": act, "section": sec, "heading": (sect or {}).get("heading", ""),
+                 "snippet": " ".join(((sect or {}).get("text") or desc).split())[:400],
+                 "url": (sect or {}).get("url", ""), "verified": bool(sect), "grounding": "kev_category",
+                 "confidence": conf}]
         out.append(Finding(
             id=f"finding_{uuid.uuid4().hex[:8]}", target_clause_id=c.id, related_clause_ids=[],
             relation_type="statutory_violation",
-            severity={"high": "high", "medium": "medium", "low": "low"}[conf], risk_score=risk,
-            rationale=(f"[{conf} confidence, p={risk:.2f}] Kev reads this clause as one that {desc}. "
-                       f"A court would test it under {act}, {sec}."),
-            surfaced_by=["kev_statutory"], evidence=[{"clause_id": c.id, "start": 0, "end": len(c.text)}],
-            refs=[{"source": act, "section": sec, "snippet": desc}],
-            scores={"analysis_confidence": risk, "confidence_label": conf, "risk_probs": probs},
+            severity=conf, risk_score=risk,
+            rationale=(f"[{conf} confidence, p={risk:.2f}{tags}] Kev reads this clause as one that {desc}. "
+                       f"A court would test it under {act}, {sec}."
+                       + (" The law search independently retrieved the same section." if lc else "")
+                       + (" The deterministic Indian-law rules also flag this clause." if rc else "")),
+            surfaced_by=["kev_statutory"] + (["rag_confirmed"] if lc else []) + (["rule_confirmed"] if rc else []),
+            evidence=[{"clause_id": c.id, "start": 0, "end": len(c.text)}],
+            refs=refs,
+            scores={"analysis_confidence": risk, "confidence_label": conf, "base_confidence": base,
+                    "law_confirmed": lc, "rule_confirmed": rc, "risk_probs": probs,
+                    "retrieved_sections": [f"{s['act']} s.{s['section']}" for s in retrieved]},
         ))
     return out

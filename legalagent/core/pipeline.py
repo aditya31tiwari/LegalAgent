@@ -92,12 +92,13 @@ def analyse_clauses(clauses: list[Clause], config: dict, contract_id: str = "loc
     findings = list(pair_findings)
     # Clause vs Indian law: deterministic rules + Kev's single-clause check (shown with confidence
     # labels, never silently dropped) + grounded statute retrieval for every finding.
-    findings.extend(analyse_statutory(clauses, config.get("jurisdiction", "India")))
+    rule_findings = analyse_statutory(clauses, config.get("jurisdiction", "India"))
+    findings.extend(rule_findings)
     if config.get("kev_statutory", True) and judge_used == "local":
         t = time.perf_counter()
         try:
             from legalagent.core.statutory_kev import kev_statutory_findings
-            findings.extend(kev_statutory_findings(clauses))
+            findings.extend(kev_statutory_findings(clauses, rule_hits={f.target_clause_id for f in rule_findings}))
         except Exception as exc:
             logger.warning("Kev statutory check skipped: %s", exc)
         timings["kev_statutory_s"] = round(time.perf_counter() - t, 3)

@@ -172,6 +172,36 @@ def main():
             "outcome = ground truth. Pune injections: our planted illegal clauses. CUAD ordinary: normal clauses (any flag is a false alarm). "
             "Kev over-flags, so the product shows confidence labels."))
 
+    lp = load("eval_lawcheck_pipeline.json") or []
+    if lp:
+        order = ["low", "medium", "high"]
+
+        def tier(r):
+            if not r["gated"] or r["p"] < 0.30:
+                return None
+            base = "high" if r["p"] >= 0.7 else "medium" if r["p"] >= 0.45 else "low"
+            return order[min(order.index(base) + int(r["corr"]) + int(r["regex"]), 2)]
+        rules = [("regex rules only", lambda r: r["regex"]),
+                 ("Kev on every clause, P(risk) ≥ 0.5", lambda r: r["p"] >= 0.5),
+                 ("as deployed: type gate + Kev, any confidence", lambda r: tier(r) is not None),
+                 ("as deployed: medium or high", lambda r: tier(r) in ("medium", "high")),
+                 ("as deployed: high (incl. law-/rule-confirmed)", lambda r: tier(r) == "high"),
+                 ("law-confirmed by RAG (retrieval finds Kev's section)", lambda r: r["gated"] and r["p"] >= 0.3 and r["corr"])]
+        rows = []
+        for name, f in rules:
+            cell = []
+            for src in ("supreme_court", "pune_injection", "cuad_ordinary"):
+                x = [r for r in lp if r["src"] == src]
+                cell.append(f"{sum(f(r) for r in x if r['risky'])}/{sum(r['risky'] for r in x)} · {sum(f(r) for r in x if not r['risky'])}/{sum(not r['risky'] for r in x)}")
+            tp = sum(f(r) for r in lp if r["risky"]); fp = sum(f(r) for r in lp if not r["risky"])
+            rows.append([name, *cell, f"{tp}/{tp + fp}" if tp + fp else "—"])
+        parts.append(section("4b · Clause ↔ Indian law as deployed (type gate + Kev + RAG and rule corroboration)", table(
+            ["rule", "Supreme Court: caught · false", "Pune planted: caught · false", "ordinary clauses: caught · false", "precision"], rows),
+            "Tests the full law check the dashboard runs: InLegalBERT decides which clauses could carry a legal risk; Kev names the risk type "
+            "(→ mapped section); a finding is LAW-CONFIRMED when the India Code search independently retrieves the same section and "
+            "RULE-CONFIRMED when the regex rules also fire; each confirmation raises confidence one level. "
+            "Same ground truth as table 4 (results/eval_lawcheck_pipeline.json, scripts/eval_rag_check.py)."))
+
     # ── statute retrieval
     ind = independent_statutes()
     rows = [[m, v.get("recall@1"), v.get("recall@3"), v.get("recall@5"), v.get("act_recall@3")] for m, v in ind.items()]

@@ -11,7 +11,7 @@ Short answers first, detail after. Say numbers exactly as written here; they mat
 | 1 | **0.931 / 0.750** | "Our fine-tuned InLegalBERT classifies clause types at 0.93 F1, and 0.75 on contract types it never saw. The mid-term MiniLM model got 0.83 / 0.59." |
 | 2 | **71 % vs 46 %** | "On 28 bad/fixed clause twins, Kev decides correctly 71 % of the time; rules 46 %." |
 | 3 | **75 % vs 7.5 %** | "On 280 lawyer-annotated interacting pairs from CUAD, Kev finds 75 %; rules 7.5 %." |
-| 4 | **6/9 vs 0/9** | "Of 9 clauses the Supreme Court struck down, Kev flags 6, keyword rules 0. Kev also flags the 4 upheld ones, so we show confidence labels." |
+| 4 | **13/15 · 1/30** | "Our clause-vs-law check, as deployed, surfaces 13 of 15 real violations (Supreme Court struck-down + planted faults) and flags only 1 of 30 ordinary clauses. Keyword rules alone caught 4 of 15. A finding is *law-confirmed* when our India Code search independently finds the same section; those were right 4 times out of 5." (Kev alone on Supreme Court clauses: 6/9 vs regex 0/9; the 4 upheld ones are still flagged, hence confidence labels.) |
 | 5 | **0.32 (from 0.11)** | "For a risky clause, the exact Indian law section is in our top 5 for 32 % of cases, up from 11 % with plain keyword search; the right Act is in the top 3 for 53 %." |
 | 6 | **4,408 sections / 37 sources** | "Our Indian law library: 4,408 India Code sections." |
 | 7 | **92.9 % / 85.7 % / κ 0.57** | "We validated the teacher: 92.9 % on known answers, 85.7 % of its citations exist in India Code, moderate agreement with Claude (κ 0.57)." |
@@ -76,6 +76,20 @@ about 4 decisions per second.
 Three signals: explicit cross-references ("subject to Clause 14.2"), a 40-pair matrix of clause types that commonly
 clash (cap × indemnity 0.9), and hybrid keyword + meaning search fused with reciprocal rank fusion. Cross-referenced
 pairs are always kept; the rest are ranked and capped at 60.
+
+**Q: How exactly do you check a clause against Indian law?**
+Four signals, each measured. (1) Our classifier decides which clauses could carry a legal risk (this cut false alarms on
+ordinary clauses from 11/30 to 1/30). (2) Kev reads the clause and picks one of 7 plain-language legal risks, each mapped
+to its section (restraint of trade → ICA s.27, forfeiture → s.74, one-sided arbitrator → A&C s.12 …). (3) RAG searches
+the 4,408 India Code sections for that clause; if it independently finds the same section, the finding is
+*law-confirmed* and its confidence goes up. (4) If our deterministic rules also fire, it is *rule-confirmed*. The real
+section text is always attached and verified. Result: 13 of 15 real violations surfaced, 1 of 30 ordinary clauses flagged.
+
+**Q: Why doesn't Kev just read the statute text and decide?**
+We tested exactly that: zero-shot, Kev judged worse from statute text (AUC 0.64) than from its own risk-type reading
+(0.74), and retrieval finds the exact section only 32 % of the time, so the decision would inherit retrieval misses.
+So retrieval *corroborates* (precise, 4/5) instead of *deciding*. Training Kev on teacher labels that include the
+retrieved law is our next step.
 
 **Q: What is RAG here?**
 For each finding we retrieve the real India Code sections (BM25 + our fine-tuned InLegal-SBERT, fused, with a small

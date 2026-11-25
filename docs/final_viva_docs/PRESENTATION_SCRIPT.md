@@ -89,7 +89,14 @@ Press Enter for each stage. One or two points per stage.
 - Point at the probability columns: "It gives a probability for every option; the highest wins."
 - Point at the milliseconds: it runs on the laptop GPU in a fraction of a second.
 
-### B6–B8. Explain: law check, law text, result (quickly)
+### B6–B8. Explain: law check, law text, result
+- Stage 6: only clauses whose type can carry legal risk are checked; Kev picks one of 7 Indian-law risks, each mapped
+  to its section (restraint of trade → ICA s.27, forfeiture → s.74). Point at the chart: red = high, amber = medium.
+- Stage 7: the India Code search runs on the clause; "✓ LAW-CONFIRMED" means it independently found the same section
+  Kev pointed to. Those confirmations were right 4 times out of 5. The real section text is shown either way.
+- Overall: 13 of 15 real violations surfaced, only 1 of 30 ordinary clauses flagged.
+
+### (old notes for B6–B8)
 - Stage 6: the same model checks single clauses against 7 Indian-law risks (restraint of trade, penalties, one-sided
   arbitrator…).
 - Stage 7: the real India Code sections are searched and attached.
