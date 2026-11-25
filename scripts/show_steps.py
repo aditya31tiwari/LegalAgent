@@ -234,38 +234,67 @@ def main():
         chart("5_kev_pair_probabilities", _pairs, args)
 
     # 6 ── clause vs Indian law (Kev, categories)
-    stage(6, "Clause vs Indian law: Kev's risk check", "regex rules vs Kev single-clause check (7 risk categories → Act + section); P(risk) = 1 − P(none); confidence high ≥0.70, medium ≥0.45", args)
+    stage(6, "Clause vs Indian law (the check the dashboard runs)",
+          "① type gate: only clauses whose type can carry legal risk · ② Kev names 1 of 7 legal risks → mapped section, P(risk) = 1 − P(none) "
+          "→ base confidence (high ≥0.70, medium ≥0.45, low ≥0.30) · ③ LAW-CONFIRMED if the India Code search independently finds that section "
+          "(+1 level) · ④ RULE-CONFIRMED if the regex rules also fire (+1 level)", args)
     from legalagent.core.analysis import analyse_statutory
     from legalagent.core import statutory_kev as sk
     regex_hits = {f.target_clause_id for f in analyse_statutory(clauses, "India")}
     law_rows = []
     if kev_up:
-        cands = [c for c in clauses if ({l["label"] for l in c.labels} or {"other"}) & sk.RISK_TYPES]
+        gated = [c for c in clauses if ({l["label"] for l in c.labels} or {"other"}) & sk.RISK_TYPES]
+        con.print(f"① type gate: [bold]{len(gated)}[/bold] of {len(clauses)} clauses have a type that can carry an Indian-law risk "
+                  f"(the rest, e.g. notices or governing law, are not checked) · regex rules fire on {len(regex_hits)} clause(s)\n")
+        kf = sk.kev_statutory_findings(clauses, rule_hits=regex_hits, show_from=0.0)   # exactly the pipeline's function
+        by_clause = {c.id: c for c in clauses}
+        lv = {"high": 0, "medium": 1, "low": 2}
         tb = Table(box=box.SIMPLE_HEAVY, show_lines=True)
-        tb.add_column("clause"); tb.add_column("regex"); tb.add_column("P(risk)"); tb.add_column("risk type")
-        tb.add_column("law", overflow="fold", max_width=30); tb.add_column("confidence"); tb.add_column("text", overflow="fold", ratio=1)
-        for c in cands:
-            p = sk.assess(c.text)["probabilities"]
+        for col in ("clause", "P(risk)", "risk type → law", "base", "law-confirmed", "rule-confirmed", "FINAL"):
+            tb.add_column(col, overflow="fold")
+        tb.add_column("text", overflow="fold", ratio=1)
+        rows6 = []
+        for f in kf:
+            c = by_clause[f.target_clause_id]
+            p = f.scores["risk_probs"]
             top = max((k for k in p if k != "none"), key=lambda k: float(p[k]))
-            law_rows.append((1 - float(p.get("none", 0)), c, top))
-        for risk, c, top in first(sorted(law_rows, key=lambda x: -x[0]), args.rows):   # most risky clauses first
+            risk = float(f.scores["analysis_confidence"])
+            final = f.scores["confidence_label"] if risk >= 0.3 else "—"
+            law_rows.append((risk, c, top))
+            rows6.append((lv.get(final, 3), -risk, c, top, risk, f, final))
+        for _, _, c, top, risk, f, final in first(sorted(rows6, key=lambda x: (x[0], x[1])), args.rows):
             _, act, sec = sk.CATEGORIES[top]
-            conf = sk.confidence_label(risk) if risk >= 0.3 else "—"
-            style = {"high": "bold red", "medium": "yellow", "low": "dim"}.get(conf, "dim")
-            tb.add_row(c.number, "✓" if c.id in regex_hits else "", pct(risk), top,
-                       f"{act.replace('The ', '')}, {sec}" if act else "", f"[{style}]{conf}[/{style}]", flat(c.text))
+            style = {"high": "bold red", "medium": "yellow", "low": "dim"}.get(final, "dim")
+            tb.add_row(c.number, pct(risk), f"{top} → {act.replace('The ', '')}, {sec}" if act else top,
+                       f["scores"]["base_confidence"] if isinstance(f, dict) else (f.scores["base_confidence"] if risk >= 0.3 else "—"),
+                       "[green]✓ law[/green]" if f.scores["law_confirmed"] else "",
+                       "[green]✓ rule[/green]" if f.scores["rule_confirmed"] else "",
+                       f"[{style}]{final.upper()}[/{style}]", flat(c.text))
         con.print(tb)
+        n_show = sum(1 for r in law_rows if r[0] >= 0.3)
+        n_lc = sum(1 for f in kf if f.scores["law_confirmed"] and f.scores["analysis_confidence"] >= 0.3)
+        n_rc = sum(1 for f in kf if f.scores["rule_confirmed"] and f.scores["analysis_confidence"] >= 0.3)
+        con.print(f"shown as findings (P(risk) ≥ 0.30): {n_show} · law-confirmed: {n_lc} · rule-confirmed: {n_rc}\n"
+                  "[dim]On our ground truth this check surfaced 13 of 15 real violations and flagged 1 of 30 ordinary clauses; "
+                  "law-confirmed findings were right 4 times out of 5 (/report table 4b).[/dim]")
+
+        conf_of = {f.target_clause_id: f for f in kf}
 
         def _law(ax):
             rows = sorted(law_rows, key=lambda x: x[0])
-            names = [f"{c.number} · {top}" for _, c, top in rows]
-            vals = [r for r, _, _ in rows]
-            cols = ["#c2342b" if v >= 0.7 else "#d98c00" if v >= 0.45 else "#9aa4bd" for v in vals]
+            names, vals, cols = [], [], []
+            for r, c, top in rows:
+                f = conf_of[c.id]
+                tag = (" ✓law" if f.scores["law_confirmed"] else "") + (" ✓rule" if f.scores["rule_confirmed"] else "")
+                names.append(f"{c.number} · {top}{tag}")
+                vals.append(r)
+                final = f.scores["confidence_label"] if r >= 0.3 else "none"
+                cols.append({"high": "#c2342b", "medium": "#d98c00", "low": "#9aa4bd"}.get(final, "#d9dde6"))
             ax.barh(names, vals, color=cols)
             for x, lab in ((0.45, "medium"), (0.7, "high")):
                 ax.axvline(x, color="#5b6478", linestyle="--", linewidth=0.8); ax.text(x, len(rows) - 0.5, f" {lab}", fontsize=8)
-            ax.set_xlim(0, 1); ax.set_xlabel("P(risk) = 1 − P(none)")
-            ax.set_title("Kev's Indian-law risk per clause (red = high, amber = medium confidence)")
+            ax.set_xlim(0, 1); ax.set_xlabel("Kev P(risk) = 1 − P(none)   (bar colour = FINAL confidence after law/rule confirmation)")
+            ax.set_title("Clause vs Indian law: red = high, amber = medium, grey = low   (✓law = law-confirmed, ✓rule = rule-confirmed)")
         chart("6_kev_law_risk", _law, args)
     else:
         con.print(f"regex rules flagged {len(regex_hits)} clauses; Kev check skipped (server not running)")
