@@ -48,12 +48,15 @@ def pct(p):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("file")
-    ap.add_argument("--rows", type=int, default=20, help="rows shown per table")
-    ap.add_argument("--pairs", type=int, default=10, help="pairs sent to Kev in stage 5")
+    ap.add_argument("file", nargs="?", default=str(ROOT / "data/demo/generated/supreme_court_casebook.md"),
+                    help="contract file (default: the Supreme Court casebook)")
+    ap.add_argument("--rows", type=int, default=12, help="rows shown per table")
+    ap.add_argument("--pairs", type=int, default=8, help="pairs sent to Kev in stage 5")
     ap.add_argument("--no-pause", dest="pause", action="store_false")
     args = ap.parse_args()
     path = Path(args.file)
+    if not path.exists() and (ROOT / args.file).exists():   # allow repo-relative paths from any folder
+        path = ROOT / args.file
     cid = path.stem[:24]
 
     con.print(Panel.fit(f"[bold]LegalAgent — pipeline, stage by stage[/bold]\n{path}", border_style="blue"))
