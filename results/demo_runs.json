@@ -124,5 +124,19 @@
     "candidates_s": 10.535,
     "judge_s": 62.52,
     "kev_statutory_s": 33.704
+  },
+  {
+    "id": "demo_10",
+    "title": "NHAI Model Concession Agreement \u2014 full scanned PDF (276 pp, OCR)",
+    "clauses": 632,
+    "pairs": 279,
+    "findings": 356,
+    "judge": "local",
+    "seconds": 403.2,
+    "ingest_s": 0.09,
+    "classify_s": 123.056,
+    "candidates_s": 17.363,
+    "judge_s": 128.026,
+    "kev_statutory_s": 36.752
   }
 ]
