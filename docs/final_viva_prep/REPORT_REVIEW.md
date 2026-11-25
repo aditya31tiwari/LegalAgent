@@ -34,7 +34,7 @@ remain. **#1 and #3 are the ones a panel can catch.**
 - Tables 3.1 and 4.1: add Claude Sonnet as the second teacher, with the counts 1,740 / 620.
 - §5.1.8:
   - Add 1.8 GB GPU and ~4 decisions/s inside the full pipeline.
-  - The NHAI timing (276 pages, 632 clauses, 279 pairs, ≈4.7 min) is in `results/demo_runs.json`.
+  - The NHAI timing (276 pages, 632 clauses, 279 pairs, ≈4.7 min) is in `/report` table 10, taken from the seeding log.
 - Table 5.5:
   - Add the base dense row (0.053).
   - Say "three times better" applies to the exact-section metric only.
