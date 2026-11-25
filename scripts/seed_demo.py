@@ -63,25 +63,32 @@ def make_cuad_example() -> Path | None:
     return p
 
 
-def make_clean_pune() -> Path:
-    """The adversarial excerpt carries an italic answer-key note after each planted clause
-    ("*(Statutory Conflict: …)*"). Strip them so the system sees only the contract text."""
+def strip_answer_keys(src_rel: str, out_name: str) -> Path:
+    """The sample contracts carry an italic answer-key note after each planted clause
+    ("*(Statutory Conflict: …)*", "*(Contradiction: …)*"). Strip them so the system sees only the contract text."""
     import re
-    src = (ROOT / "data/demo/samples/02_pune_metro_adversarial_15_injections.md").read_text(encoding="utf-8")
+    src = (ROOT / src_rel).read_text(encoding="utf-8")
     clean = re.sub(r"\s*\*\([^*]{0,600}?\)\.?\*", "", src)
     GEN.mkdir(parents=True, exist_ok=True)
-    p = GEN / "pune_metro_15_planted_clean.md"
+    p = GEN / out_name
     p.write_text(clean, encoding="utf-8")
     return p
+
+
+def make_clean_pune() -> Path:
+    for rel in ("03_indian_tech_services_msa", "04_executive_employment_agreement",
+                "05_commercial_vendor_supply_agreement", "06_nhai_highway_concession_agreement"):
+        strip_answer_keys(f"data/demo/samples/{rel}.md", f"{rel}_clean.md")
+    return strip_answer_keys("data/demo/samples/02_pune_metro_adversarial_15_injections.md", "pune_metro_15_planted_clean.md")
 
 
 DOCS = [
     ("Pune Metro Line-3 Concession — 15 planted irregularities (excerpt)", "Indian Infrastructure (PPP) · Adversarial test",
      "data/demo/generated/pune_metro_15_planted_clean.md"),
-    ("Indian Tech Services MSA", "Indian Commercial · IT Services", "data/demo/samples/03_indian_tech_services_msa.md"),
-    ("Executive Employment Agreement", "Indian Employment", "data/demo/samples/04_executive_employment_agreement.md"),
-    ("Commercial Vendor Supply Agreement", "Indian Commercial · Supply", "data/demo/samples/05_commercial_vendor_supply_agreement.md"),
-    ("NHAI Highway Concession (excerpt)", "Indian Infrastructure (PPP)", "data/demo/samples/06_nhai_highway_concession_agreement.md"),
+    ("Indian Tech Services MSA", "Indian Commercial · IT Services", "data/demo/generated/03_indian_tech_services_msa_clean.md"),
+    ("Executive Employment Agreement", "Indian Employment", "data/demo/generated/04_executive_employment_agreement_clean.md"),
+    ("Commercial Vendor Supply Agreement", "Indian Commercial · Supply", "data/demo/generated/05_commercial_vendor_supply_agreement_clean.md"),
+    ("NHAI Highway Concession (excerpt)", "Indian Infrastructure (PPP)", "data/demo/generated/06_nhai_highway_concession_agreement_clean.md"),
     ("Pune Metro Line-3 Concession (baseline excerpt)", "Indian Infrastructure (PPP)", "data/demo/samples/01_pune_metro_concession_baseline.md"),
     ("Pune Metro Line-3 Concession — full scanned PDF + 15 planted irregularities (305 pp, OCR)", "Indian Infrastructure (PPP) · Adversarial test",
      "data/demo/india/adversarial/pune_metro_adversarial_15_changes.pdf"),
