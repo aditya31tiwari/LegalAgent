@@ -1,5 +1,5 @@
 #!/bin/sh
-"exec" "$(dirname "$0")/../venv/bin/python" "$0" "$@"
+''''exec "$(dirname "$0")/../venv/bin/python" "$0" "$@" #'''
 """
 Kev throughput on our laptop GPU (RTX 4050, 6 GB).
 

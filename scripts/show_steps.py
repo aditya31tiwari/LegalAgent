@@ -1,5 +1,5 @@
 #!/bin/sh
-"exec" "$(dirname "$0")/../venv/bin/python" "$0" "$@"
+''''exec "$(dirname "$0")/../venv/bin/python" "$0" "$@" #'''
 """
 Backend walk-through for the panel: runs the pipeline ONE STAGE AT A TIME on a contract and prints
 what each stage produced as tables (terminal, via rich). Press Enter to go to the next stage.

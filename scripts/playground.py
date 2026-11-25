@@ -1,5 +1,5 @@
 #!/bin/sh
-"exec" "$(dirname "$0")/../venv/bin/python" "$0" "$@"
+''''exec "$(dirname "$0")/../venv/bin/python" "$0" "$@" #'''
 """
 Terminal playground: paste two clauses, see what every LegalAgent component computes.
 
