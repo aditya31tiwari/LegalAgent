@@ -1,128 +1,69 @@
 # LegalAgent
 
-**An Agentic Contract Review System for Cross-Clause Risk Detection**
+**Local-first cross-clause risk detection for Indian contracts** · B.Tech major project, JIIT
 
-Most contract review tools read one clause at a time. LegalAgent reads clauses *against each other* — because a liability cap in Section 5 can be quietly cancelled out by an indemnity clause in Section 12, and no clause-by-clause tool will ever catch that.
-
----
-
-## What it does
-
-Upload a contract. LegalAgent finds clause pairs that conflict, depend on each other, overlap, or leave a loophole — then explains why in plain language, with sources.
+LegalAgent reads a contract (including scanned PDFs), finds the clauses that create risk **together** (a liability
+cap undone by an uncapped indemnity, a non-compete that survives termination) and the clauses that **Indian law**
+makes void or risky (e.g. ICA s.27, s.74, A&C Act s.12), and attaches the actual India Code text. Everything runs on
+one laptop GPU (RTX 4050, 6 GB); no contract text leaves the machine.
 
 ## Pipeline
 
 ```
-Contract
-   ↓
-Clause Extraction        split by numbering/section patterns (1.1, (a), Section 5)
-   ↓
-Clause Classification    label each clause via fine-tuned LegalBERT
-   ↓
-Related-Clause Retrieval find other clauses in the same contract that matter
-   ↓
-Cross-Clause Analysis    compare them: conflict / dependency / overlap / ambiguity
-   ↓
-Risk Detection           flag the pair, assign severity
-   ↓
-RAG Explanation          explain the risk, grounded in retrieved references
-   ↓
-Results
+PDF / DOCX / TXT
+  → ingest      pymupdf4llm (digital pages) · Tesseract OCR, parallel + cached (scanned pages)
+  → extract     numbered clauses, ARTICLE/SCHEDULE parts, parent links, resolved cross-references
+  → classify    fine-tuned InLegalBERT over CLAUSE-22 (22 types) + 7 rule-based Indian labels
+  → shortlist   cross-references + 40-pair clause-type clash matrix + hybrid BM25/dense retrieval (RRF)
+  → judge       Kev-0.8B decision model, served locally: relation · severity · statute choice
+  → law check   Kev single-clause check over 7 Indian-law risk categories + regex rules
+  → ground      RAG over 4,408 India Code sections (BM25 + fine-tuned InLegal-SBERT + Act prior), citations verified
+  → store/show  SQLite → FastAPI (live progress) → dashboard
 ```
 
-## Retrieval: three methods, compared
+## Results (all measured; details in `/report` or `results/REPORT.html`)
 
-Step 3 is the core research contribution. Three approaches are built and evaluated against each other using precision/recall at varying *k*:
+| What | Result |
+|---|---|
+| Clause classification (CLAUSE-22) | InLegalBERT micro-F1 **0.931** test, **0.750** out-of-domain (MiniLM baseline 0.828 / 0.590) |
+| Pair judge, 28 bad/fixed checklist twins | Kev **71 %** · rules 46 % |
+| Pair judge, 280 lawyer-annotated CUAD interactions (recall) | Kev **75 %** · rules 7.5 % |
+| Clause vs law, clauses struck down by the Supreme Court | Kev **6 / 9** · regex 0 / 9 (Kev also flags upheld clauses → confidence labels) |
+| Statute retrieval, exact section in top 5 | **0.32** (BM25 0.11); right Act in top 3: 0.53 |
+| Teacher (Gemini 4) vs independent truth | 92.9 % checklist · 85.7 % real citations · κ 0.57 with Claude |
+| Speed (RTX 4050) | Kev ~11 decisions/s, ~3,500 input tokens/s, 1.8 GB; 305-page scan end to end in 4.4 min |
+| GNN (GraphSAGE) ablation | ROC-AUC 0.742 vs 0.748 without the graph: no gain, off by default |
 
-| Method | How it works | Catches |
-|---|---|---|
-| **BM25** | keyword overlap | shared legal terms, explicit references |
-| **Dense** | embedding similarity | related meaning, different wording |
-| **Hybrid** | combined scores | ideally both |
+## Run it
 
-## Output
-
-Every finding carries:
-
-- the target clause and the related clause(s) it was compared against
-- relation type and severity (Low / Medium / High)
-- a plain-language reason
-- supporting references
-- a suggested revision *(very well could be future scope)*
-
-A flag without a reason isn't useful to a reviewer, so nothing ships without one.
-
----
-
-## Tech Stack
-
-**Core** — Python 3.10+, PyTorch, HuggingFace Transformers
-**Retrieval** — rank-bm25, Sentence-Transformers, FAISS / ChromaDB
-**Generation** — LLM API for RAG-based explanation
-**Product layer** — login, document storage, dashboard, history, delete account/data
-
-## Dataset
-
-- **CUAD** — 500+ contracts, 13,000+ expert-annotated clauses (training + baseline evaluation)
-- **Held-out set** — a small curated set of publicly documented loophole-exploited contracts, treated as illustrative case studies rather than a statistical benchmark
-
-## Phase 1 target (end-to-end)
-
-```
-User → Frontend → Demo Login → Upload Contract → Backend API
-     → Storage → LegalAgent Core (6 stages) → Results → Frontend
+```bash
+bash scripts/start_demo.sh            # Kev judge on :8008 (GPU) + web app on :8080 (+ Workbench window)
+# http://localhost:8080/app      dashboard: upload & analyse, findings, clause graph
+# http://localhost:8080/scores   under the hood: every score behind every finding
+# http://localhost:8080/report   every comparison with timings
+venv/bin/python scripts/show_steps.py data/demo/generated/supreme_court_casebook.md   # pipeline stage by stage
+venv/bin/python -m pytest -q tests clause20
 ```
 
-Core system first. Advanced components later.
+## Documentation
 
-## Why LegalAgent
+Start at **[docs/final_viva_docs/README.md](docs/final_viva_docs/README.md)**:
+process and failed attempts, design decisions, every concept explained, the final report text, the demo script.
 
-**Existing tools review clauses. LegalAgent reviews the contract.**
+## Repository map
 
-### 1. Cross-clause risk, not single-clause labels
-Every mainstream contract review tool is single-pass: it reads clause 5, tells you it's a
-limitation-of-liability clause, scores it, and moves on. It never asks whether clause 12
-cancels it out. LegalAgent's entire pipeline is built around that question. The unit of
-analysis is the **clause pair**, not the clause.
-
-### 2. It finds the pairs worth comparing
-A 60-clause contract has ~1,800 possible pairs — too many to analyse blindly. LegalAgent
-narrows them using three signals:
-- **Retrieval** (BM25 / dense / hybrid) surfaces semantically related clauses
-- **Cross-references** parsed from the text ("subject to Section 8.2") give explicit links
-- **A risk type matrix** encodes known dangerous combinations — liability cap × indemnity,
-  termination × survival, exclusivity × non-compete
-
-Only the shortlist gets deep analysis. That's what makes it run in seconds, not minutes.
-
-### 3. Every flag comes with its reasoning
-A severity score with no explanation is a dead end for a reviewer. Each finding carries the
-*specific* clause it was compared against, the relation type, verbatim evidence from both
-clauses, and a plain-language reason grounded in retrieved references — not an unaided
-model guess.
-
-### 4. Severity is transparent, not a black box
-Risk levels come from a tunable rubric over relation type, clause-type pairing, and analysis
-confidence — readable, auditable, and adjustable. The model finds the issue; a documented
-rule decides how serious it is.
-
-### 5. The retrieval comparison is a real result
-BM25 vs dense vs hybrid are evaluated against gold clause pairs derived from the contracts'
-own cross-references — a measurable deliverable, not a benchmark bolted on the side.
-
-### 6. Modular by construction
-Every stage reads and writes the same clause data structure. LangGraph orchestration, the
-MCP interface, and the clause-graph GNN can be added later without rewriting anything that
-already works.
-
----
-
-> **In one line:** LegalAgent catches the risks that only appear when two clauses are read
-> together — and tells you exactly why.
-
----
+| Path | Contents |
+|---|---|
+| `legalagent/core/` | ingestion, extraction, classification, retrieval, candidate selection, Kev judge, Indian-law check, statute RAG, GNN, pipeline |
+| `web/` | FastAPI server, dashboard (`index.html`), under-the-hood page (`scores.html`) |
+| `train/` | classifier, retriever, Kev (LoRA) and GNN training |
+| `scripts/` | evaluation (`eval_all.py`), judge selection, demo seeding, step viewer, report builder, benchmarks |
+| `clause20/` | CLAUSE-22 dataset build and label definitions (`labels.yaml`) |
+| `research/` | taxonomy research, teacher labels and validation, Supreme Court litigated clauses |
+| `results/` | every measured number (JSON) + `REPORT.html` |
 
 ## Scope
 
-LegalAgent is a research and assistive tool for surfacing clauses worth a closer look. **It does not replace a lawyer's review.**
-
+LegalAgent is an assistive tool that surfaces clauses worth a closer look. It does not replace a lawyer's review.
+Main limitation: training labels for clause pairs come from an LLM teacher (validated, but not lawyer-verified),
+and the judge favours recall over precision.

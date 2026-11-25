@@ -4,6 +4,9 @@
 
 | File | What it is for |
 |---|---|
+| [PANEL_VIVA.md](PANEL_VIVA.md) | **Viva prep**: the 10 numbers to know, expected questions with answers, hard questions, what not to do |
+| [DECISIONS.md](DECISIONS.md) | **Every design decision**: what we chose, why (with numbers), why not the alternatives |
+| [SWEEP_FINDINGS.md](SWEEP_FINDINGS.md) | Pre-viva sweep: risks for the presentation and what to do about each |
 | [PANEL_DEMO.md](PANEL_DEMO.md) | **How to show the project tomorrow**: which laptop shows what, setup, the 12-minute walk-through, fallbacks |
 | [LEARNING.md](LEARNING.md) | **For us**: every part explained (what / how / why / why not), what each result table tests, likely viva questions, glossary |
 | [LEARN_EVERYTHING.md](LEARN_EVERYTHING.md) | **Learn every concept from zero** (GNN, transformers, embeddings, BM25, RRF, RAG, LoRA, metrics, Indian law, web…) with examples, **plus all exact facts**: 22 + 7 labels, 40 clash pairs, datasets, models, Kev's questions, thresholds, commands |

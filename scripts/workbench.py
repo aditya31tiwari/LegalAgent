@@ -126,7 +126,7 @@ class Workbench(tk.Tk):
             local_judge.KEV_URL = KEV_BASE_URL
             base = local_judge.available()
             local_judge.KEV_URL = "http://127.0.0.1:8008/v1/systemone"
-            self.log(f"GPU: {gpu} · classifier: {available_backend('auto')} · Kev fine-tuned :8008 {'UP' if ft else 'down'} · Kev base :8009 {'UP' if base else 'down'}")
+            self.log(f"GPU: {gpu} · classifier: {available_backend('auto')} · Kev judge :8008 {'UP' if ft else 'down'}" + (" · comparison Kev :8009 UP" if base else ""))
         except Exception as exc:
             self.log(f"status check failed: {exc}")
 
@@ -155,7 +155,7 @@ class Workbench(tk.Tk):
         self.gem = tk.BooleanVar(value=False)
         ttk.Checkbutton(top, text="also ask Gemini (sends text to Google)", variable=self.gem).pack(side="left", padx=12)
         ttk.Button(top, text="▶ Run every method", command=self._run_play).pack(side="left", padx=8)
-        ttk.Label(top, text="Kev fine-tuned :8008 · Kev base :8009", style="Muted.TLabel").pack(side="right")
+        ttk.Label(top, text="Kev (served judge) :8008 · local GPU", style="Muted.TLabel").pack(side="right")
 
         boxes = ttk.Frame(self.tab_play)
         boxes.pack(fill="x", padx=6)

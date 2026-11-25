@@ -118,9 +118,20 @@ def compare_pair(text_a: str, text_b: str, use_gemini: bool = False) -> dict:
     out["judges"] = {
         "rules": {"relation": f.relation_type if f else "no_issue", "severity": f.severity if f else None,
                   "rationale": f.rationale if f else "", "statutory_flags": [s.rationale for s in stat]},
-        "kev_finetuned": _kev(KEV_FT_URL, a, b, sections),
-        "kev_base": _kev(KEV_BASE_URL, a, b, sections),
     }
+    # Name the :8008 judge by what start_demo.sh actually serves (results/judge_selection.json);
+    # the :8009 comparison server is shown only when it is running.
+    served = "kev_base_zero_shot"
+    try:
+        import json as _json
+        served = _json.loads((Path(__file__).resolve().parents[2] / "results" / "judge_selection.json").read_text()).get("judge", served)
+    except Exception:
+        pass
+    main_name = "kev_base (served, zero-shot)" if "base" in served else "kev_finetuned (served)"
+    out["judges"][main_name] = _kev(KEV_FT_URL, a, b, sections)
+    other = _kev(KEV_BASE_URL, a, b, sections)
+    if other.get("available"):
+        out["judges"]["kev (comparison server :8009)"] = other
     if use_gemini:
         try:
             from legalagent.core.gemini_analysis import analyse_pairs_with_gemini
