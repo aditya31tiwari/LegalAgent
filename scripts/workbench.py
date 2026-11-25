@@ -1,3 +1,5 @@
+#!/bin/sh
+"exec" "$(dirname "$0")/../venv/bin/python" "$0" "$@"
 """
 LegalAgent Workbench — a desktop window onto the engine (Tkinter + matplotlib).
 

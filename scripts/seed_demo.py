@@ -1,3 +1,5 @@
+#!/bin/sh
+"exec" "$(dirname "$0")/../venv/bin/python" "$0" "$@"
 """
 Rebuild the demo database from REAL pipeline runs (replaces the hand-written showcase
 findings that legalagent/db.py:seed_database used to insert).
