@@ -6,14 +6,14 @@
       "risky": true,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.1975,
-        "penalty_or_forfeiture": 0.0519,
-        "restricts_legal_remedies": 0.2694,
-        "one_sided_arbitrator": 0.002,
-        "termination_at_will": 0.0632,
-        "unstamped_or_invalid_form": 0.0113,
-        "personal_data_without_consent": 0.0012,
-        "none": 0.4035
+        "restraint_of_trade": 0.1235,
+        "penalty_or_forfeiture": 0.0708,
+        "restricts_legal_remedies": 0.2688,
+        "one_sided_arbitrator": 0.0117,
+        "termination_at_will": 0.091,
+        "unstamped_or_invalid_form": 0.0285,
+        "personal_data_without_consent": 0.0064,
+        "none": 0.3993
       },
       "kev_tau0.5": "restricts_legal_remedies",
       "kev_tau0.7": "restricts_legal_remedies"
@@ -24,14 +24,14 @@
       "risky": true,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.6917,
-        "penalty_or_forfeiture": 0.0412,
-        "restricts_legal_remedies": 0.069,
-        "one_sided_arbitrator": 0.001,
-        "termination_at_will": 0.0246,
-        "unstamped_or_invalid_form": 0.006,
-        "personal_data_without_consent": 0.0006,
-        "none": 0.1659
+        "restraint_of_trade": 0.2542,
+        "penalty_or_forfeiture": 0.1022,
+        "restricts_legal_remedies": 0.1884,
+        "one_sided_arbitrator": 0.0047,
+        "termination_at_will": 0.0717,
+        "unstamped_or_invalid_form": 0.0305,
+        "personal_data_without_consent": 0.0062,
+        "none": 0.3422
       },
       "kev_tau0.5": "restraint_of_trade",
       "kev_tau0.7": "restraint_of_trade"
@@ -42,14 +42,14 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.2561,
-        "penalty_or_forfeiture": 0.1406,
-        "restricts_legal_remedies": 0.2662,
-        "one_sided_arbitrator": 0.0013,
-        "termination_at_will": 0.1106,
-        "unstamped_or_invalid_form": 0.0055,
-        "personal_data_without_consent": 0.0006,
-        "none": 0.2191
+        "restraint_of_trade": 0.1693,
+        "penalty_or_forfeiture": 0.1782,
+        "restricts_legal_remedies": 0.28,
+        "one_sided_arbitrator": 0.0044,
+        "termination_at_will": 0.1068,
+        "unstamped_or_invalid_form": 0.0126,
+        "personal_data_without_consent": 0.0031,
+        "none": 0.2455
       },
       "kev_tau0.5": "restricts_legal_remedies",
       "kev_tau0.7": "restricts_legal_remedies"
@@ -60,17 +60,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.1899,
-        "penalty_or_forfeiture": 0.0478,
-        "restricts_legal_remedies": 0.1934,
-        "one_sided_arbitrator": 0.0023,
-        "termination_at_will": 0.0989,
-        "unstamped_or_invalid_form": 0.0098,
-        "personal_data_without_consent": 0.0011,
-        "none": 0.4568
+        "restraint_of_trade": 0.1475,
+        "penalty_or_forfeiture": 0.1028,
+        "restricts_legal_remedies": 0.1363,
+        "one_sided_arbitrator": 0.0095,
+        "termination_at_will": 0.0988,
+        "unstamped_or_invalid_form": 0.0311,
+        "personal_data_without_consent": 0.0077,
+        "none": 0.4663
       },
-      "kev_tau0.5": "restricts_legal_remedies",
-      "kev_tau0.7": "restricts_legal_remedies"
+      "kev_tau0.5": "restraint_of_trade",
+      "kev_tau0.7": "restraint_of_trade"
     },
     {
       "source": "supreme_court",
@@ -78,14 +78,14 @@
       "risky": true,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0028,
-        "penalty_or_forfeiture": 0.7475,
-        "restricts_legal_remedies": 0.0146,
-        "one_sided_arbitrator": 0.001,
-        "termination_at_will": 0.0067,
-        "unstamped_or_invalid_form": 0.0037,
-        "personal_data_without_consent": 0.0005,
-        "none": 0.2234
+        "restraint_of_trade": 0.0121,
+        "penalty_or_forfeiture": 0.4996,
+        "restricts_legal_remedies": 0.0388,
+        "one_sided_arbitrator": 0.0052,
+        "termination_at_will": 0.0462,
+        "unstamped_or_invalid_form": 0.0133,
+        "personal_data_without_consent": 0.0029,
+        "none": 0.3818
       },
       "kev_tau0.5": "penalty_or_forfeiture",
       "kev_tau0.7": "penalty_or_forfeiture"
@@ -96,17 +96,17 @@
       "risky": true,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0067,
-        "penalty_or_forfeiture": 0.4321,
-        "restricts_legal_remedies": 0.0969,
-        "one_sided_arbitrator": 0.0018,
-        "termination_at_will": 0.1622,
-        "unstamped_or_invalid_form": 0.0126,
-        "personal_data_without_consent": 0.0008,
-        "none": 0.287
+        "restraint_of_trade": 0.0346,
+        "penalty_or_forfeiture": 0.1519,
+        "restricts_legal_remedies": 0.0622,
+        "one_sided_arbitrator": 0.0091,
+        "termination_at_will": 0.4181,
+        "unstamped_or_invalid_form": 0.0223,
+        "personal_data_without_consent": 0.0035,
+        "none": 0.2983
       },
-      "kev_tau0.5": "penalty_or_forfeiture",
-      "kev_tau0.7": "penalty_or_forfeiture"
+      "kev_tau0.5": "termination_at_will",
+      "kev_tau0.7": "termination_at_will"
     },
     {
       "source": "supreme_court",
@@ -114,14 +114,14 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0057,
-        "penalty_or_forfeiture": 0.3371,
-        "restricts_legal_remedies": 0.2033,
-        "one_sided_arbitrator": 0.0014,
-        "termination_at_will": 0.0588,
-        "unstamped_or_invalid_form": 0.0073,
-        "personal_data_without_consent": 0.0007,
-        "none": 0.3857
+        "restraint_of_trade": 0.024,
+        "penalty_or_forfeiture": 0.2226,
+        "restricts_legal_remedies": 0.1662,
+        "one_sided_arbitrator": 0.0062,
+        "termination_at_will": 0.1358,
+        "unstamped_or_invalid_form": 0.0221,
+        "personal_data_without_consent": 0.0041,
+        "none": 0.419
       },
       "kev_tau0.5": "penalty_or_forfeiture",
       "kev_tau0.7": "penalty_or_forfeiture"
@@ -132,14 +132,14 @@
       "risky": true,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0084,
-        "penalty_or_forfeiture": 0.04,
-        "restricts_legal_remedies": 0.0886,
-        "one_sided_arbitrator": 0.0015,
-        "termination_at_will": 0.4507,
-        "unstamped_or_invalid_form": 0.0136,
-        "personal_data_without_consent": 0.0012,
-        "none": 0.3959
+        "restraint_of_trade": 0.0404,
+        "penalty_or_forfeiture": 0.0755,
+        "restricts_legal_remedies": 0.1358,
+        "one_sided_arbitrator": 0.0066,
+        "termination_at_will": 0.3375,
+        "unstamped_or_invalid_form": 0.0294,
+        "personal_data_without_consent": 0.007,
+        "none": 0.3678
       },
       "kev_tau0.5": "termination_at_will",
       "kev_tau0.7": "termination_at_will"
@@ -150,14 +150,14 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0017,
-        "penalty_or_forfeiture": 0.0623,
-        "restricts_legal_remedies": 0.7961,
-        "one_sided_arbitrator": 0.0005,
-        "termination_at_will": 0.0422,
-        "unstamped_or_invalid_form": 0.0025,
-        "personal_data_without_consent": 0.0003,
-        "none": 0.0944
+        "restraint_of_trade": 0.0077,
+        "penalty_or_forfeiture": 0.0797,
+        "restricts_legal_remedies": 0.7058,
+        "one_sided_arbitrator": 0.0023,
+        "termination_at_will": 0.0667,
+        "unstamped_or_invalid_form": 0.0061,
+        "personal_data_without_consent": 0.0015,
+        "none": 0.1301
       },
       "kev_tau0.5": "restricts_legal_remedies",
       "kev_tau0.7": "restricts_legal_remedies"
@@ -168,17 +168,17 @@
       "risky": true,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0165,
-        "penalty_or_forfeiture": 0.0369,
-        "restricts_legal_remedies": 0.0837,
-        "one_sided_arbitrator": 0.0727,
-        "termination_at_will": 0.0242,
-        "unstamped_or_invalid_form": 0.0145,
-        "personal_data_without_consent": 0.0017,
-        "none": 0.7498
+        "restraint_of_trade": 0.034,
+        "penalty_or_forfeiture": 0.087,
+        "restricts_legal_remedies": 0.0855,
+        "one_sided_arbitrator": 0.0725,
+        "termination_at_will": 0.0337,
+        "unstamped_or_invalid_form": 0.0195,
+        "personal_data_without_consent": 0.0042,
+        "none": 0.6637
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "penalty_or_forfeiture"
     },
     {
       "source": "supreme_court",
@@ -186,14 +186,14 @@
       "risky": true,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0195,
-        "penalty_or_forfeiture": 0.0171,
-        "restricts_legal_remedies": 0.0595,
-        "one_sided_arbitrator": 0.0462,
-        "termination_at_will": 0.0107,
-        "unstamped_or_invalid_form": 0.0115,
-        "personal_data_without_consent": 0.0016,
-        "none": 0.8341
+        "restraint_of_trade": 0.0277,
+        "penalty_or_forfeiture": 0.0402,
+        "restricts_legal_remedies": 0.0567,
+        "one_sided_arbitrator": 0.0516,
+        "termination_at_will": 0.0273,
+        "unstamped_or_invalid_form": 0.0153,
+        "personal_data_without_consent": 0.0049,
+        "none": 0.7762
       },
       "kev_tau0.5": "none",
       "kev_tau0.7": "none"
@@ -204,14 +204,14 @@
       "risky": true,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0075,
-        "penalty_or_forfeiture": 0.0065,
-        "restricts_legal_remedies": 0.2859,
-        "one_sided_arbitrator": 0.4055,
-        "termination_at_will": 0.0117,
-        "unstamped_or_invalid_form": 0.0059,
-        "personal_data_without_consent": 0.0008,
-        "none": 0.2762
+        "restraint_of_trade": 0.0167,
+        "penalty_or_forfeiture": 0.0185,
+        "restricts_legal_remedies": 0.2082,
+        "one_sided_arbitrator": 0.2634,
+        "termination_at_will": 0.0323,
+        "unstamped_or_invalid_form": 0.0159,
+        "personal_data_without_consent": 0.003,
+        "none": 0.4419
       },
       "kev_tau0.5": "one_sided_arbitrator",
       "kev_tau0.7": "one_sided_arbitrator"
@@ -222,17 +222,17 @@
       "risky": true,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0289,
-        "penalty_or_forfeiture": 0.0319,
-        "restricts_legal_remedies": 0.0653,
-        "one_sided_arbitrator": 0.0438,
-        "termination_at_will": 0.021,
-        "unstamped_or_invalid_form": 0.0184,
-        "personal_data_without_consent": 0.0031,
-        "none": 0.7876
+        "restraint_of_trade": 0.0598,
+        "penalty_or_forfeiture": 0.0676,
+        "restricts_legal_remedies": 0.1116,
+        "one_sided_arbitrator": 0.0507,
+        "termination_at_will": 0.0637,
+        "unstamped_or_invalid_form": 0.0283,
+        "personal_data_without_consent": 0.011,
+        "none": 0.6074
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "restricts_legal_remedies"
     },
     {
       "source": "pune_injection",
@@ -240,14 +240,14 @@
       "risky": true,
       "regex": true,
       "kev_probs": {
-        "restraint_of_trade": 0.7414,
-        "penalty_or_forfeiture": 0.0253,
-        "restricts_legal_remedies": 0.0569,
-        "one_sided_arbitrator": 0.0008,
-        "termination_at_will": 0.0265,
-        "unstamped_or_invalid_form": 0.0049,
-        "personal_data_without_consent": 0.0005,
-        "none": 0.1437
+        "restraint_of_trade": 0.4675,
+        "penalty_or_forfeiture": 0.0601,
+        "restricts_legal_remedies": 0.1256,
+        "one_sided_arbitrator": 0.0034,
+        "termination_at_will": 0.0685,
+        "unstamped_or_invalid_form": 0.0174,
+        "personal_data_without_consent": 0.0036,
+        "none": 0.2539
       },
       "kev_tau0.5": "restraint_of_trade",
       "kev_tau0.7": "restraint_of_trade"
@@ -258,14 +258,14 @@
       "risky": true,
       "regex": true,
       "kev_probs": {
-        "restraint_of_trade": 0.0078,
-        "penalty_or_forfeiture": 0.4892,
-        "restricts_legal_remedies": 0.0215,
-        "one_sided_arbitrator": 0.0024,
-        "termination_at_will": 0.012,
-        "unstamped_or_invalid_form": 0.0064,
-        "personal_data_without_consent": 0.001,
-        "none": 0.4597
+        "restraint_of_trade": 0.0254,
+        "penalty_or_forfeiture": 0.5196,
+        "restricts_legal_remedies": 0.0473,
+        "one_sided_arbitrator": 0.0063,
+        "termination_at_will": 0.0534,
+        "unstamped_or_invalid_form": 0.0145,
+        "personal_data_without_consent": 0.0045,
+        "none": 0.329
       },
       "kev_tau0.5": "penalty_or_forfeiture",
       "kev_tau0.7": "penalty_or_forfeiture"
@@ -276,14 +276,14 @@
       "risky": true,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0093,
-        "penalty_or_forfeiture": 0.544,
-        "restricts_legal_remedies": 0.0559,
-        "one_sided_arbitrator": 0.003,
-        "termination_at_will": 0.0184,
-        "unstamped_or_invalid_form": 0.0077,
-        "personal_data_without_consent": 0.0059,
-        "none": 0.3557
+        "restraint_of_trade": 0.0308,
+        "penalty_or_forfeiture": 0.4557,
+        "restricts_legal_remedies": 0.1042,
+        "one_sided_arbitrator": 0.0083,
+        "termination_at_will": 0.0575,
+        "unstamped_or_invalid_form": 0.0174,
+        "personal_data_without_consent": 0.0396,
+        "none": 0.2864
       },
       "kev_tau0.5": "penalty_or_forfeiture",
       "kev_tau0.7": "penalty_or_forfeiture"
@@ -294,14 +294,14 @@
       "risky": true,
       "regex": true,
       "kev_probs": {
-        "restraint_of_trade": 0.0042,
-        "penalty_or_forfeiture": 0.0073,
-        "restricts_legal_remedies": 0.0052,
-        "one_sided_arbitrator": 0.0007,
-        "termination_at_will": 0.0054,
-        "unstamped_or_invalid_form": 0.0044,
-        "personal_data_without_consent": 0.7803,
-        "none": 0.1925
+        "restraint_of_trade": 0.0124,
+        "penalty_or_forfeiture": 0.0108,
+        "restricts_legal_remedies": 0.0155,
+        "one_sided_arbitrator": 0.0021,
+        "termination_at_will": 0.0252,
+        "unstamped_or_invalid_form": 0.0076,
+        "personal_data_without_consent": 0.785,
+        "none": 0.1415
       },
       "kev_tau0.5": "personal_data_without_consent",
       "kev_tau0.7": "personal_data_without_consent"
@@ -312,14 +312,14 @@
       "risky": true,
       "regex": true,
       "kev_probs": {
-        "restraint_of_trade": 0.0038,
-        "penalty_or_forfeiture": 0.0093,
-        "restricts_legal_remedies": 0.0064,
-        "one_sided_arbitrator": 0.0013,
-        "termination_at_will": 0.0036,
-        "unstamped_or_invalid_form": 0.7463,
-        "personal_data_without_consent": 0.0007,
-        "none": 0.2288
+        "restraint_of_trade": 0.0262,
+        "penalty_or_forfeiture": 0.0431,
+        "restricts_legal_remedies": 0.0545,
+        "one_sided_arbitrator": 0.0076,
+        "termination_at_will": 0.0348,
+        "unstamped_or_invalid_form": 0.5337,
+        "personal_data_without_consent": 0.0057,
+        "none": 0.2945
       },
       "kev_tau0.5": "unstamped_or_invalid_form",
       "kev_tau0.7": "unstamped_or_invalid_form"
@@ -330,17 +330,17 @@
       "risky": true,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.032,
-        "penalty_or_forfeiture": 0.0856,
-        "restricts_legal_remedies": 0.0612,
-        "one_sided_arbitrator": 0.0051,
-        "termination_at_will": 0.066,
-        "unstamped_or_invalid_form": 0.0125,
-        "personal_data_without_consent": 0.0024,
-        "none": 0.7352
+        "restraint_of_trade": 0.0779,
+        "penalty_or_forfeiture": 0.1397,
+        "restricts_legal_remedies": 0.0824,
+        "one_sided_arbitrator": 0.0106,
+        "termination_at_will": 0.1308,
+        "unstamped_or_invalid_form": 0.0208,
+        "personal_data_without_consent": 0.0158,
+        "none": 0.522
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "penalty_or_forfeiture"
     },
     {
       "source": "cuad_ordinary",
@@ -348,14 +348,14 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0212,
-        "penalty_or_forfeiture": 0.0352,
-        "restricts_legal_remedies": 0.2423,
-        "one_sided_arbitrator": 0.0032,
-        "termination_at_will": 0.1992,
-        "unstamped_or_invalid_form": 0.0156,
-        "personal_data_without_consent": 0.0018,
-        "none": 0.4814
+        "restraint_of_trade": 0.0566,
+        "penalty_or_forfeiture": 0.0904,
+        "restricts_legal_remedies": 0.2403,
+        "one_sided_arbitrator": 0.0123,
+        "termination_at_will": 0.1814,
+        "unstamped_or_invalid_form": 0.019,
+        "personal_data_without_consent": 0.0086,
+        "none": 0.3914
       },
       "kev_tau0.5": "restricts_legal_remedies",
       "kev_tau0.7": "restricts_legal_remedies"
@@ -366,17 +366,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0126,
-        "penalty_or_forfeiture": 0.0253,
-        "restricts_legal_remedies": 0.0257,
-        "one_sided_arbitrator": 0.0048,
-        "termination_at_will": 0.0138,
-        "unstamped_or_invalid_form": 0.0178,
-        "personal_data_without_consent": 0.0038,
-        "none": 0.8962
+        "restraint_of_trade": 0.0411,
+        "penalty_or_forfeiture": 0.0849,
+        "restricts_legal_remedies": 0.0988,
+        "one_sided_arbitrator": 0.0422,
+        "termination_at_will": 0.0773,
+        "unstamped_or_invalid_form": 0.0292,
+        "personal_data_without_consent": 0.0395,
+        "none": 0.587
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "restricts_legal_remedies"
     },
     {
       "source": "cuad_ordinary",
@@ -384,17 +384,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0156,
-        "penalty_or_forfeiture": 0.0344,
-        "restricts_legal_remedies": 0.0692,
-        "one_sided_arbitrator": 0.0105,
-        "termination_at_will": 0.0279,
-        "unstamped_or_invalid_form": 0.01,
-        "personal_data_without_consent": 0.0022,
-        "none": 0.8301
+        "restraint_of_trade": 0.05,
+        "penalty_or_forfeiture": 0.0989,
+        "restricts_legal_remedies": 0.1144,
+        "one_sided_arbitrator": 0.0413,
+        "termination_at_will": 0.0846,
+        "unstamped_or_invalid_form": 0.0303,
+        "personal_data_without_consent": 0.0108,
+        "none": 0.5696
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "restricts_legal_remedies"
     },
     {
       "source": "cuad_ordinary",
@@ -402,17 +402,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0225,
-        "penalty_or_forfeiture": 0.0549,
-        "restricts_legal_remedies": 0.0819,
-        "one_sided_arbitrator": 0.0137,
-        "termination_at_will": 0.0403,
-        "unstamped_or_invalid_form": 0.014,
-        "personal_data_without_consent": 0.0026,
-        "none": 0.7701
+        "restraint_of_trade": 0.0508,
+        "penalty_or_forfeiture": 0.0989,
+        "restricts_legal_remedies": 0.1322,
+        "one_sided_arbitrator": 0.0515,
+        "termination_at_will": 0.0937,
+        "unstamped_or_invalid_form": 0.0293,
+        "personal_data_without_consent": 0.0111,
+        "none": 0.5326
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "restricts_legal_remedies"
     },
     {
       "source": "cuad_ordinary",
@@ -420,17 +420,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0281,
-        "penalty_or_forfeiture": 0.0405,
-        "restricts_legal_remedies": 0.0604,
-        "one_sided_arbitrator": 0.0035,
-        "termination_at_will": 0.0324,
-        "unstamped_or_invalid_form": 0.0158,
-        "personal_data_without_consent": 0.0038,
-        "none": 0.8154
+        "restraint_of_trade": 0.0609,
+        "penalty_or_forfeiture": 0.0718,
+        "restricts_legal_remedies": 0.0818,
+        "one_sided_arbitrator": 0.0093,
+        "termination_at_will": 0.0578,
+        "unstamped_or_invalid_form": 0.0275,
+        "personal_data_without_consent": 0.0248,
+        "none": 0.6661
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "restricts_legal_remedies"
     },
     {
       "source": "cuad_ordinary",
@@ -438,17 +438,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0171,
-        "penalty_or_forfeiture": 0.0363,
-        "restricts_legal_remedies": 0.0332,
-        "one_sided_arbitrator": 0.0071,
-        "termination_at_will": 0.0345,
-        "unstamped_or_invalid_form": 0.0136,
-        "personal_data_without_consent": 0.0028,
-        "none": 0.8554
+        "restraint_of_trade": 0.0548,
+        "penalty_or_forfeiture": 0.0864,
+        "restricts_legal_remedies": 0.0853,
+        "one_sided_arbitrator": 0.0308,
+        "termination_at_will": 0.1165,
+        "unstamped_or_invalid_form": 0.0277,
+        "personal_data_without_consent": 0.0164,
+        "none": 0.5821
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "termination_at_will"
     },
     {
       "source": "cuad_ordinary",
@@ -456,17 +456,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.011,
-        "penalty_or_forfeiture": 0.0194,
-        "restricts_legal_remedies": 0.0147,
-        "one_sided_arbitrator": 0.0028,
-        "termination_at_will": 0.0123,
-        "unstamped_or_invalid_form": 0.0184,
-        "personal_data_without_consent": 0.002,
-        "none": 0.9193
+        "restraint_of_trade": 0.0456,
+        "penalty_or_forfeiture": 0.0743,
+        "restricts_legal_remedies": 0.0764,
+        "one_sided_arbitrator": 0.0191,
+        "termination_at_will": 0.0664,
+        "unstamped_or_invalid_form": 0.0533,
+        "personal_data_without_consent": 0.0123,
+        "none": 0.6527
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "restricts_legal_remedies"
     },
     {
       "source": "cuad_ordinary",
@@ -474,17 +474,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0127,
-        "penalty_or_forfeiture": 0.0214,
-        "restricts_legal_remedies": 0.2377,
-        "one_sided_arbitrator": 0.0022,
-        "termination_at_will": 0.3517,
-        "unstamped_or_invalid_form": 0.0139,
-        "personal_data_without_consent": 0.0013,
-        "none": 0.3591
+        "restraint_of_trade": 0.054,
+        "penalty_or_forfeiture": 0.061,
+        "restricts_legal_remedies": 0.2161,
+        "one_sided_arbitrator": 0.0103,
+        "termination_at_will": 0.1994,
+        "unstamped_or_invalid_form": 0.0297,
+        "personal_data_without_consent": 0.0058,
+        "none": 0.4238
       },
-      "kev_tau0.5": "termination_at_will",
-      "kev_tau0.7": "termination_at_will"
+      "kev_tau0.5": "restricts_legal_remedies",
+      "kev_tau0.7": "restricts_legal_remedies"
     },
     {
       "source": "cuad_ordinary",
@@ -492,17 +492,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0384,
-        "penalty_or_forfeiture": 0.0544,
-        "restricts_legal_remedies": 0.0177,
-        "one_sided_arbitrator": 0.0046,
-        "termination_at_will": 0.0224,
-        "unstamped_or_invalid_form": 0.0145,
-        "personal_data_without_consent": 0.0035,
-        "none": 0.8446
+        "restraint_of_trade": 0.0621,
+        "penalty_or_forfeiture": 0.0812,
+        "restricts_legal_remedies": 0.0729,
+        "one_sided_arbitrator": 0.012,
+        "termination_at_will": 0.0863,
+        "unstamped_or_invalid_form": 0.0371,
+        "personal_data_without_consent": 0.017,
+        "none": 0.6315
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "termination_at_will"
     },
     {
       "source": "cuad_ordinary",
@@ -510,17 +510,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0209,
-        "penalty_or_forfeiture": 0.0279,
-        "restricts_legal_remedies": 0.0947,
-        "one_sided_arbitrator": 0.0042,
-        "termination_at_will": 0.0367,
-        "unstamped_or_invalid_form": 0.0272,
-        "personal_data_without_consent": 0.0062,
-        "none": 0.7822
+        "restraint_of_trade": 0.0471,
+        "penalty_or_forfeiture": 0.0552,
+        "restricts_legal_remedies": 0.1579,
+        "one_sided_arbitrator": 0.0166,
+        "termination_at_will": 0.0756,
+        "unstamped_or_invalid_form": 0.0624,
+        "personal_data_without_consent": 0.0206,
+        "none": 0.5647
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "restricts_legal_remedies"
     },
     {
       "source": "cuad_ordinary",
@@ -528,17 +528,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0208,
-        "penalty_or_forfeiture": 0.0355,
-        "restricts_legal_remedies": 0.0288,
-        "one_sided_arbitrator": 0.0077,
-        "termination_at_will": 0.0345,
-        "unstamped_or_invalid_form": 0.0257,
-        "personal_data_without_consent": 0.0029,
-        "none": 0.844
+        "restraint_of_trade": 0.0449,
+        "penalty_or_forfeiture": 0.093,
+        "restricts_legal_remedies": 0.0945,
+        "one_sided_arbitrator": 0.0686,
+        "termination_at_will": 0.1104,
+        "unstamped_or_invalid_form": 0.0395,
+        "personal_data_without_consent": 0.0108,
+        "none": 0.5383
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "termination_at_will"
     },
     {
       "source": "cuad_ordinary",
@@ -546,14 +546,14 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0139,
-        "penalty_or_forfeiture": 0.0172,
-        "restricts_legal_remedies": 0.0856,
-        "one_sided_arbitrator": 0.0019,
-        "termination_at_will": 0.4024,
-        "unstamped_or_invalid_form": 0.0199,
-        "personal_data_without_consent": 0.0014,
-        "none": 0.4577
+        "restraint_of_trade": 0.0551,
+        "penalty_or_forfeiture": 0.0532,
+        "restricts_legal_remedies": 0.0965,
+        "one_sided_arbitrator": 0.0088,
+        "termination_at_will": 0.3157,
+        "unstamped_or_invalid_form": 0.0311,
+        "personal_data_without_consent": 0.0072,
+        "none": 0.4324
       },
       "kev_tau0.5": "termination_at_will",
       "kev_tau0.7": "termination_at_will"
@@ -564,17 +564,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0151,
-        "penalty_or_forfeiture": 0.0441,
-        "restricts_legal_remedies": 0.018,
-        "one_sided_arbitrator": 0.0041,
-        "termination_at_will": 0.0177,
-        "unstamped_or_invalid_form": 0.0169,
-        "personal_data_without_consent": 0.0023,
-        "none": 0.8819
+        "restraint_of_trade": 0.0339,
+        "penalty_or_forfeiture": 0.0896,
+        "restricts_legal_remedies": 0.0538,
+        "one_sided_arbitrator": 0.0144,
+        "termination_at_will": 0.0802,
+        "unstamped_or_invalid_form": 0.0346,
+        "personal_data_without_consent": 0.0084,
+        "none": 0.6851
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "penalty_or_forfeiture"
     },
     {
       "source": "cuad_ordinary",
@@ -582,17 +582,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0165,
-        "penalty_or_forfeiture": 0.0264,
-        "restricts_legal_remedies": 0.1462,
-        "one_sided_arbitrator": 0.0027,
-        "termination_at_will": 0.1491,
-        "unstamped_or_invalid_form": 0.0188,
-        "personal_data_without_consent": 0.0022,
-        "none": 0.6382
+        "restraint_of_trade": 0.0495,
+        "penalty_or_forfeiture": 0.0692,
+        "restricts_legal_remedies": 0.1995,
+        "one_sided_arbitrator": 0.0072,
+        "termination_at_will": 0.1743,
+        "unstamped_or_invalid_form": 0.0294,
+        "personal_data_without_consent": 0.0111,
+        "none": 0.4598
       },
-      "kev_tau0.5": "none",
-      "kev_tau0.7": "termination_at_will"
+      "kev_tau0.5": "restricts_legal_remedies",
+      "kev_tau0.7": "restricts_legal_remedies"
     },
     {
       "source": "cuad_ordinary",
@@ -600,16 +600,16 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0346,
-        "penalty_or_forfeiture": 0.0318,
-        "restricts_legal_remedies": 0.2072,
-        "one_sided_arbitrator": 0.0032,
-        "termination_at_will": 0.1633,
-        "unstamped_or_invalid_form": 0.0129,
-        "personal_data_without_consent": 0.0017,
-        "none": 0.5454
+        "restraint_of_trade": 0.0505,
+        "penalty_or_forfeiture": 0.0654,
+        "restricts_legal_remedies": 0.2748,
+        "one_sided_arbitrator": 0.0068,
+        "termination_at_will": 0.1121,
+        "unstamped_or_invalid_form": 0.0179,
+        "personal_data_without_consent": 0.0051,
+        "none": 0.4673
       },
-      "kev_tau0.5": "none",
+      "kev_tau0.5": "restricts_legal_remedies",
       "kev_tau0.7": "restricts_legal_remedies"
     },
     {
@@ -618,17 +618,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.016,
-        "penalty_or_forfeiture": 0.0378,
-        "restricts_legal_remedies": 0.0366,
-        "one_sided_arbitrator": 0.0061,
-        "termination_at_will": 0.028,
-        "unstamped_or_invalid_form": 0.0099,
-        "personal_data_without_consent": 0.0021,
-        "none": 0.8634
+        "restraint_of_trade": 0.0346,
+        "penalty_or_forfeiture": 0.0813,
+        "restricts_legal_remedies": 0.0853,
+        "one_sided_arbitrator": 0.0251,
+        "termination_at_will": 0.0855,
+        "unstamped_or_invalid_form": 0.0217,
+        "personal_data_without_consent": 0.0094,
+        "none": 0.657
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "termination_at_will"
     },
     {
       "source": "cuad_ordinary",
@@ -636,17 +636,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0157,
-        "penalty_or_forfeiture": 0.0312,
-        "restricts_legal_remedies": 0.1238,
-        "one_sided_arbitrator": 0.0031,
-        "termination_at_will": 0.3058,
-        "unstamped_or_invalid_form": 0.0139,
-        "personal_data_without_consent": 0.0018,
-        "none": 0.5047
+        "restraint_of_trade": 0.0427,
+        "penalty_or_forfeiture": 0.0766,
+        "restricts_legal_remedies": 0.1902,
+        "one_sided_arbitrator": 0.0131,
+        "termination_at_will": 0.1765,
+        "unstamped_or_invalid_form": 0.0342,
+        "personal_data_without_consent": 0.0084,
+        "none": 0.4584
       },
-      "kev_tau0.5": "none",
-      "kev_tau0.7": "termination_at_will"
+      "kev_tau0.5": "restricts_legal_remedies",
+      "kev_tau0.7": "restricts_legal_remedies"
     },
     {
       "source": "cuad_ordinary",
@@ -654,17 +654,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0153,
-        "penalty_or_forfeiture": 0.0168,
-        "restricts_legal_remedies": 0.1381,
-        "one_sided_arbitrator": 0.0121,
-        "termination_at_will": 0.0188,
-        "unstamped_or_invalid_form": 0.0302,
-        "personal_data_without_consent": 0.0023,
-        "none": 0.7664
+        "restraint_of_trade": 0.0347,
+        "penalty_or_forfeiture": 0.0368,
+        "restricts_legal_remedies": 0.134,
+        "one_sided_arbitrator": 0.0458,
+        "termination_at_will": 0.0698,
+        "unstamped_or_invalid_form": 0.0487,
+        "personal_data_without_consent": 0.0079,
+        "none": 0.6223
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "restricts_legal_remedies"
     },
     {
       "source": "cuad_ordinary",
@@ -672,14 +672,14 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0135,
-        "penalty_or_forfeiture": 0.0461,
-        "restricts_legal_remedies": 0.0163,
-        "one_sided_arbitrator": 0.0039,
-        "termination_at_will": 0.0167,
-        "unstamped_or_invalid_form": 0.0266,
-        "personal_data_without_consent": 0.0024,
-        "none": 0.8746
+        "restraint_of_trade": 0.0239,
+        "penalty_or_forfeiture": 0.0877,
+        "restricts_legal_remedies": 0.0494,
+        "one_sided_arbitrator": 0.0125,
+        "termination_at_will": 0.0536,
+        "unstamped_or_invalid_form": 0.0391,
+        "personal_data_without_consent": 0.0071,
+        "none": 0.7268
       },
       "kev_tau0.5": "none",
       "kev_tau0.7": "none"
@@ -690,14 +690,14 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0225,
-        "penalty_or_forfeiture": 0.0241,
-        "restricts_legal_remedies": 0.3396,
-        "one_sided_arbitrator": 0.0027,
-        "termination_at_will": 0.2401,
-        "unstamped_or_invalid_form": 0.0136,
-        "personal_data_without_consent": 0.0016,
-        "none": 0.3557
+        "restraint_of_trade": 0.0667,
+        "penalty_or_forfeiture": 0.0557,
+        "restricts_legal_remedies": 0.3316,
+        "one_sided_arbitrator": 0.0107,
+        "termination_at_will": 0.1474,
+        "unstamped_or_invalid_form": 0.0308,
+        "personal_data_without_consent": 0.0087,
+        "none": 0.3482
       },
       "kev_tau0.5": "restricts_legal_remedies",
       "kev_tau0.7": "restricts_legal_remedies"
@@ -708,17 +708,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0148,
-        "penalty_or_forfeiture": 0.0185,
-        "restricts_legal_remedies": 0.1245,
-        "one_sided_arbitrator": 0.0025,
-        "termination_at_will": 0.3416,
-        "unstamped_or_invalid_form": 0.0103,
-        "personal_data_without_consent": 0.0016,
-        "none": 0.4862
+        "restraint_of_trade": 0.0407,
+        "penalty_or_forfeiture": 0.0558,
+        "restricts_legal_remedies": 0.2468,
+        "one_sided_arbitrator": 0.0082,
+        "termination_at_will": 0.2054,
+        "unstamped_or_invalid_form": 0.0241,
+        "personal_data_without_consent": 0.0079,
+        "none": 0.411
       },
-      "kev_tau0.5": "termination_at_will",
-      "kev_tau0.7": "termination_at_will"
+      "kev_tau0.5": "restricts_legal_remedies",
+      "kev_tau0.7": "restricts_legal_remedies"
     },
     {
       "source": "cuad_ordinary",
@@ -726,16 +726,16 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0252,
-        "penalty_or_forfeiture": 0.0225,
-        "restricts_legal_remedies": 0.1398,
-        "one_sided_arbitrator": 0.0034,
-        "termination_at_will": 0.1002,
-        "unstamped_or_invalid_form": 0.0168,
-        "personal_data_without_consent": 0.002,
-        "none": 0.6901
+        "restraint_of_trade": 0.0707,
+        "penalty_or_forfeiture": 0.0531,
+        "restricts_legal_remedies": 0.2657,
+        "one_sided_arbitrator": 0.0097,
+        "termination_at_will": 0.1148,
+        "unstamped_or_invalid_form": 0.0223,
+        "personal_data_without_consent": 0.007,
+        "none": 0.4568
       },
-      "kev_tau0.5": "none",
+      "kev_tau0.5": "restricts_legal_remedies",
       "kev_tau0.7": "restricts_legal_remedies"
     },
     {
@@ -744,14 +744,14 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0116,
-        "penalty_or_forfeiture": 0.0283,
-        "restricts_legal_remedies": 0.0127,
-        "one_sided_arbitrator": 0.0042,
-        "termination_at_will": 0.0133,
-        "unstamped_or_invalid_form": 0.0182,
-        "personal_data_without_consent": 0.0025,
-        "none": 0.9092
+        "restraint_of_trade": 0.0251,
+        "penalty_or_forfeiture": 0.0657,
+        "restricts_legal_remedies": 0.0434,
+        "one_sided_arbitrator": 0.0138,
+        "termination_at_will": 0.049,
+        "unstamped_or_invalid_form": 0.0303,
+        "personal_data_without_consent": 0.0067,
+        "none": 0.766
       },
       "kev_tau0.5": "none",
       "kev_tau0.7": "none"
@@ -762,17 +762,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.02,
-        "penalty_or_forfeiture": 0.0239,
-        "restricts_legal_remedies": 0.1064,
-        "one_sided_arbitrator": 0.0037,
-        "termination_at_will": 0.0622,
-        "unstamped_or_invalid_form": 0.0173,
-        "personal_data_without_consent": 0.0026,
-        "none": 0.7638
+        "restraint_of_trade": 0.0508,
+        "penalty_or_forfeiture": 0.0473,
+        "restricts_legal_remedies": 0.1549,
+        "one_sided_arbitrator": 0.0095,
+        "termination_at_will": 0.0847,
+        "unstamped_or_invalid_form": 0.0284,
+        "personal_data_without_consent": 0.0097,
+        "none": 0.6148
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "restricts_legal_remedies"
     },
     {
       "source": "cuad_ordinary",
@@ -780,17 +780,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0162,
-        "penalty_or_forfeiture": 0.0447,
-        "restricts_legal_remedies": 0.0328,
-        "one_sided_arbitrator": 0.005,
-        "termination_at_will": 0.0245,
-        "unstamped_or_invalid_form": 0.0209,
-        "personal_data_without_consent": 0.004,
-        "none": 0.852
+        "restraint_of_trade": 0.0373,
+        "penalty_or_forfeiture": 0.1209,
+        "restricts_legal_remedies": 0.0728,
+        "one_sided_arbitrator": 0.0191,
+        "termination_at_will": 0.068,
+        "unstamped_or_invalid_form": 0.0373,
+        "personal_data_without_consent": 0.0101,
+        "none": 0.6347
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "penalty_or_forfeiture"
     },
     {
       "source": "cuad_ordinary",
@@ -798,17 +798,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.024,
-        "penalty_or_forfeiture": 0.0445,
-        "restricts_legal_remedies": 0.0558,
-        "one_sided_arbitrator": 0.0088,
-        "termination_at_will": 0.0366,
-        "unstamped_or_invalid_form": 0.0182,
-        "personal_data_without_consent": 0.0028,
-        "none": 0.8092
+        "restraint_of_trade": 0.0454,
+        "penalty_or_forfeiture": 0.0813,
+        "restricts_legal_remedies": 0.0881,
+        "one_sided_arbitrator": 0.0258,
+        "termination_at_will": 0.1062,
+        "unstamped_or_invalid_form": 0.03,
+        "personal_data_without_consent": 0.0118,
+        "none": 0.6115
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "termination_at_will"
     },
     {
       "source": "cuad_ordinary",
@@ -816,17 +816,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0231,
-        "penalty_or_forfeiture": 0.0283,
-        "restricts_legal_remedies": 0.15,
-        "one_sided_arbitrator": 0.0037,
-        "termination_at_will": 0.1852,
-        "unstamped_or_invalid_form": 0.0192,
-        "personal_data_without_consent": 0.0022,
-        "none": 0.5882
+        "restraint_of_trade": 0.045,
+        "penalty_or_forfeiture": 0.0751,
+        "restricts_legal_remedies": 0.2069,
+        "one_sided_arbitrator": 0.0086,
+        "termination_at_will": 0.1654,
+        "unstamped_or_invalid_form": 0.0267,
+        "personal_data_without_consent": 0.0072,
+        "none": 0.4651
       },
-      "kev_tau0.5": "none",
-      "kev_tau0.7": "termination_at_will"
+      "kev_tau0.5": "restricts_legal_remedies",
+      "kev_tau0.7": "restricts_legal_remedies"
     },
     {
       "source": "cuad_ordinary",
@@ -834,17 +834,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0235,
-        "penalty_or_forfeiture": 0.0314,
-        "restricts_legal_remedies": 0.1316,
-        "one_sided_arbitrator": 0.0043,
-        "termination_at_will": 0.1675,
-        "unstamped_or_invalid_form": 0.0182,
-        "personal_data_without_consent": 0.0025,
-        "none": 0.621
+        "restraint_of_trade": 0.0447,
+        "penalty_or_forfeiture": 0.0977,
+        "restricts_legal_remedies": 0.2058,
+        "one_sided_arbitrator": 0.0105,
+        "termination_at_will": 0.1953,
+        "unstamped_or_invalid_form": 0.0216,
+        "personal_data_without_consent": 0.0088,
+        "none": 0.4158
       },
-      "kev_tau0.5": "none",
-      "kev_tau0.7": "termination_at_will"
+      "kev_tau0.5": "restricts_legal_remedies",
+      "kev_tau0.7": "restricts_legal_remedies"
     },
     {
       "source": "cuad_ordinary",
@@ -852,17 +852,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0245,
-        "penalty_or_forfeiture": 0.0503,
-        "restricts_legal_remedies": 0.0368,
-        "one_sided_arbitrator": 0.0076,
-        "termination_at_will": 0.0324,
-        "unstamped_or_invalid_form": 0.0121,
-        "personal_data_without_consent": 0.0024,
-        "none": 0.8338
+        "restraint_of_trade": 0.0614,
+        "penalty_or_forfeiture": 0.1182,
+        "restricts_legal_remedies": 0.0951,
+        "one_sided_arbitrator": 0.032,
+        "termination_at_will": 0.0975,
+        "unstamped_or_invalid_form": 0.0288,
+        "personal_data_without_consent": 0.012,
+        "none": 0.5551
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "penalty_or_forfeiture"
     },
     {
       "source": "cuad_ordinary",
@@ -870,17 +870,17 @@
       "risky": false,
       "regex": false,
       "kev_probs": {
-        "restraint_of_trade": 0.0147,
-        "penalty_or_forfeiture": 0.0302,
-        "restricts_legal_remedies": 0.0249,
-        "one_sided_arbitrator": 0.0043,
-        "termination_at_will": 0.0147,
-        "unstamped_or_invalid_form": 0.0196,
-        "personal_data_without_consent": 0.0024,
-        "none": 0.8892
+        "restraint_of_trade": 0.0312,
+        "penalty_or_forfeiture": 0.0931,
+        "restricts_legal_remedies": 0.0734,
+        "one_sided_arbitrator": 0.0132,
+        "termination_at_will": 0.063,
+        "unstamped_or_invalid_form": 0.0381,
+        "personal_data_without_consent": 0.0109,
+        "none": 0.6771
       },
       "kev_tau0.5": "none",
-      "kev_tau0.7": "none"
+      "kev_tau0.7": "penalty_or_forfeiture"
     }
   ],
   "kev_url": "http://127.0.0.1:8008/v1/systemone",
@@ -914,32 +914,6 @@
     "kev_tau0.5": {
       "caught": 11,
       "missed": 4,
-      "false_alarms": 9,
-      "correctly_quiet": 25,
-      "by_source": {
-        "cuad_ordinary": {
-          "caught": 0,
-          "risky": 0,
-          "false_alarms": 5,
-          "safe": 30
-        },
-        "pune_injection": {
-          "caught": 5,
-          "risky": 6,
-          "false_alarms": 0,
-          "safe": 0
-        },
-        "supreme_court": {
-          "caught": 6,
-          "risky": 9,
-          "false_alarms": 4,
-          "safe": 4
-        }
-      }
-    },
-    "kev_tau0.7": {
-      "caught": 11,
-      "missed": 4,
       "false_alarms": 15,
       "correctly_quiet": 19,
       "by_source": {
@@ -957,6 +931,32 @@
         },
         "supreme_court": {
           "caught": 6,
+          "risky": 9,
+          "false_alarms": 4,
+          "safe": 4
+        }
+      }
+    },
+    "kev_tau0.7": {
+      "caught": 14,
+      "missed": 1,
+      "false_alarms": 32,
+      "correctly_quiet": 2,
+      "by_source": {
+        "cuad_ordinary": {
+          "caught": 0,
+          "risky": 0,
+          "false_alarms": 28,
+          "safe": 30
+        },
+        "pune_injection": {
+          "caught": 6,
+          "risky": 6,
+          "false_alarms": 0,
+          "safe": 0
+        },
+        "supreme_court": {
+          "caught": 8,
           "risky": 9,
           "false_alarms": 4,
           "safe": 4

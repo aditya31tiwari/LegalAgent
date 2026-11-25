@@ -266,7 +266,7 @@ infrastructure business in India."</span>,
   <span class="k">"section"</span>: <span class="s">"Percept D'Mark (India) (P) Ltd. v. Zaheer Khan, (2006) 4 SCC 227"</span>,
   <span class="k">"grounding"</span>: <span class="s">"retrieved"</span>, <span class="k">"confidence"</span>: <span class="s">"low"</span>, <span class="k">"retrieval_score"</span>: <span class="n">0.0328</span> }</pre></div>
   <div class="card"><h3>Ground truth example: a real Supreme Court clause</h3>
-    <p><b>Superintendence Company of India v. Krishan Murgai</b> (1980), clause 10 of an appointment letter: <i>"…you will not be permitted to join any firm of our competitors or run a business of your own … for a period of two years … after you leave the Company."</i> The court refused to enforce it (ICA s.27). On this clause Kev answered <code>restraint_of_trade 0.69</code>, <code>none 0.17</code> → flagged, high confidence. Regex rules did not flag it.</p></div>
+    <p><b>M/s Kailash Nath Associates v. Delhi Development Authority</b> (2015), auction terms para 2(iv): <i>"In case of default, breach or non-compliance of any of the terms and conditions of the auction … the earnest money shall be forfeited."</i> The Supreme Court held that forfeiting earnest money is governed by <b>Section 74</b> of the Indian Contract Act and is allowed only as reasonable compensation for actual loss. Kev picked <code>penalty_or_forfeiture</code> → <b>ICA s.74</b>, the same section the court applied, and flagged it. Regex rules did not flag it.</p></div>
 </section>
 
 <!-- RESULTS -->

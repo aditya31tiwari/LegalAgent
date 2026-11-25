@@ -133,6 +133,7 @@ def main():
         tb = Table(box=box.SIMPLE_HEAVY)
         for c in ("A", "B", "P(no_issue)", "P(conflict)", "P(dependency)", "P(overlap)", "P(ambiguity)", "decision", "severity", "statute chosen", "ms"):
             tb.add_column(c, overflow="fold")
+        judged = []
         for a, b, ss in pairs[: args.pairs]:
             A, B = by[a], by[b]
             secs = lj.statute_options(A, B)
@@ -141,10 +142,11 @@ def main():
             dec = lj.decide(rp, tau)
             sp = ans["severity"]["probabilities"]
             sev = lj.SEVERITIES[max(range(3), key=lambda i: float(sp[str(i)]))]
-            st_choice = ans.get("statute", {}).get("choice", "")
+            judged.append((float(rp.get("no_issue", 0)), A, B, rp, dec, sev, ans.get("statute", {}).get("choice", ""), r.get("latency_ms", "")))
+        for _, A, B, rp, dec, sev, st_choice, ms in sorted(judged, key=lambda x: x[0]):   # most risky pairs first
             style = "bold red" if dec != "no_issue" else "dim"
             tb.add_row(A.number, B.number, *(pct(rp.get(k, 0)) for k in ("no_issue", "conflict", "dependency", "overlap", "ambiguity")),
-                       f"[{style}]{dec}[/{style}]", sev, short(st_choice, 30), str(r.get("latency_ms", "")))
+                       f"[{style}]{dec}[/{style}]", sev, short(st_choice, 30), str(ms))
             if dec != "no_issue":
                 flagged.append((A, B))
         con.print(tb)
@@ -156,18 +158,22 @@ def main():
     from legalagent.core import statutory_kev as sk
     regex_hits = {f.target_clause_id for f in analyse_statutory(clauses, "India")}
     if lj.available():
-        cands = [c for c in clauses if ({l["label"] for l in c.labels} or {"other"}) & sk.RISK_TYPES][: args.rows]
+        cands = [c for c in clauses if ({l["label"] for l in c.labels} or {"other"}) & sk.RISK_TYPES][: max(args.rows, 30)]
         tb = Table(box=box.SIMPLE_HEAVY)
-        for c in ("clause", "regex", "P(none)", "top risk", "p", "law", "confidence", "text"):
+        # P(risk) = 1 − P(none): how sure Kev is that the clause carries SOME Indian-law risk (the confidence label uses it);
+        # "risk type" = the most likely of the 7 categories, mapped to its Act and section.
+        for c in ("clause", "regex", "P(risk)", "risk type", "law", "confidence", "text"):
             tb.add_column(c, overflow="fold")
+        rows = []
         for c in cands:
             p = sk.assess(c.text)["probabilities"]
             top = max((k for k in p if k != "none"), key=lambda k: float(p[k]))
-            risk = 1 - float(p.get("none", 0))
+            rows.append((1 - float(p.get("none", 0)), c, top))
+        for risk, c, top in sorted(rows, key=lambda x: -x[0])[: args.rows]:   # most risky clauses first
             _, act, sec = sk.CATEGORIES[top]
             conf = sk.confidence_label(risk) if risk >= 0.3 else "—"
             style = {"high": "bold red", "medium": "yellow", "low": "dim"}.get(conf, "dim")
-            tb.add_row(c.number, "✓" if c.id in regex_hits else "", pct(p.get("none", 0)), top, pct(p[top]),
+            tb.add_row(c.number, "✓" if c.id in regex_hits else "", pct(risk), top,
                        f"{act.replace('The ', '')}, {sec}" if act else "", f"[{style}]{conf}[/{style}]", short(c.text, 50))
         con.print(tb)
     else:
