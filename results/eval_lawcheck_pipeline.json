@@ -1,0 +1,595 @@
+[
+ {
+  "src": "supreme_court",
+  "id": "percept_dmark_2006",
+  "risky": true,
+  "p": 0.6007,
+  "gated": true,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "exclusivity_and_restraint"
+  ]
+ },
+ {
+  "src": "supreme_court",
+  "id": "superintendence_murgai_1980",
+  "risky": true,
+  "p": 0.6578,
+  "gated": true,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "exclusivity_and_restraint"
+  ]
+ },
+ {
+  "src": "supreme_court",
+  "id": "golikari_century_spinning_1967",
+  "risky": false,
+  "p": 0.7545,
+  "gated": true,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "other"
+  ]
+ },
+ {
+  "src": "supreme_court",
+  "id": "gujarat_bottling_coca_cola_1995",
+  "risky": false,
+  "p": 0.5337,
+  "gated": true,
+  "regex": false,
+  "corr": true,
+  "labels": [
+   "exclusivity_and_restraint"
+  ]
+ },
+ {
+  "src": "supreme_court",
+  "id": "kailash_nath_dda_2015",
+  "risky": true,
+  "p": 0.6182,
+  "gated": true,
+  "regex": false,
+  "corr": true,
+  "labels": [
+   "other"
+  ]
+ },
+ {
+  "src": "supreme_court",
+  "id": "maula_bux_1969",
+  "risky": true,
+  "p": 0.7017,
+  "gated": true,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "other"
+  ]
+ },
+ {
+  "src": "supreme_court",
+  "id": "ongc_saw_pipes_2003",
+  "risky": false,
+  "p": 0.581,
+  "gated": true,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "limitation_of_liability",
+   "liquidated_damages",
+   "remedies"
+  ]
+ },
+ {
+  "src": "supreme_court",
+  "id": "central_inland_brojo_nath_1986",
+  "risky": true,
+  "p": 0.6322,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "notices"
+  ]
+ },
+ {
+  "src": "supreme_court",
+  "id": "indusind_bank_2016",
+  "risky": false,
+  "p": 0.8699,
+  "gated": true,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "other"
+  ]
+ },
+ {
+  "src": "supreme_court",
+  "id": "jagdish_chander_2007",
+  "risky": true,
+  "p": 0.3363,
+  "gated": true,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "arbitration"
+  ]
+ },
+ {
+  "src": "supreme_court",
+  "id": "nn_global_mercantile_2021_2023",
+  "risky": true,
+  "p": 0.2238,
+  "gated": true,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "other"
+  ]
+ },
+ {
+  "src": "supreme_court",
+  "id": "perkins_eastman_hscc_2019",
+  "risky": true,
+  "p": 0.5581,
+  "gated": true,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "arbitration"
+  ]
+ },
+ {
+  "src": "supreme_court",
+  "id": "bgs_sgs_soma_nhpc_2019",
+  "risky": true,
+  "p": 0.3926,
+  "gated": true,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "arbitration"
+  ]
+ },
+ {
+  "src": "pune_injection",
+  "id": "91.3",
+  "risky": true,
+  "p": 0.7461,
+  "gated": true,
+  "regex": true,
+  "corr": true,
+  "labels": [
+   "exclusivity_and_restraint"
+  ]
+ },
+ {
+  "src": "pune_injection",
+  "id": "91.5",
+  "risky": true,
+  "p": 0.671,
+  "gated": true,
+  "regex": true,
+  "corr": true,
+  "labels": [
+   "liquidated_damages",
+   "remedies"
+  ]
+ },
+ {
+  "src": "pune_injection",
+  "id": "91.6",
+  "risky": true,
+  "p": 0.7136,
+  "gated": true,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "data_protection"
+  ]
+ },
+ {
+  "src": "pune_injection",
+  "id": "91.7",
+  "risky": true,
+  "p": 0.8585,
+  "gated": true,
+  "regex": true,
+  "corr": true,
+  "labels": [
+   "data_protection"
+  ]
+ },
+ {
+  "src": "pune_injection",
+  "id": "91.13",
+  "risky": true,
+  "p": 0.7055,
+  "gated": true,
+  "regex": true,
+  "corr": false,
+  "labels": [
+   "stamp_duty"
+  ]
+ },
+ {
+  "src": "pune_injection",
+  "id": "91.9",
+  "risky": true,
+  "p": 0.478,
+  "gated": true,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "other"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0334::2.01",
+  "risky": false,
+  "p": 0.6086,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "term_and_renewal"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0118::14.4",
+  "risky": false,
+  "p": 0.413,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "audit_and_records"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0400::10.4",
+  "risky": false,
+  "p": 0.4304,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "governing_law"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0162::24.1",
+  "risky": false,
+  "p": 0.4674,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "governing_law"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0441::11.5",
+  "risky": false,
+  "p": 0.3339,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "audit_and_records"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0358::15.9",
+  "risky": false,
+  "p": 0.4179,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "governing_law"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0464::5.3",
+  "risky": false,
+  "p": 0.3473,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "audit_and_records"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0400::6.1",
+  "risky": false,
+  "p": 0.5762,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "term_and_renewal"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0346::3.6::2",
+  "risky": false,
+  "p": 0.3685,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "audit_and_records"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0286::5.17",
+  "risky": false,
+  "p": 0.4353,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "audit_and_records"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0012::18.07",
+  "risky": false,
+  "p": 0.4617,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "governing_law"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0242::7",
+  "risky": false,
+  "p": 0.5676,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "term_and_renewal"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0417::25.0",
+  "risky": false,
+  "p": 0.3149,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "insurance"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0118::9.2",
+  "risky": false,
+  "p": 0.5402,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "insurance"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0346::2.1::2",
+  "risky": false,
+  "p": 0.5327,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "term_and_renewal"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0020::9.4",
+  "risky": false,
+  "p": 0.343,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "governing_law"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0498::5.1",
+  "risky": false,
+  "p": 0.5416,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "term_and_renewal"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0077::9.6",
+  "risky": false,
+  "p": 0.3777,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "governing_law"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0050::7.4",
+  "risky": false,
+  "p": 0.2732,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "insurance"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0183::1",
+  "risky": false,
+  "p": 0.6518,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "term_and_renewal"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0247::7",
+  "risky": false,
+  "p": 0.589,
+  "gated": true,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "notices",
+   "term_and_renewal",
+   "termination"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0470::2",
+  "risky": false,
+  "p": 0.5432,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "term_and_renewal"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0118::9.1",
+  "risky": false,
+  "p": 0.234,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "insurance"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0191::17.2",
+  "risky": false,
+  "p": 0.3852,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "term_and_renewal"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0290::6.5::2",
+  "risky": false,
+  "p": 0.3653,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "insurance"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0048::19",
+  "risky": false,
+  "p": 0.3885,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "governing_law"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0307::16.1",
+  "risky": false,
+  "p": 0.5349,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "term_and_renewal"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0006::5.1",
+  "risky": false,
+  "p": 0.5842,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "term_and_renewal"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0388::9.5",
+  "risky": false,
+  "p": 0.4449,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "governing_law"
+  ]
+ },
+ {
+  "src": "cuad_ordinary",
+  "id": "cuad:0096::26.2.4",
+  "risky": false,
+  "p": 0.3229,
+  "gated": false,
+  "regex": false,
+  "corr": false,
+  "labels": [
+   "insurance"
+  ]
+ }
+]

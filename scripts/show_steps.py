@@ -284,14 +284,23 @@ def main():
             _, act, sec = sk.CATEGORIES[top]
             v = verify_citation(f"{act}, {sec}") if act else None
             mapped = f"{act.replace('The ', '')}, {sec}" + (" (verified in India Code)" if v else "") if act else ""
+        found = retrieve_sections(c.text[:900], k=5)
+        key = (act, sec.replace("Section ", "")) if top and act else None
         tb = Table(title=f"clause {c.number}: {flat(c.text)}", title_justify="left", box=box.SIMPLE_HEAVY)
         for col in ("rank", "retrieved section", "heading", "retrieval score", "confidence"):
             tb.add_column(col, overflow="fold")
-        for i, (s, sc) in enumerate(retrieve_sections(c.text[:900], k=4)):
-            tb.add_row(str(i + 1), f"{s['act'].replace('The ', '')}, s.{s['section']}", flat(s["heading"]), f"{sc:.4f}", retrieval_confidence(i, sc))
+        hit = False
+        for i, (s, sc) in enumerate(found):
+            same = key is not None and (s["act"], str(s["section"])) == key
+            hit = hit or same
+            tb.add_row(str(i + 1), f"{s['act'].replace('The ', '')}, s.{s['section']}" + ("  ← same as Kev" if same else ""),
+                       flat(s["heading"]), f"{sc:.4f}", retrieval_confidence(i, sc))
         if mapped:
             con.print(f"[bold]Kev's risk category:[/bold] {top} (P(risk) {risk:.2f}) → [bold]{mapped}[/bold]")
         con.print(tb)
+        if key:
+            con.print("[bold green]✓ LAW-CONFIRMED:[/bold green] the law search independently found the same section Kev's reading points to\n" if hit else
+                      "[dim]The law search did not surface this section on its own; the citation comes from Kev's risk type and is verified in India Code.[/dim]\n")
 
     # 8 ── summary
     stage(8, "Result", "what goes to the database and the dashboard", args)

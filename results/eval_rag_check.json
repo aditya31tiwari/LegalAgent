@@ -1,0 +1,2836 @@
+{
+  "rules": {
+    "kev_category_flag": {
+      "supreme_court": {
+        "caught": 6,
+        "risky": 9,
+        "false_alarms": 4,
+        "safe": 4
+      },
+      "pune_injection": {
+        "caught": 5,
+        "risky": 6,
+        "false_alarms": 0,
+        "safe": 0
+      },
+      "cuad_ordinary": {
+        "caught": 0,
+        "risky": 0,
+        "false_alarms": 11,
+        "safe": 30
+      }
+    },
+    "rag_flag": {
+      "supreme_court": {
+        "caught": 6,
+        "risky": 9,
+        "false_alarms": 4,
+        "safe": 4
+      },
+      "pune_injection": {
+        "caught": 6,
+        "risky": 6,
+        "false_alarms": 0,
+        "safe": 0
+      },
+      "cuad_ordinary": {
+        "caught": 0,
+        "risky": 0,
+        "false_alarms": 18,
+        "safe": 30
+      }
+    },
+    "both": {
+      "supreme_court": {
+        "caught": 5,
+        "risky": 9,
+        "false_alarms": 4,
+        "safe": 4
+      },
+      "pune_injection": {
+        "caught": 5,
+        "risky": 6,
+        "false_alarms": 0,
+        "safe": 0
+      },
+      "cuad_ordinary": {
+        "caught": 0,
+        "risky": 0,
+        "false_alarms": 9,
+        "safe": 30
+      }
+    }
+  },
+  "items": [
+    {
+      "source": "supreme_court",
+      "id": "percept_dmark_2006",
+      "risky": true,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.6007,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.28",
+        "The Indian Contract Act, 1872 s.65",
+        "The Indian Contract Act, 1872 s.29"
+      ],
+      "rag_mapped_violates": true,
+      "max_p_violates": 0.4747,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4494,
+            "complies": 0.1667,
+            "not_relevant": 0.3839
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Competition Act, 2002 s.3",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3208,
+            "complies": 0.1518,
+            "not_relevant": 0.5273
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.65",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4747,
+            "complies": 0.187,
+            "not_relevant": 0.3383
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.29",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4162,
+            "complies": 0.2039,
+            "not_relevant": 0.3799
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "supreme_court",
+      "id": "superintendence_murgai_1980",
+      "risky": true,
+      "category": "restraint_of_trade",
+      "p_risk": 0.6578,
+      "kev_category_flag": true,
+      "rag_flag": false,
+      "rag_violated": [],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.3876,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.27",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3876,
+            "complies": 0.1461,
+            "not_relevant": 0.4663
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Partnership Act, 1932 s.36",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2444,
+            "complies": 0.2648,
+            "not_relevant": 0.4909
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Partnership Act, 1932 s.55",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2276,
+            "complies": 0.3477,
+            "not_relevant": 0.4248
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Companies Act, 2013 s.202",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2975,
+            "complies": 0.1574,
+            "not_relevant": 0.5451
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "supreme_court",
+      "id": "golikari_century_spinning_1967",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.7545,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.28",
+        "The Companies Act, 2013 s.202",
+        "The Companies Act, 2013 s.466",
+        "The Code on Wages, 2019 s.43"
+      ],
+      "rag_mapped_violates": true,
+      "max_p_violates": 0.5348,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "violates",
+          "p": {
+            "violates": 0.5348,
+            "complies": 0.1336,
+            "not_relevant": 0.3316
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Companies Act, 2013 s.202",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4566,
+            "complies": 0.1644,
+            "not_relevant": 0.379
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Companies Act, 2013 s.466",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4418,
+            "complies": 0.1509,
+            "not_relevant": 0.4073
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Code on Wages, 2019 s.43",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4724,
+            "complies": 0.1641,
+            "not_relevant": 0.3636
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "supreme_court",
+      "id": "gujarat_bottling_coca_cola_1995",
+      "risky": false,
+      "category": "restraint_of_trade",
+      "p_risk": 0.5337,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.27",
+        "The Indian Contract Act, 1872 s.29"
+      ],
+      "rag_mapped_violates": true,
+      "max_p_violates": 0.5647,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.27",
+          "choice": "violates",
+          "p": {
+            "violates": 0.5647,
+            "complies": 0.1132,
+            "not_relevant": 0.322
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.29",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4957,
+            "complies": 0.1501,
+            "not_relevant": 0.3542
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Partnership Act, 1932 s.36",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3322,
+            "complies": 0.2051,
+            "not_relevant": 0.4627
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "supreme_court",
+      "id": "kailash_nath_dda_2015",
+      "risky": true,
+      "category": "penalty_or_forfeiture",
+      "p_risk": 0.6182,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Sale of Goods Act, 1930 s.64"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.4934,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.74",
+          "choice": "complies",
+          "p": {
+            "violates": 0.3096,
+            "complies": 0.3574,
+            "not_relevant": 0.333
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Sale of Goods Act, 1930 s.64",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4934,
+            "complies": 0.1441,
+            "not_relevant": 0.3625
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.73",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3479,
+            "complies": 0.2663,
+            "not_relevant": 0.3858
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "supreme_court",
+      "id": "maula_bux_1969",
+      "risky": true,
+      "category": "termination_at_will",
+      "p_risk": 0.7017,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.23",
+        "The Indian Contract Act, 1872 s.64",
+        "The Specific Relief Act, 1963 s.27",
+        "The Specific Relief Act, 1963 s.19"
+      ],
+      "rag_mapped_violates": true,
+      "max_p_violates": 0.4456,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.23",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4026,
+            "complies": 0.2383,
+            "not_relevant": 0.3591
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.64",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4403,
+            "complies": 0.2483,
+            "not_relevant": 0.3114
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Specific Relief Act, 1963 s.27",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4,
+            "complies": 0.2613,
+            "not_relevant": 0.3387
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Specific Relief Act, 1963 s.19",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4456,
+            "complies": 0.22,
+            "not_relevant": 0.3344
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "supreme_court",
+      "id": "ongc_saw_pipes_2003",
+      "risky": false,
+      "category": "penalty_or_forfeiture",
+      "p_risk": 0.581,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.55",
+        "The Sale of Goods Act, 1930 s.38",
+        "The Sale of Goods Act, 1930 s.57"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.4839,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.74",
+          "choice": "complies",
+          "p": {
+            "violates": 0.3022,
+            "complies": 0.3604,
+            "not_relevant": 0.3374
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.55",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4839,
+            "complies": 0.1757,
+            "not_relevant": 0.3404
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Sale of Goods Act, 1930 s.38",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4316,
+            "complies": 0.2292,
+            "not_relevant": 0.3392
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Sale of Goods Act, 1930 s.57",
+          "choice": "violates",
+          "p": {
+            "violates": 0.3787,
+            "complies": 0.2572,
+            "not_relevant": 0.364
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "supreme_court",
+      "id": "central_inland_brojo_nath_1986",
+      "risky": true,
+      "category": "termination_at_will",
+      "p_risk": 0.6322,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Industrial Disputes Act, 1947 s.25M"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.4204,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.23",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3337,
+            "complies": 0.2875,
+            "not_relevant": 0.3788
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Code on Wages, 2019 s.20",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3473,
+            "complies": 0.2307,
+            "not_relevant": 0.422
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Industrial Disputes Act, 1947 s.25M",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4204,
+            "complies": 0.2337,
+            "not_relevant": 0.346
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Negotiable Instruments Act, 1881 s.98",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.349,
+            "complies": 0.2814,
+            "not_relevant": 0.3695
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "supreme_court",
+      "id": "indusind_bank_2016",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.8699,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.28",
+        "The Indian Contract Act, 1872 s.130",
+        "The Indian Contract Act, 1872 s.139",
+        "The Indian Contract Act, 1872 s.129"
+      ],
+      "rag_mapped_violates": true,
+      "max_p_violates": 0.4867,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4382,
+            "complies": 0.1379,
+            "not_relevant": 0.4239
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.130",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4156,
+            "complies": 0.2603,
+            "not_relevant": 0.3241
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.139",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4867,
+            "complies": 0.2075,
+            "not_relevant": 0.3059
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.129",
+          "choice": "violates",
+          "p": {
+            "violates": 0.3906,
+            "complies": 0.271,
+            "not_relevant": 0.3384
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "supreme_court",
+      "id": "jagdish_chander_2007",
+      "risky": true,
+      "category": "penalty_or_forfeiture",
+      "p_risk": 0.3363,
+      "kev_category_flag": false,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Partnership Act, 1932 s.17"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.3632,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.74",
+          "choice": "complies",
+          "p": {
+            "violates": 0.2083,
+            "complies": 0.5003,
+            "not_relevant": 0.2915
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Partnership Act, 1932 s.7",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.348,
+            "complies": 0.2993,
+            "not_relevant": 0.3528
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Partnership Act, 1932 s.4",
+          "choice": "complies",
+          "p": {
+            "violates": 0.2737,
+            "complies": 0.3859,
+            "not_relevant": 0.3404
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Partnership Act, 1932 s.17",
+          "choice": "violates",
+          "p": {
+            "violates": 0.3632,
+            "complies": 0.3383,
+            "not_relevant": 0.2985
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "supreme_court",
+      "id": "nn_global_mercantile_2021_2023",
+      "risky": true,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.2238,
+      "kev_category_flag": false,
+      "rag_flag": false,
+      "rag_violated": [],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.2897,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "complies",
+          "p": {
+            "violates": 0.2586,
+            "complies": 0.3792,
+            "not_relevant": 0.3622
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.7",
+          "choice": "complies",
+          "p": {
+            "violates": 0.2897,
+            "complies": 0.4194,
+            "not_relevant": 0.2909
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.30",
+          "choice": "complies",
+          "p": {
+            "violates": 0.2424,
+            "complies": 0.4593,
+            "not_relevant": 0.2983
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.22",
+          "choice": "complies",
+          "p": {
+            "violates": 0.2775,
+            "complies": 0.3849,
+            "not_relevant": 0.3376
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "supreme_court",
+      "id": "perkins_eastman_hscc_2019",
+      "risky": true,
+      "category": "one_sided_arbitrator",
+      "p_risk": 0.5581,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Arbitration and Conciliation Act, 1996 s.12",
+        "The Arbitration and Conciliation Act, 1996 s.28"
+      ],
+      "rag_mapped_violates": true,
+      "max_p_violates": 0.4506,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Arbitration and Conciliation Act, 1996 s.12",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4271,
+            "complies": 0.229,
+            "not_relevant": 0.3439
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.28",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4506,
+            "complies": 0.1598,
+            "not_relevant": 0.3896
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.29B",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3527,
+            "complies": 0.2723,
+            "not_relevant": 0.3749
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.20",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.341,
+            "complies": 0.2862,
+            "not_relevant": 0.3728
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "supreme_court",
+      "id": "bgs_sgs_soma_nhpc_2019",
+      "risky": true,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.3926,
+      "kev_category_flag": false,
+      "rag_flag": false,
+      "rag_violated": [],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.365,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3097,
+            "complies": 0.2357,
+            "not_relevant": 0.4546
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.24",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.365,
+            "complies": 0.1973,
+            "not_relevant": 0.4377
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.1",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3641,
+            "complies": 0.2631,
+            "not_relevant": 0.3728
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.20",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.303,
+            "complies": 0.3206,
+            "not_relevant": 0.3764
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "pune_injection",
+      "id": "91.3",
+      "risky": true,
+      "category": "restraint_of_trade",
+      "p_risk": 0.7461,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "Supreme Court of India Precedent (ICA s.27) s.Percept D'Mark (India) (P) Ltd. v. Zaheer Khan, (2006) 4 SCC 227"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.7654,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.27",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.4197,
+            "complies": 0.1581,
+            "not_relevant": 0.4221
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Partnership Act, 1932 s.36",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.246,
+            "complies": 0.255,
+            "not_relevant": 0.499
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "Supreme Court of India Precedent (ICA s.27) s.Percept D'Mark (India) (P) Ltd. v. Zaheer Khan, (2006) 4 SCC 227",
+          "choice": "violates",
+          "p": {
+            "violates": 0.7654,
+            "complies": 0.0567,
+            "not_relevant": 0.178
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Partnership Act, 1932 s.55",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2789,
+            "complies": 0.3171,
+            "not_relevant": 0.4041
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "pune_injection",
+      "id": "91.5",
+      "risky": true,
+      "category": "penalty_or_forfeiture",
+      "p_risk": 0.671,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "Supreme Court of India Precedent (ICA s.74) s.Kailash Nath Associates v. Delhi Development Authority, (2015) 4 SCC 136"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.6888,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.74",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3588,
+            "complies": 0.2667,
+            "not_relevant": 0.3745
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "Supreme Court of India Precedent (ICA s.74) s.Kailash Nath Associates v. Delhi Development Authority, (2015) 4 SCC 136",
+          "choice": "violates",
+          "p": {
+            "violates": 0.6888,
+            "complies": 0.0681,
+            "not_relevant": 0.2431
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Sale of Goods Act, 1930 s.61",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3489,
+            "complies": 0.231,
+            "not_relevant": 0.4201
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "pune_injection",
+      "id": "91.6",
+      "risky": true,
+      "category": "penalty_or_forfeiture",
+      "p_risk": 0.7136,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.74",
+        "The Digital Personal Data Protection Act, 2023 s.3",
+        "The Digital Personal Data Protection Act, 2023 s.33",
+        "The Digital Personal Data Protection Act, 2023 s.4"
+      ],
+      "rag_mapped_violates": true,
+      "max_p_violates": 0.4628,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.74",
+          "choice": "violates",
+          "p": {
+            "violates": 0.3617,
+            "complies": 0.3168,
+            "not_relevant": 0.3215
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Digital Personal Data Protection Act, 2023 s.3",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4628,
+            "complies": 0.1394,
+            "not_relevant": 0.3979
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Digital Personal Data Protection Act, 2023 s.33",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4212,
+            "complies": 0.2274,
+            "not_relevant": 0.3515
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Digital Personal Data Protection Act, 2023 s.4",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4488,
+            "complies": 0.1813,
+            "not_relevant": 0.3699
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "pune_injection",
+      "id": "91.7",
+      "risky": true,
+      "category": "personal_data_without_consent",
+      "p_risk": 0.8585,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Digital Personal Data Protection Act, 2023 s.6",
+        "The Digital Personal Data Protection Act, 2023 s.5",
+        "The Digital Personal Data Protection Act, 2023 s.7"
+      ],
+      "rag_mapped_violates": true,
+      "max_p_violates": 0.6445,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Digital Personal Data Protection Act, 2023 s.6",
+          "choice": "violates",
+          "p": {
+            "violates": 0.5149,
+            "complies": 0.1749,
+            "not_relevant": 0.3101
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Digital Personal Data Protection Act, 2023 s.5",
+          "choice": "violates",
+          "p": {
+            "violates": 0.6445,
+            "complies": 0.1254,
+            "not_relevant": 0.2301
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Digital Personal Data Protection Act, 2023 s.7",
+          "choice": "violates",
+          "p": {
+            "violates": 0.5475,
+            "complies": 0.1728,
+            "not_relevant": 0.2797
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "pune_injection",
+      "id": "91.13",
+      "risky": true,
+      "category": "unstamped_or_invalid_form",
+      "p_risk": 0.7055,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "Supreme Court of India 7-Judge Constitution Bench (Stamp Act & A&C Act) s.In Re: Interplay Between Arbitration Agreements under A&C Act 1996 and Indian Stamp Act 1899, 2023 INSC 1066",
+        "The Indian Stamp Act, 1899 s.34",
+        "The Indian Stamp Act, 1899 s.37"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.5948,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Stamp Act, 1899 s.35",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3756,
+            "complies": 0.1942,
+            "not_relevant": 0.4302
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "Supreme Court of India 7-Judge Constitution Bench (Stamp Act & A&C Act) s.In Re: Interplay Between Arbitration Agreements under A&C Act 1996 and Indian Stamp Act 1899, 2023 INSC 1066",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4996,
+            "complies": 0.1009,
+            "not_relevant": 0.3996
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Stamp Act, 1899 s.34",
+          "choice": "violates",
+          "p": {
+            "violates": 0.5948,
+            "complies": 0.1236,
+            "not_relevant": 0.2816
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Stamp Act, 1899 s.37",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4197,
+            "complies": 0.1638,
+            "not_relevant": 0.4164
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "pune_injection",
+      "id": "91.9",
+      "risky": true,
+      "category": "penalty_or_forfeiture",
+      "p_risk": 0.478,
+      "kev_category_flag": false,
+      "rag_flag": true,
+      "rag_violated": [
+        "Bharatiya Nagarik Suraksha Sanhita, 2023 s.129",
+        "The Indian Contract Act, 1872 s.15"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.4948,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.74",
+          "choice": "complies",
+          "p": {
+            "violates": 0.3263,
+            "complies": 0.3764,
+            "not_relevant": 0.2973
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "Bharatiya Nagarik Suraksha Sanhita, 2023 s.129",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4474,
+            "complies": 0.2192,
+            "not_relevant": 0.3334
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Information Technology Act, 2000 s.66",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3447,
+            "complies": 0.2651,
+            "not_relevant": 0.3901
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.15",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4948,
+            "complies": 0.244,
+            "not_relevant": 0.2612
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0334::2.01",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.6086,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Arbitration and Conciliation Act, 1996 s.40",
+        "The Arbitration and Conciliation Act, 1996 s.43",
+        "The Indian Contract Act, 1872 s.36"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.5153,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3741,
+            "complies": 0.1722,
+            "not_relevant": 0.4537
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.40",
+          "choice": "violates",
+          "p": {
+            "violates": 0.394,
+            "complies": 0.249,
+            "not_relevant": 0.357
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.43",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4177,
+            "complies": 0.1693,
+            "not_relevant": 0.413
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.36",
+          "choice": "violates",
+          "p": {
+            "violates": 0.5153,
+            "complies": 0.1234,
+            "not_relevant": 0.3613
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0118::14.4",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.413,
+      "kev_category_flag": false,
+      "rag_flag": false,
+      "rag_violated": [],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.3541,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3094,
+            "complies": 0.2061,
+            "not_relevant": 0.4844
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.26",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3115,
+            "complies": 0.2746,
+            "not_relevant": 0.4139
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Digital Personal Data Protection Act, 2023 s.11",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3089,
+            "complies": 0.2179,
+            "not_relevant": 0.4732
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Companies Act, 2013 s.144",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3541,
+            "complies": 0.1937,
+            "not_relevant": 0.4522
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0400::10.4",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.4304,
+      "kev_category_flag": false,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Arbitration and Conciliation Act, 1996 s.42",
+        "The Constitution of India s.363"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.4335,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3955,
+            "complies": 0.1897,
+            "not_relevant": 0.4148
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.42",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4309,
+            "complies": 0.2536,
+            "not_relevant": 0.3155
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "Supreme Court of India Precedent (A&C Act ss.2(2), 28) s.PASL Wind Solutions Pvt. Ltd. v. GE Power Conversion India Pvt. Ltd., (2021) 7 SCC 1",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3189,
+            "complies": 0.1895,
+            "not_relevant": 0.4916
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Constitution of India s.363",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4335,
+            "complies": 0.1607,
+            "not_relevant": 0.4057
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0162::24.1",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.4674,
+      "kev_category_flag": false,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.28",
+        "The Arbitration and Conciliation Act, 1996 s.61",
+        "The Arbitration and Conciliation Act, 1996 s.7",
+        "The Arbitration and Conciliation Act, 1996 s.1"
+      ],
+      "rag_mapped_violates": true,
+      "max_p_violates": 0.4514,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4285,
+            "complies": 0.1518,
+            "not_relevant": 0.4197
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.61",
+          "choice": "violates",
+          "p": {
+            "violates": 0.3946,
+            "complies": 0.2178,
+            "not_relevant": 0.3876
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.7",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4514,
+            "complies": 0.2723,
+            "not_relevant": 0.2763
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.1",
+          "choice": "violates",
+          "p": {
+            "violates": 0.444,
+            "complies": 0.2431,
+            "not_relevant": 0.3129
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0441::11.5",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.3339,
+      "kev_category_flag": false,
+      "rag_flag": false,
+      "rag_violated": [],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.337,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.337,
+            "complies": 0.1845,
+            "not_relevant": 0.4785
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Digital Personal Data Protection Act, 2023 s.36",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.1886,
+            "complies": 0.351,
+            "not_relevant": 0.4604
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Companies Act, 2013 s.405",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2408,
+            "complies": 0.3636,
+            "not_relevant": 0.3957
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Digital Personal Data Protection Act, 2023 s.11",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3014,
+            "complies": 0.2214,
+            "not_relevant": 0.4772
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0358::15.9",
+      "risky": false,
+      "category": "termination_at_will",
+      "p_risk": 0.4179,
+      "kev_category_flag": false,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Code on Wages, 2019 s.61"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.378,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.23",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3393,
+            "complies": 0.2879,
+            "not_relevant": 0.3728
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Code on Wages, 2019 s.61",
+          "choice": "violates",
+          "p": {
+            "violates": 0.3575,
+            "complies": 0.3058,
+            "not_relevant": 0.3367
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.57",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2909,
+            "complies": 0.2866,
+            "not_relevant": 0.4226
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "Supreme Court of India Precedent (A&C Act ss.2(2), 28) s.PASL Wind Solutions Pvt. Ltd. v. GE Power Conversion India Pvt. Ltd., (2021) 7 SCC 1",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.378,
+            "complies": 0.1786,
+            "not_relevant": 0.4434
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0464::5.3",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.3473,
+      "kev_category_flag": false,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.67"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.3576,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.336,
+            "complies": 0.2078,
+            "not_relevant": 0.4562
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Constitution of India s.243ZM",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2492,
+            "complies": 0.3192,
+            "not_relevant": 0.4315
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Companies Act, 2013 s.204",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2785,
+            "complies": 0.3319,
+            "not_relevant": 0.3896
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.67",
+          "choice": "violates",
+          "p": {
+            "violates": 0.3576,
+            "complies": 0.2918,
+            "not_relevant": 0.3506
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0400::6.1",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.5762,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.28",
+        "The Arbitration and Conciliation Act, 1996 s.40",
+        "The Indian Contract Act, 1872 s.36",
+        "The Companies Act, 2013 s.243"
+      ],
+      "rag_mapped_violates": true,
+      "max_p_violates": 0.5829,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "violates",
+          "p": {
+            "violates": 0.385,
+            "complies": 0.2321,
+            "not_relevant": 0.3829
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.40",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4083,
+            "complies": 0.3009,
+            "not_relevant": 0.2908
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.36",
+          "choice": "violates",
+          "p": {
+            "violates": 0.5829,
+            "complies": 0.1522,
+            "not_relevant": 0.2648
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Companies Act, 2013 s.243",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4293,
+            "complies": 0.2321,
+            "not_relevant": 0.3386
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0346::3.6::2",
+      "risky": false,
+      "category": "termination_at_will",
+      "p_risk": 0.3685,
+      "kev_category_flag": false,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.23",
+        "The Micro, Small and Medium Enterprises Development Act, 2006 s.17"
+      ],
+      "rag_mapped_violates": true,
+      "max_p_violates": 0.4378,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.23",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4378,
+            "complies": 0.1561,
+            "not_relevant": 0.4061
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Digital Personal Data Protection Act, 2023 s.11",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3119,
+            "complies": 0.139,
+            "not_relevant": 0.5491
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Micro, Small and Medium Enterprises Development Act, 2006 s.17",
+          "choice": "violates",
+          "p": {
+            "violates": 0.434,
+            "complies": 0.181,
+            "not_relevant": 0.3849
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Digital Personal Data Protection Act, 2023 s.4",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.403,
+            "complies": 0.1419,
+            "not_relevant": 0.4551
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0286::5.17",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.4353,
+      "kev_category_flag": false,
+      "rag_flag": false,
+      "rag_violated": [],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.3124,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3113,
+            "complies": 0.2229,
+            "not_relevant": 0.4658
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Competition Act, 2002 s.52",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3124,
+            "complies": 0.2189,
+            "not_relevant": 0.4688
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Mediation Act, 2023 s.46",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2997,
+            "complies": 0.2276,
+            "not_relevant": 0.4727
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Consumer Protection Act, 2019 s.26",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2763,
+            "complies": 0.2347,
+            "not_relevant": 0.489
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0012::18.07",
+      "risky": false,
+      "category": "termination_at_will",
+      "p_risk": 0.4617,
+      "kev_category_flag": false,
+      "rag_flag": false,
+      "rag_violated": [],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.3119,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.23",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3109,
+            "complies": 0.2387,
+            "not_relevant": 0.4503
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Constitution of India s.256",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2937,
+            "complies": 0.2856,
+            "not_relevant": 0.4207
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Code of Civil Procedure, 1908 s.45",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3119,
+            "complies": 0.2442,
+            "not_relevant": 0.4439
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Code on Wages, 2019 s.61",
+          "choice": "complies",
+          "p": {
+            "violates": 0.3049,
+            "complies": 0.3537,
+            "not_relevant": 0.3413
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0242::7",
+      "risky": false,
+      "category": "termination_at_will",
+      "p_risk": 0.5676,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Companies Act, 2013 s.243",
+        "The Indian Contract Act, 1872 s.202"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.4671,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.23",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2972,
+            "complies": 0.2788,
+            "not_relevant": 0.424
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Companies Act, 2013 s.243",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4671,
+            "complies": 0.1995,
+            "not_relevant": 0.3334
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.202",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4119,
+            "complies": 0.215,
+            "not_relevant": 0.373
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Transfer of Property Act, 1882 s.106",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3331,
+            "complies": 0.2493,
+            "not_relevant": 0.4176
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0417::25.0",
+      "risky": false,
+      "category": "penalty_or_forfeiture",
+      "p_risk": 0.3149,
+      "kev_category_flag": false,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.53",
+        "The Indian Contract Act, 1872 s.132",
+        "Indian Judicial Precedent (ICA ss.124-125) s.Gajanan Moreshwar Parelkar v. Moreshwar Madan Mantri, AIR 1942 Bom 302"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.4075,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.74",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2993,
+            "complies": 0.3062,
+            "not_relevant": 0.3946
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.53",
+          "choice": "violates",
+          "p": {
+            "violates": 0.3982,
+            "complies": 0.2572,
+            "not_relevant": 0.3447
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.132",
+          "choice": "violates",
+          "p": {
+            "violates": 0.3771,
+            "complies": 0.2607,
+            "not_relevant": 0.3622
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "Indian Judicial Precedent (ICA ss.124-125) s.Gajanan Moreshwar Parelkar v. Moreshwar Madan Mantri, AIR 1942 Bom 302",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4075,
+            "complies": 0.2182,
+            "not_relevant": 0.3743
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0118::9.2",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.5402,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Limitation Act, 1963 s.44"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.406,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3864,
+            "complies": 0.1772,
+            "not_relevant": 0.4364
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Limitation Act, 1963 s.44",
+          "choice": "violates",
+          "p": {
+            "violates": 0.406,
+            "complies": 0.2304,
+            "not_relevant": 0.3636
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Transfer of Property Act, 1882 s.135",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3629,
+            "complies": 0.2243,
+            "not_relevant": 0.4128
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Stamp Act, 1899 s.66",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3124,
+            "complies": 0.1561,
+            "not_relevant": 0.5315
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0346::2.1::2",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.5327,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.20",
+        "The Indian Contract Act, 1872 s.36",
+        "The Arbitration and Conciliation Act, 1996 s.7"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.6601,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3711,
+            "complies": 0.1948,
+            "not_relevant": 0.4341
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.20",
+          "choice": "violates",
+          "p": {
+            "violates": 0.615,
+            "complies": 0.1168,
+            "not_relevant": 0.2682
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.36",
+          "choice": "violates",
+          "p": {
+            "violates": 0.6601,
+            "complies": 0.1023,
+            "not_relevant": 0.2376
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.7",
+          "choice": "violates",
+          "p": {
+            "violates": 0.3972,
+            "complies": 0.261,
+            "not_relevant": 0.3418
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0020::9.4",
+      "risky": false,
+      "category": "termination_at_will",
+      "p_risk": 0.343,
+      "kev_category_flag": false,
+      "rag_flag": false,
+      "rag_violated": [],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.3719,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.23",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3254,
+            "complies": 0.277,
+            "not_relevant": 0.3976
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "Supreme Court of India Precedent (A&C Act ss.2(2), 28) s.PASL Wind Solutions Pvt. Ltd. v. GE Power Conversion India Pvt. Ltd., (2021) 7 SCC 1",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2847,
+            "complies": 0.2178,
+            "not_relevant": 0.4974
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.2",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3466,
+            "complies": 0.2711,
+            "not_relevant": 0.3824
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.1",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3719,
+            "complies": 0.244,
+            "not_relevant": 0.3841
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0498::5.1",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.5416,
+      "kev_category_flag": true,
+      "rag_flag": false,
+      "rag_violated": [],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.3324,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3324,
+            "complies": 0.2002,
+            "not_relevant": 0.4674
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Patents Act, 1970 s.90",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3028,
+            "complies": 0.2767,
+            "not_relevant": 0.4205
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.25",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.295,
+            "complies": 0.2711,
+            "not_relevant": 0.4338
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Transfer of Property Act, 1882 s.107",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2535,
+            "complies": 0.2056,
+            "not_relevant": 0.541
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0077::9.6",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.3777,
+      "kev_category_flag": false,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.28",
+        "The Arbitration and Conciliation Act, 1996 s.42",
+        "The Commercial Courts Act, 2015 s.9",
+        "Supreme Court of India Precedent (A&C Act ss.2(2), 28) s.PASL Wind Solutions Pvt. Ltd. v. GE Power Conversion India Pvt. Ltd., (2021) 7 SCC 1"
+      ],
+      "rag_mapped_violates": true,
+      "max_p_violates": 0.4901,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4183,
+            "complies": 0.181,
+            "not_relevant": 0.4007
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.42",
+          "choice": "violates",
+          "p": {
+            "violates": 0.3674,
+            "complies": 0.3237,
+            "not_relevant": 0.3089
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Commercial Courts Act, 2015 s.9",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4214,
+            "complies": 0.2583,
+            "not_relevant": 0.3204
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "Supreme Court of India Precedent (A&C Act ss.2(2), 28) s.PASL Wind Solutions Pvt. Ltd. v. GE Power Conversion India Pvt. Ltd., (2021) 7 SCC 1",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4901,
+            "complies": 0.1276,
+            "not_relevant": 0.3823
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0050::7.4",
+      "risky": false,
+      "category": "penalty_or_forfeiture",
+      "p_risk": 0.2732,
+      "kev_category_flag": false,
+      "rag_flag": false,
+      "rag_violated": [],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.3177,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.74",
+          "choice": "complies",
+          "p": {
+            "violates": 0.2125,
+            "complies": 0.4528,
+            "not_relevant": 0.3347
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.132",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2814,
+            "complies": 0.3323,
+            "not_relevant": 0.3863
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.147",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3177,
+            "complies": 0.3102,
+            "not_relevant": 0.3721
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Consumer Protection Act, 2019 s.82",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2263,
+            "complies": 0.3677,
+            "not_relevant": 0.406
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0183::1",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.6518,
+      "kev_category_flag": true,
+      "rag_flag": false,
+      "rag_violated": [],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.4196,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.4196,
+            "complies": 0.1349,
+            "not_relevant": 0.4455
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Patents Act, 1970 s.53",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3893,
+            "complies": 0.1522,
+            "not_relevant": 0.4585
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Patents Act, 1970 s.55",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2968,
+            "complies": 0.198,
+            "not_relevant": 0.5052
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Patents Act, 1970 s.90",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3782,
+            "complies": 0.1623,
+            "not_relevant": 0.4595
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0247::7",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.589,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Companies Act, 2013 s.243"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.4455,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3985,
+            "complies": 0.1864,
+            "not_relevant": 0.4151
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Trade Marks Act, 1999 s.25",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3427,
+            "complies": 0.284,
+            "not_relevant": 0.3733
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Patents Act, 1970 s.53",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3849,
+            "complies": 0.1941,
+            "not_relevant": 0.421
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Companies Act, 2013 s.243",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4455,
+            "complies": 0.1698,
+            "not_relevant": 0.3847
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0470::2",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.5432,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.56",
+        "The Indian Contract Act, 1872 s.29",
+        "The Indian Contract Act, 1872 s.36"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.5808,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3474,
+            "complies": 0.235,
+            "not_relevant": 0.4176
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.56",
+          "choice": "violates",
+          "p": {
+            "violates": 0.5007,
+            "complies": 0.1876,
+            "not_relevant": 0.3116
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.29",
+          "choice": "violates",
+          "p": {
+            "violates": 0.3991,
+            "complies": 0.2205,
+            "not_relevant": 0.3804
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.36",
+          "choice": "violates",
+          "p": {
+            "violates": 0.5808,
+            "complies": 0.1333,
+            "not_relevant": 0.2858
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0118::9.1",
+      "risky": false,
+      "category": "penalty_or_forfeiture",
+      "p_risk": 0.234,
+      "kev_category_flag": false,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.53"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.3684,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.74",
+          "choice": "complies",
+          "p": {
+            "violates": 0.2202,
+            "complies": 0.4348,
+            "not_relevant": 0.345
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Limitation Act, 1963 s.44",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.319,
+            "complies": 0.3083,
+            "not_relevant": 0.3727
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.53",
+          "choice": "violates",
+          "p": {
+            "violates": 0.3684,
+            "complies": 0.293,
+            "not_relevant": 0.3386
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.132",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2809,
+            "complies": 0.3407,
+            "not_relevant": 0.3784
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0191::17.2",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.3852,
+      "kev_category_flag": false,
+      "rag_flag": false,
+      "rag_violated": [],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.2975,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2942,
+            "complies": 0.2116,
+            "not_relevant": 0.4942
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Information Technology Act, 2000 s.23",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2253,
+            "complies": 0.2363,
+            "not_relevant": 0.5383
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Trade Marks Act, 1999 s.36G",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2565,
+            "complies": 0.2834,
+            "not_relevant": 0.4601
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Trade Marks Act, 1999 s.25",
+          "choice": "complies",
+          "p": {
+            "violates": 0.2975,
+            "complies": 0.3531,
+            "not_relevant": 0.3494
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0290::6.5::2",
+      "risky": false,
+      "category": "penalty_or_forfeiture",
+      "p_risk": 0.3653,
+      "kev_category_flag": false,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.224",
+        "The Indian Contract Act, 1872 s.222",
+        "The Indian Contract Act, 1872 s.218"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.5864,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.74",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2964,
+            "complies": 0.3278,
+            "not_relevant": 0.3758
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.224",
+          "choice": "violates",
+          "p": {
+            "violates": 0.5864,
+            "complies": 0.1222,
+            "not_relevant": 0.2915
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.222",
+          "choice": "violates",
+          "p": {
+            "violates": 0.3671,
+            "complies": 0.2828,
+            "not_relevant": 0.3501
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.218",
+          "choice": "violates",
+          "p": {
+            "violates": 0.5454,
+            "complies": 0.1507,
+            "not_relevant": 0.3039
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0048::19",
+      "risky": false,
+      "category": "termination_at_will",
+      "p_risk": 0.3885,
+      "kev_category_flag": false,
+      "rag_flag": false,
+      "rag_violated": [],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.3912,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.23",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3434,
+            "complies": 0.2707,
+            "not_relevant": 0.3859
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.42",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3517,
+            "complies": 0.2564,
+            "not_relevant": 0.392
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Limitation Act, 1963 s.11",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3805,
+            "complies": 0.2228,
+            "not_relevant": 0.3967
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.48",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3912,
+            "complies": 0.1841,
+            "not_relevant": 0.4246
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0307::16.1",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.5349,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Limitation Act, 1963 s.44",
+        "The Trade Marks Act, 1999 s.25"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.46,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3702,
+            "complies": 0.1835,
+            "not_relevant": 0.4463
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Patents Act, 1970 s.53",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.4038,
+            "complies": 0.1788,
+            "not_relevant": 0.4175
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Limitation Act, 1963 s.44",
+          "choice": "violates",
+          "p": {
+            "violates": 0.46,
+            "complies": 0.2406,
+            "not_relevant": 0.2994
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Trade Marks Act, 1999 s.25",
+          "choice": "violates",
+          "p": {
+            "violates": 0.3675,
+            "complies": 0.269,
+            "not_relevant": 0.3635
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0006::5.1",
+      "risky": false,
+      "category": "restricts_legal_remedies",
+      "p_risk": 0.5842,
+      "kev_category_flag": true,
+      "rag_flag": true,
+      "rag_violated": [
+        "The Indian Contract Act, 1872 s.56",
+        "The Arbitration and Conciliation Act, 1996 s.43"
+      ],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.4529,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.28",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.375,
+            "complies": 0.1614,
+            "not_relevant": 0.4636
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.56",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4529,
+            "complies": 0.1559,
+            "not_relevant": 0.3912
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.43",
+          "choice": "violates",
+          "p": {
+            "violates": 0.4268,
+            "complies": 0.1562,
+            "not_relevant": 0.417
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Industrial Disputes Act, 1947 s.19",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3084,
+            "complies": 0.3045,
+            "not_relevant": 0.3872
+          }
+        }
+      ],
+      "both": true
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0388::9.5",
+      "risky": false,
+      "category": "penalty_or_forfeiture",
+      "p_risk": 0.4449,
+      "kev_category_flag": false,
+      "rag_flag": false,
+      "rag_violated": [],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.3437,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.74",
+          "choice": "complies",
+          "p": {
+            "violates": 0.3379,
+            "complies": 0.3393,
+            "not_relevant": 0.3228
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "Supreme Court of India Precedent (A&C Act ss.2(2), 28) s.PASL Wind Solutions Pvt. Ltd. v. GE Power Conversion India Pvt. Ltd., (2021) 7 SCC 1",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3437,
+            "complies": 0.1723,
+            "not_relevant": 0.484
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Arbitration and Conciliation Act, 1996 s.42",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3292,
+            "complies": 0.2798,
+            "not_relevant": 0.3909
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Constitution of India s.245",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.3228,
+            "complies": 0.3056,
+            "not_relevant": 0.3716
+          }
+        }
+      ],
+      "both": false
+    },
+    {
+      "source": "cuad_ordinary",
+      "id": "cuad:0096::26.2.4",
+      "risky": false,
+      "category": "penalty_or_forfeiture",
+      "p_risk": 0.3229,
+      "kev_category_flag": false,
+      "rag_flag": false,
+      "rag_violated": [],
+      "rag_mapped_violates": false,
+      "max_p_violates": 0.2578,
+      "checks": [
+        {
+          "how": "mapped",
+          "section": "The Indian Contract Act, 1872 s.74",
+          "choice": "complies",
+          "p": {
+            "violates": 0.1989,
+            "complies": 0.4594,
+            "not_relevant": 0.3417
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Contract Act, 1872 s.154",
+          "choice": "complies",
+          "p": {
+            "violates": 0.2372,
+            "complies": 0.4101,
+            "not_relevant": 0.3527
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Indian Partnership Act, 1932 s.26",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2578,
+            "complies": 0.2929,
+            "not_relevant": 0.4492
+          }
+        },
+        {
+          "how": "retrieved",
+          "section": "The Consumer Protection Act, 2019 s.87",
+          "choice": "not_relevant",
+          "p": {
+            "violates": 0.2449,
+            "complies": 0.2155,
+            "not_relevant": 0.5396
+          }
+        }
+      ],
+      "both": false
+    }
+  ]
+}
