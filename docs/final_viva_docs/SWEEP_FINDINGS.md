@@ -1,4 +1,20 @@
-# Pre-viva sweep — what could hurt the presentation (25 Nov 2026, ~00:45)
+# Pre-viva sweep — what could hurt the presentation (25 Nov 2026, ~00:45; updated ~11:00)
+
+## Update at ~11:00 (viva day) — what was fixed this morning
+- ✅ Item 1: laptop is back (IP still 192.168.1.10 on this network); **backend started and checked**: all pages and APIs
+  return 200, Kev on GPU (1.7 GB), `/scores` warmed up for Pune Metro.
+- ✅ Item 2: **root README rewritten** for the final system (pipeline, results table, how to run, docs link).
+- ✅ Workbench/playground: the :8008 judge was mislabelled "kev_finetuned" and showed "kev_base: server not running".
+  Now it reads **"kev_base (served, zero-shot)"** and the missing :8009 row is hidden. Playground "Run every method"
+  takes ~33 s (all methods incl. GNN and RAG).
+- ✅ New: samples 03–06 (Tech MSA, Employment, Vendor Supply, NHAI excerpt) also contained "*(Contradiction: …)*"
+  answer-key notes. They are now analysed from clean copies (`data/demo/generated/*_clean.md`), re-seeded with Kev.
+  For the live upload, use `data/demo/generated/04_executive_employment_agreement_clean.md`.
+- 🟠 New, know the answer: on the cap-vs-indemnity checklist twin Kev answers "ambiguity" for **both** the bad and the
+  fixed version (P(no_issue) 0.20 vs 0.21); the teacher gets it right. See PANEL_VIVA.md §4 "Show me it distinguishing…".
+- Still open (by choice): items 3–9 below are "know the answer" items, not bugs.
+
+---
 
 Read top to bottom; each item says **how serious**, **what to do** (mostly: nothing, just know the answer), and
 **how long a fix would take** if you decide to fix it. Nothing here was changed in the project.

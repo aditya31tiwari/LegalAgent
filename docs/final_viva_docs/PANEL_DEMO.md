@@ -81,7 +81,7 @@ Dropdown → **Supreme Court casebook — 18 real clauses**. Each ARTICLE headin
 That is why every law finding carries a confidence label and the system is a reviewer's assistant, not a judge."
 
 ### ④ Live: upload a contract (2 min)
-**Upload & analyse** → drop `data/demo/samples/04_executive_employment_agreement.md` (or any PDF) → watch the
+**Upload & analyse** → drop `data/demo/generated/04_executive_employment_agreement_clean.md` (or any PDF) → watch the
 live progress (ingest → extract → classify → shortlist → judge → law → grounding) → it opens automatically.
 For a scanned PDF say: "pages without a text layer go through Tesseract OCR in parallel and are cached."
 
